@@ -1,0 +1,171 @@
+---
+- name: Check if Cilium is already installed
+  command: kubectl get daemonset cilium -n kube-system
+  register: cilium_installed
+  ignore_errors: true
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+- name: Create Cilium CNI chaining configuration
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: cni-configuration
+        namespace: kube-system
+      data:
+        cni-config: |
+          {
+            "name": "generic-veth",
+            "cniVersion": "0.3.1",
+            "plugins": [
+              {
+                "type": "kube-ovn",
+                "server_socket": "/run/openvswitch/kube-ovn-daemon.sock",
+                "ipam": {
+                    "type": "kube-ovn",
+                    "server_socket": "/run/openvswitch/kube-ovn-daemon.sock"
+                }
+              },
+              {
+                "type": "portmap",
+                "snat": true,
+                "capabilities": {"portMappings": true}
+              },
+              {
+                "type": "cilium-cni"
+              }
+            ]
+          }
+  when: cilium_installed.rc != 0
+
+- name: Add Cilium Helm repository
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io/
+    state: present
+  when: cilium_installed.rc != 0
+
+- name: Install Cilium with Kube-OVN chaining mode
+  kubernetes.core.helm:
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "1.18.5"
+    release_namespace: kube-system
+    create_namespace: false
+    wait: true
+    wait_timeout: 10m
+    values:
+      # CNI chaining configuration for Kube-OVN
+      cni:
+        chainingMode: generic-veth
+        customConf: true
+        configMap: cni-configuration
+      
+      # Routing mode
+      routingMode: native
+      
+      # Disable IPv4 masquerade (Kube-OVN handles this)
+      enableIPv4Masquerade: false
+      
+      # Disable identity mark (required for chaining)
+      enableIdentityMark: false
+      
+      # Device detection for Kube-OVN interfaces
+      devices: eth+ ens+ ens3 ovn0 genev_sys_6081 vxlan_sys_4789
+      
+      # Bandwidth manager - disabled as Kube-OVN handles bandwidth
+      bandwidthManager:
+        enabled: false
+      
+      # Keep kube-proxy (K3s uses it) - must be boolean
+      kubeProxyReplacement: false
+      
+      # Network policy enforcement
+      policyEnforcementMode: default
+      
+      # Enable Hubble for observability
+      hubble:
+        enabled: true
+        relay:
+          enabled: true
+        ui:
+          enabled: true
+      
+      # Operator configuration
+      operator:
+        replicas: 1
+      
+      # Resource limits
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+  when: cilium_installed.rc != 0
+
+- name: Wait for Cilium pods to be ready
+  command: kubectl wait --for=condition=ready pod -l k8s-app=cilium -n kube-system --timeout=600s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  when: cilium_installed.rc != 0
+  retries: 3
+  delay: 10
+
+- name: Wait for Cilium operator to be ready
+  command: kubectl wait --for=condition=ready pod -l name=cilium-operator -n kube-system --timeout=300s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  when: cilium_installed.rc != 0
+  retries: 2
+  delay: 5
+
+- name: Disable SIP validation for NAT gateways compatibility
+  shell: |
+    CILIUM_POD=$(kubectl -n kube-system get pod -l k8s-app=cilium -o jsonpath='{.items[0].metadata.name}')
+    kubectl -n kube-system exec ${CILIUM_POD} -- cilium config set enable-host-legacy-routing true
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  when: cilium_installed.rc != 0
+  ignore_errors: true
+
+- name: Verify Cilium installation
+  command: kubectl get pods -n kube-system -l k8s-app=cilium
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: cilium_pods
+  changed_when: false
+
+- name: Display Cilium pods status
+  debug:
+    var: cilium_pods.stdout_lines
+
+- name: Check if Cilium pods exist
+  command: kubectl get pods -n kube-system -l k8s-app=cilium --no-headers
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: cilium_pods_check
+  changed_when: false
+  failed_when: false
+
+- name: Check Cilium status
+  shell: |
+    CILIUM_POD=$(kubectl -n kube-system get pod -l k8s-app=cilium -o jsonpath='{.items[0].metadata.name}')
+    kubectl -n kube-system exec ${CILIUM_POD} -- cilium status --brief
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: cilium_status
+  changed_when: false
+  ignore_errors: true
+  when: cilium_pods_check.stdout != ""
+
+- name: Display Cilium status
+  debug:
+    var: cilium_status.stdout_lines
+  when: cilium_status.rc is defined and cilium_status.rc == 0

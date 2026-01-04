@@ -1,35 +1,28 @@
 ---
-- name: Install required system packages
-  apt:
-    name:
-      - curl
-      - gpg
-      - apt-transport-https
-    state: present
-    update_cache: yes
-  become: true
+- name: Check if Helm is already installed
+  command: helm version --short
+  register: helm_installed
+  ignore_errors: true
+  changed_when: false
 
-- name: Download Helm GPG key
+- name: Download Helm installation script
   get_url:
-    url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
-    dest: /usr/share/keyrings/helm.gpg
-    mode: '0644'
-  become: true
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    mode: '0700'
+  when: helm_installed.rc != 0
 
-- name: Add Helm APT repository
-  apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
-    state: present
-    filename: helm-stable-debian
+- name: Install Helm using official script
+  command: /tmp/get_helm.sh
   become: true
+  when: helm_installed.rc != 0
 
-- name: Update apt cache
-  apt:
-    update_cache: yes
-  become: true
+- name: Remove installation script
+  file:
+    path: /tmp/get_helm.sh
+    state: absent
+  when: helm_installed.rc != 0
 
-- name: Install Helm
-  apt:
-    name: helm
-    state: present
-  become: true
+- name: Verify Helm installation
+  command: helm version --short
+  changed_when: false

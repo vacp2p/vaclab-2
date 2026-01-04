@@ -77,7 +77,7 @@ ansible-galaxy collection install community.general
 Install Python packages needed by Ansible modules:
 
 ```bash
-pip3 install --user kubernetes openshift PyYAML
+sudo apt install python3-kubernetes python3-yaml
 ```
 
 ---
