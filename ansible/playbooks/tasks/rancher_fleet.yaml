@@ -1,0 +1,54 @@
+---
+- name: Download Helm GPG key
+  get_url:
+    url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
+    dest: /usr/share/keyrings/helm.gpg
+    mode: '0644'
+  become: true
+
+- name: Add Fleet Helm repository
+  kubernetes.core.helm_repository:
+    name: fleet
+    repo_url: https://rancher.github.io/fleet-helm-charts/
+    state: present
+
+- name: Install Fleet CRD Helm chart
+  kubernetes.core.helm:
+    name: fleet-crd
+    chart_ref: fleet/fleet-crd
+    release_namespace: cattle-fleet-system
+    create_namespace: true
+    wait: true
+
+- name: Install Fleet Helm chart
+  kubernetes.core.helm:
+    name: fleet
+    chart_ref: fleet/fleet
+    release_namespace: cattle-fleet-system
+    create_namespace: true
+    wait: true
+
+- name: Create Fleet GitRepo manifest to watch vaclab-2 repo 
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: fleet.cattle.io/v1alpha1
+      kind: GitRepo
+      metadata:
+        name: vaclab-2
+        namespace: fleet-local
+      spec:
+        repo: "https://github.com/vacp2p/vaclab-2"
+        paths:
+          - fleet
+
+- name: Get Fleet status
+  kubernetes.core.k8s_info:
+    api_version: fleet.cattle.io/v1alpha1
+    kind: GitRepo
+    namespace: fleet-local
+  register: fleet_status
+
+- name: Display Fleet status
+  debug:
+    var: fleet_status

@@ -1,0 +1,35 @@
+---
+- name: Install required system packages
+  apt:
+    name:
+      - curl
+      - gpg
+      - apt-transport-https
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Download Helm GPG key
+  get_url:
+    url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
+    dest: /usr/share/keyrings/helm.gpg
+    mode: '0644'
+  become: true
+
+- name: Add Helm APT repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+    state: present
+    filename: helm-stable-debian
+  become: true
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  become: true
+
+- name: Install Helm
+  apt:
+    name: helm
+    state: present
+  become: true

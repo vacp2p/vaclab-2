@@ -1,0 +1,48 @@
+---
+- name: Test for raspberry pi /proc/cpuinfo
+  ansible.builtin.command: grep -E "Raspberry Pi|BCM2708|BCM2709|BCM2835|BCM2836" /proc/cpuinfo
+  register: raspberrypi_grep_cpuinfo
+  failed_when: false
+  changed_when: false
+
+- name: Test for raspberry pi /proc/device-tree/model
+  ansible.builtin.command: grep -E "Raspberry Pi" /proc/device-tree/model
+  register: raspberrypi_grep_device_tree_model
+  failed_when: false
+  changed_when: false
+
+- name: Run Raspberry Pi-specific tasks
+  when:
+    - raspberrypi_grep_cpuinfo.rc == 0 or raspberrypi_grep_device_tree_model.rc == 0
+  block:
+    - name: Set detected_distribution to Raspbian
+      # noqa var-naming[no-role-prefix]
+      ansible.builtin.set_fact:
+        detected_distribution: Raspbian
+      when: >
+        ansible_facts.lsb.id|default("") == "Raspbian" or
+        ansible_facts.lsb.description|default("") is match("[Rr]aspbian.*")
+
+    - name: Set detected_distribution to Debian
+      # noqa var-naming[no-role-prefix]
+      ansible.builtin.set_fact:
+        detected_distribution: Debian
+      when: >
+        ansible_facts.lsb.id|default("") == "Debian" or
+        ansible_facts.lsb.description|default("") is match("Debian")
+
+    - name: Set detected_distribution to ArchLinux (ARM64)
+      # noqa var-naming[no-role-prefix]
+      ansible.builtin.set_fact:
+        detected_distribution: Archlinux
+      when:
+        - ansible_facts.architecture is search("aarch64")
+        - ansible_facts.os_family is match("Archlinux")
+
+    - name: Execute OS related tasks on the Raspberry Pi
+      ansible.builtin.include_tasks: "{{ item }}"
+      with_first_found:
+        - "prereq/{{ detected_distribution }}.yml"
+        - "prereq/{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version'] }}.yml"
+        - "prereq/{{ ansible_facts['distribution'] }}.yml"
+        - "prereq/default.yml"

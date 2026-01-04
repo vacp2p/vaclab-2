@@ -1,0 +1,16 @@
+---
+- name: Import kube cluster playbook
+  ansible.builtin.import_playbook: ../k3s-ansible/playbooks/site.yml
+
+- name: Install Helm
+  hosts: k3s_cluster
+  tasks:
+    - name: Import Helm installation tasks
+      ansible.builtin.import_tasks: tasks/helm.yaml
+
+- name: Install rancher fleet
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import Rancher Fleet installation tasks
+      ansible.builtin.import_tasks: tasks/rancher_fleet.yaml
