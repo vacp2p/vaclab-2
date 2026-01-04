@@ -98,10 +98,10 @@
       # CNI configuration - Priority 10 for Cilium chaining
       cni_conf:
         CNI_CONFIG_PRIORITY: "10"
-        CNI_CONF_DIR: "/etc/cni/net.d"
-        CNI_BIN_DIR: "/opt/cni/bin"
-        CNI_CONF_FILE: "/kube-ovn/10-kube-ovn.conflist"
-        MOUNT_LOCAL_BIN_DIR: true
+        #CNI_CONF_DIR: "/etc/cni/net.d"
+        #CNI_BIN_DIR: "/opt/cni/bin"
+        #CNI_CONF_FILE: "/etc/cni/net.d/10-kube-ovn.conflist"
+        #MOUNT_LOCAL_BIN_DIR: true
       
       # Image configuration
       global:
