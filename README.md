@@ -16,9 +16,9 @@
 | traefik | ✅ OK | K3S-friendly ingress |
 | containerd | ✅ OK | Container Runtime |
 | Cert Manager | 🚧 WIP | Autamed TLS via HTTP-01 challenges |
-| Kube-OVN | 🚧 WIP | Primary CNI |
-| Cilium | 🚧 WIP | Chained CNI |
-| Hubble | 🚧 WIP | Cilium real-time flow observability UI |
+| Kube-OVN | ✅ OK | Primary CNI |
+| Cilium | ✅ OK | Chained CNI |
+| Hubble | ✅ OK | Cilium real-time flow observability UI |
 | Longhorn | 🚧 WIP | CSI - Distributed block storage |
 | Rancher UI | 🚧 WIP | Rancher management UI |
 | Authentik | 🚧 WIP | Identity & Access Management |
