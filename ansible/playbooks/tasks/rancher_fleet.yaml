@@ -1,11 +1,4 @@
 ---
-- name: Download Helm GPG key
-  get_url:
-    url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
-    dest: /usr/share/keyrings/helm.gpg
-    mode: '0644'
-  become: true
-
 - name: Add Fleet Helm repository
   kubernetes.core.helm_repository:
     name: fleet
@@ -28,9 +21,17 @@
     create_namespace: true
     wait: true
 
-- name: Create Fleet GitRepo manifest to watch vaclab-2 repo 
+- name: Wait for Fleet to be ready
+  command: kubectl wait --for=condition=ready pod -l app=fleet-controller -n cattle-fleet-system --timeout=300s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  retries: 3
+  delay: 10
+
+- name: Create Fleet GitRepo manifest to watch vaclab-2 repo
   kubernetes.core.k8s:
     state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
     definition:
       apiVersion: fleet.cattle.io/v1alpha1
       kind: GitRepo
@@ -43,12 +44,12 @@
           - fleet
 
 - name: Get Fleet status
-  kubernetes.core.k8s_info:
-    api_version: fleet.cattle.io/v1alpha1
-    kind: GitRepo
-    namespace: fleet-local
+  command: kubectl get gitrepo -n fleet-local
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   register: fleet_status
+  changed_when: false
 
 - name: Display Fleet status
   debug:
-    var: fleet_status
+    var: fleet_status.stdout_lines

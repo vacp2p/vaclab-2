@@ -1,0 +1,154 @@
+---
+- name: Check if Kube-OVN is already installed
+  command: kubectl get crd subnets.kubeovn.io
+  register: kubeovn_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Label nodes with linux OS
+  command: kubectl label node -lbeta.kubernetes.io/os=linux kubernetes.io/os=linux --overwrite
+  when: kubeovn_installed.rc != 0
+  ignore_errors: true
+
+- name: Label control-plane nodes with kube-ovn master role
+  command: kubectl label node -lnode-role.kubernetes.io/control-plane kube-ovn/role=master --overwrite
+  when: kubeovn_installed.rc != 0
+  ignore_errors: true
+
+- name: Label nodes with OVS datapath type
+  command: kubectl label node -lovn.kubernetes.io/ovs_dp_type!=userspace ovn.kubernetes.io/ovs_dp_type=kernel --overwrite
+  when: kubeovn_installed.rc != 0
+  ignore_errors: true
+
+- name: Add Kube-OVN Helm repository
+  kubernetes.core.helm_repository:
+    name: kubeovn
+    repo_url: https://kubeovn.github.io/kube-ovn/
+    state: present
+  when: kubeovn_installed.rc != 0
+
+- name: Install Kube-OVN with Cilium integration support
+  kubernetes.core.helm:
+    name: kube-ovn
+    chart_ref: kubeovn/kube-ovn
+    chart_version: "1.14.0"
+    release_namespace: kube-system
+    create_namespace: false
+    wait: true
+    wait_timeout: 5m
+    values:
+      # Master nodes configuration
+      MASTER_NODES: "{{ groups['server'] | join(',') }}"
+      
+      # Namespace
+      namespace: kube-system
+      
+      # Network stack and type
+      networking:
+        NET_STACK: ipv4
+        ENABLE_SSL: false
+        NETWORK_TYPE: geneve
+        TUNNEL_TYPE: geneve
+        IFACE: ""
+        POD_NIC_TYPE: "veth-pair"
+        EXCLUDE_IPS: ""
+        EXCHANGE_LINK_NAME: false
+        ENABLE_EIP_SNAT: true
+        DEFAULT_SUBNET: "ovn-default"
+        DEFAULT_VPC: "ovn-cluster"
+        NODE_SUBNET: "join"
+        ENABLE_ECMP: false
+        ENABLE_METRICS: true
+        NODE_LOCAL_DNS_IP: ""
+        PROBE_INTERVAL: 180000
+        OVN_NORTHD_PROBE_INTERVAL: 5000
+        OVN_LEADER_PROBE_INTERVAL: 5
+        OVN_REMOTE_PROBE_INTERVAL: 10000
+        OVN_REMOTE_OPENFLOW_INTERVAL: 180
+        OVN_NORTHD_N_THREADS: 1
+        ENABLE_COMPACT: false
+      
+      # IPv4 network configuration
+      ipv4:
+        POD_CIDR: "10.42.0.0/16"
+        POD_GATEWAY: "10.42.0.1"
+        SVC_CIDR: "10.43.0.0/16"
+        JOIN_CIDR: "10.64.0.0/16"
+        PINGER_EXTERNAL_ADDRESS: "1.1.1.1"
+        PINGER_EXTERNAL_DOMAIN: "kube-ovn.io."
+      
+      # Features - Network policies disabled for Cilium
+      func:
+        ENABLE_LB: true
+        ENABLE_NP: false
+        ENABLE_EXTERNAL_VPC: true
+        HW_OFFLOAD: false
+        ENABLE_LB_SVC: false
+        ENABLE_KEEP_VM_IP: true
+        LS_DNAT_MOD_DL_DST: true
+        LS_CT_SKIP_DST_LPORT_IPS: true
+        CHECK_GATEWAY: true
+        LOGICAL_GATEWAY: false
+        ENABLE_BIND_LOCAL_IP: true
+        SECURE_SERVING: false
+        ENABLE_NAT_GW: true
+        ENABLE_OVN_IPSEC: false
+        ENABLE_ANP: false
+      
+      # CNI configuration - Priority 10 for Cilium chaining
+      cni_conf:
+        CNI_CONFIG_PRIORITY: "10"
+        #CNI_CONF_DIR: "/etc/cni/net.d"
+        #CNI_BIN_DIR: "/opt/cni/bin"
+        #CNI_CONF_FILE: "/etc/cni/net.d/10-kube-ovn.conflist"
+        #MOUNT_LOCAL_BIN_DIR: true
+      
+      # Image configuration
+      global:
+        registry:
+          address: docker.io/kubeovn
+          imagePullSecrets: []
+        images:
+          kubeovn:
+            repository: kube-ovn
+            vpcRepository: vpc-nat-gateway
+            tag: v1.14.0
+            support_arm: true
+            thirdparty: true
+      
+      image:
+        pullPolicy: IfNotPresent
+      
+  when: kubeovn_installed.rc != 0
+
+- name: Wait for Kube-OVN pods to be ready
+  command: kubectl wait --for=condition=ready pod -l app=ovn-central -n kube-system --timeout=300s
+  when: kubeovn_installed.rc != 0
+  retries: 3
+  delay: 10
+
+- name: Wait for Kube-OVN CNI to be ready
+  command: kubectl wait --for=condition=ready pod -l app=kube-ovn-cni -n kube-system --timeout=300s
+  when: kubeovn_installed.rc != 0
+  retries: 3
+  delay: 10
+
+- name: Verify Kube-OVN installation
+  command: kubectl get pods -n kube-system -l app=kube-ovn
+  register: kubeovn_pods
+  changed_when: false
+
+- name: Display Kube-OVN pods status
+  debug:
+    var: kubeovn_pods.stdout_lines
+
+- name: Check default subnet
+  command: kubectl get subnet
+  register: kubeovn_subnet
+  changed_when: false
+  ignore_errors: true
+
+- name: Display default subnet
+  debug:
+    var: kubeovn_subnet.stdout_lines
+  when: kubeovn_subnet.rc == 0
