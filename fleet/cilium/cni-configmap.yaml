@@ -6,8 +6,8 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
-    meta.helm.sh/release-name: cilium
-    meta.helm.sh/release-namespace: kube-system
+    meta.helm.sh/release-name: vaclab-2-fleet-cilium
+    meta.helm.sh/release-namespace: default
 data:
   cni-config: |
     {
