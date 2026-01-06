@@ -8,7 +8,6 @@ spec:
   repo: https://releases.rancher.com/server-charts/stable
   targetNamespace: cattle-system
   createNamespace: true
-  version: ""  # Latest stable version
   valuesContent: |-
     hostname: rancher.vaclab.diarra.tech
     bootstrapPassword: vaclab
