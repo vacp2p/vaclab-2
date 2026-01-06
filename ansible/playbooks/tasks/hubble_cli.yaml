@@ -36,8 +36,8 @@
     create: yes
     mode: '0644'
     block: |
-      # Hubble CLI configuration
-      export HUBBLE_SERVER=localhost:31245
+      # Hubble CLI configuration (IPv4 to avoid IPv6 issues)
+      export HUBBLE_SERVER=127.0.0.1:31245
     marker: "# {mark} ANSIBLE MANAGED BLOCK - Hubble"
 
 - name: Display Hubble CLI usage instructions
