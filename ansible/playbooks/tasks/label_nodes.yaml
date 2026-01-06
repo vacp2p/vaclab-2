@@ -1,0 +1,24 @@
+---
+# Label nodes for Kube-OVN and other CNI components
+# These labels should be applied after cluster installation
+
+- name: Label nodes with linux OS
+  command: kubectl label node --all kubernetes.io/os=linux --overwrite
+  ignore_errors: true
+
+- name: Label control-plane nodes with kube-ovn master role
+  command: kubectl label node -lnode-role.kubernetes.io/control-plane kube-ovn/role=master --overwrite
+  ignore_errors: true
+
+- name: Label nodes with OVS datapath type (kernel mode)
+  command: kubectl label node --all ovn.kubernetes.io/ovs_dp_type=kernel --overwrite
+  ignore_errors: true
+
+- name: Display labeled nodes
+  command: kubectl get nodes --show-labels
+  register: labeled_nodes
+  changed_when: false
+
+- name: Show node labels
+  debug:
+    var: labeled_nodes.stdout_lines

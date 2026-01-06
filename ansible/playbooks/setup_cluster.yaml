@@ -2,10 +2,17 @@
 - name: Import kube cluster playbook
   ansible.builtin.import_playbook: ../k3s-ansible/playbooks/site.yml
 
+- name: Label nodes for CNI and cluster components
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import node labeling tasks
+      ansible.builtin.import_tasks: tasks/label_nodes.yaml
+
 - name: Install Python kubernetes library
   hosts: k3s_cluster
   tasks:
-    - name: Import Helm installation tasks
+    - name: Import Python modules installation tasks
       ansible.builtin.import_tasks: tasks/modules_requirements.yaml
 
 - name: Install Helm

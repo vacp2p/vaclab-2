@@ -1,7 +1,9 @@
 # Kube-OVN Helm Values
 # Reference values for manual deployment
 
-MASTER_NODES: "192.168.200.1"
+# Auto-discover master nodes via label instead of static IPs
+MASTER_NODES: ""
+MASTER_NODES_LABEL: "kube-ovn/role=master"
 
 namespace: kube-system
 

@@ -4,21 +4,7 @@
   register: kubeovn_installed
   ignore_errors: true
   changed_when: false
-
-- name: Label nodes with linux OS
-  command: kubectl label node -lbeta.kubernetes.io/os=linux kubernetes.io/os=linux --overwrite
-  when: kubeovn_installed.rc != 0
-  ignore_errors: true
-
-- name: Label control-plane nodes with kube-ovn master role
-  command: kubectl label node -lnode-role.kubernetes.io/control-plane kube-ovn/role=master --overwrite
-  when: kubeovn_installed.rc != 0
-  ignore_errors: true
-
-- name: Label nodes with OVS datapath type
-  command: kubectl label node -lovn.kubernetes.io/ovs_dp_type!=userspace ovn.kubernetes.io/ovs_dp_type=kernel --overwrite
-  when: kubeovn_installed.rc != 0
-  ignore_errors: true
+  failed_when: false
 
 - name: Add Kube-OVN Helm repository
   kubernetes.core.helm_repository:
@@ -37,8 +23,9 @@
     wait: true
     wait_timeout: 5m
     values:
-      # Master nodes configuration
-      MASTER_NODES: "{{ groups['server'] | join(',') }}"
+      # Auto-discover master nodes via label (already applied above)
+      MASTER_NODES: ""
+      MASTER_NODES_LABEL: "kube-ovn/role=master"
       
       # Namespace
       namespace: kube-system
