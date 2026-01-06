@@ -1,0 +1,31 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rancher
+  namespace: kube-system
+spec:
+  chart: rancher
+  repo: https://releases.rancher.com/server-charts/stable
+  targetNamespace: cattle-system
+  createNamespace: true
+  version: ""  # Latest stable version
+  valuesContent: |-
+    hostname: rancher.vaclab.diarra.tech
+    bootstrapPassword: vaclab
+    replicas: 1
+    
+    ingress:
+      enabled: true
+      tls:
+        source: letsEncrypt
+      ingressClassName: traefik
+    
+    letsEncrypt:
+      email: mamoutou@status.im
+      ingress:
+        class: traefik
+      environment: production
+    
+    # Use existing cert-manager installation
+    certmanager:
+      install: false
