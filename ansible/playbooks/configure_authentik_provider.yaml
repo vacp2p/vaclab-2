@@ -1,0 +1,149 @@
+---
+# Configure Authentik OAuth2 Provider for Rancher
+# Run this playbook: ansible-playbook -i ansible/inventory.yaml ansible/playbooks/configure_authentik_provider.yaml
+
+- name: Configure Authentik OAuth2 Provider for Rancher
+  hosts: server
+  run_once: true
+  vars:
+    # Set AUTHENTIK_API_TOKEN environment variable with your Authentik API token
+    authentik_api_token: "{{ lookup('env', 'AUTHENTIK_API_TOKEN') | default('') }}"
+    
+  tasks:
+    - name: Check if Authentik API token is provided
+      fail:
+        msg: "AUTHENTIK_API_TOKEN environment variable is required. Get it from Authentik: Admin Interface > Tokens"
+      when: authentik_api_token | length == 0
+
+    - name: Wait for Authentik to be ready
+      uri:
+        url: "{{ authentik_url }}/api/v3/root/config/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+        status_code: 200
+      register: authentik_ready
+      until: authentik_ready.status == 200
+      retries: 30
+      delay: 5
+
+    - name: Get default property mappings for OAuth2
+      uri:
+        url: "{{ authentik_url }}/api/v3/propertymappings/all/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: property_mappings
+
+    - name: Filter OAuth2 scope mappings
+      set_fact:
+        oauth_scope_mappings: "{{ property_mappings.json.results | selectattr('component', 'equalto', 'ak-property-mapping-scope-form') | map(attribute='pk') | list }}"
+
+    - name: Get authentication flows
+      uri:
+        url: "{{ authentik_url }}/api/v3/flows/instances/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: flows
+
+    - name: Find default authorization flow
+      set_fact:
+        auth_flow_slug: "{{ (flows.json.results | selectattr('designation', 'equalto', 'authorization') | first).slug }}"
+
+    - name: Get signing certificates
+      uri:
+        url: "{{ authentik_url }}/api/v3/crypto/certificatekeypairs/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: certificates
+
+    - name: Find default signing certificate
+      set_fact:
+        signing_cert_pk: "{{ (certificates.json.results | first).pk }}"
+
+    - name: Create OAuth2/OpenID Provider for Rancher
+      uri:
+        url: "{{ authentik_url }}/api/v3/providers/oauth2/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "Rancher"
+          authorization_flow: "{{ auth_flow_slug }}"
+          client_type: "confidential"
+          client_id: "{{ authentik_client_id }}"
+          redirect_uris: "{{ rancher_url }}/verify-auth\n{{ rancher_url }}/verify-auth-azure"
+          signing_key: "{{ signing_cert_pk }}"
+          property_mappings: "{{ oauth_scope_mappings }}"
+        validate_certs: false
+        status_code: [201, 400]
+      register: provider_result
+
+    - name: Get provider details (if already exists)
+      uri:
+        url: "{{ authentik_url }}/api/v3/providers/oauth2/?client_id={{ authentik_client_id }}"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: existing_provider
+      when: provider_result.status == 400
+
+    - name: Set provider ID
+      set_fact:
+        provider_id: "{{ provider_result.json.pk if provider_result.status == 201 else existing_provider.json.results[0].pk }}"
+        provider_client_secret: "{{ provider_result.json.client_secret if provider_result.status == 201 else existing_provider.json.results[0].client_secret }}"
+
+    - name: Create Application for Rancher
+      uri:
+        url: "{{ authentik_url }}/api/v3/core/applications/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "Rancher"
+          slug: "rancher"
+          provider: "{{ provider_id }}"
+        validate_certs: false
+        status_code: [201, 400]
+      register: application_result
+
+    - name: Display Authentik configuration
+      debug:
+        msg:
+          - "=============================================="
+          - "Authentik OAuth2 Provider Configuration"
+          - "=============================================="
+          - "Status: {{ 'Created' if provider_result.status == 201 else 'Already exists' }}"
+          - "Provider Name: Rancher"
+          - "Client ID: {{ authentik_client_id }}"
+          - "Client Secret: {{ provider_client_secret }}"
+          - "Redirect URIs:"
+          - "  - {{ rancher_url }}/verify-auth"
+          - "  - {{ rancher_url }}/verify-auth-azure"
+          - "=============================================="
+          - "IMPORTANT: Save the Client Secret for Rancher configuration!"
+          - "Run: export AUTHENTIK_CLIENT_SECRET='{{ provider_client_secret }}'"
+          - "Then: ansible-playbook -i ansible/inventory.yaml ansible/playbooks/configure_authentik.yaml"
+          - "=============================================="
+
+    - name: Save client secret to temporary file (optional)
+      copy:
+        content: |
+          # Authentik Client Secret for Rancher
+          # Generated: {{ ansible_date_time.iso8601 }}
+          export AUTHENTIK_CLIENT_SECRET="{{ provider_client_secret }}"
+        dest: "/tmp/authentik_rancher_secret.sh"
+        mode: '0600'
+      delegate_to: localhost
+
+    - name: Final instructions
+      debug:
+        msg:
+          - "Client secret saved to: /tmp/authentik_rancher_secret.sh"
+          - "Source it with: source /tmp/authentik_rancher_secret.sh"

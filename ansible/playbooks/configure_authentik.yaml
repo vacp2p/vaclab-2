@@ -1,0 +1,92 @@
+---
+# Configure Rancher Authentik OIDC integration
+# Run this playbook: ansible-playbook -i ansible/inventory.yaml ansible/playbooks/configure_authentik.yaml
+
+- name: Configure Rancher Authentik OIDC
+  hosts: server
+  run_once: true
+    
+  tasks:
+    - name: Wait for Rancher to be ready
+      uri:
+        url: "{{ rancher_url }}/ping"
+        validate_certs: false
+        status_code: 200
+      register: rancher_ping
+      until: rancher_ping.status == 200
+      retries: 60
+      delay: 5
+
+    - name: Get Rancher bootstrap password from secret
+      kubernetes.core.k8s_info:
+        kind: Secret
+        namespace: cattle-system
+        name: bootstrap-secret
+      register: bootstrap_secret
+
+    - name: Set bootstrap password from secret
+      set_fact:
+        rancher_bootstrap_password: "{{ bootstrap_secret.resources[0].data.bootstrapPassword | b64decode }}"
+      when: bootstrap_secret.resources | length > 0
+
+    - name: Login to Rancher and get API token
+      uri:
+        url: "{{ rancher_url }}/v3-public/localProviders/local?action=login"
+        method: POST
+        body_format: json
+        body:
+          username: "admin"
+          password: "{{ rancher_bootstrap_password }}"
+        validate_certs: false
+        status_code: 201
+      register: rancher_login
+
+    - name: Create API token
+      uri:
+        url: "{{ rancher_url }}/v3/token"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ rancher_login.json.token }}"
+        body_format: json
+        body:
+          type: "token"
+          description: "Ansible automation token"
+          ttl: 0
+        validate_certs: false
+        status_code: 201
+      register: api_token
+
+    - name: Configure Authentik OIDC
+      uri:
+        url: "{{ rancher_url }}/v3/keyCloakOidcConfigs"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ api_token.json.token }}"
+        body_format: json
+        body:
+          enabled: true
+          accessMode: "unrestricted"
+          authEndpoint: "{{ authentik_url }}/application/o/authorize/"
+          clientId: "{{ authentik_client_id }}"
+          clientSecret: "{{ authentik_client_secret }}"
+          issuer: "{{ authentik_url }}/application/o/rancher/"
+          rancherUrl: "{{ rancher_url }}"
+          type: "keyCloakOidcConfig"
+        validate_certs: false
+        status_code: [200, 201]
+      register: oidc_config
+      when: authentik_client_secret | length > 0
+
+    - name: Display configuration status
+      debug:
+        msg:
+          - "=============================================="
+          - "Rancher Authentik OIDC Configuration"
+          - "=============================================="
+          - "Status: {{ 'Configured' if (oidc_config.status | default(0)) == 201 else 'Skipped - missing AUTHENTIK_CLIENT_SECRET' }}"
+          - "Rancher URL: {{ rancher_url }}"
+          - "Authentik URL: {{ authentik_url }}"
+          - "Client ID: {{ authentik_client_id }}"
+          - "=============================================="
+          - "Note: Set AUTHENTIK_CLIENT_SECRET environment variable to configure OIDC"
+          - "=============================================="

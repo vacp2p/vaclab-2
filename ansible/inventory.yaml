@@ -48,6 +48,17 @@ k3s_cluster:
     #   YAML here will be placed as the content of /etc/rancher/k3s/config.yaml
     #   See https://docs.k3s.io/installation/configuration#configuration-file
     # registries_config_yaml:  |
+    
+    # Rancher and Authentik configuration
+    rancher_url: "https://rancher.vaclab.diarra.tech"
+    authentik_url: "https://authentik.vaclab.diarra.tech"
+    authentik_client_id: "rancher"
+    # Set AUTHENTIK_CLIENT_SECRET environment variable or use ansible-vault
+    authentik_client_secret: "{{ lookup('env', 'AUTHENTIK_CLIENT_SECRET') | default('') }}"
+    # Google OAuth configuration for Authentik
+    google_oauth_client_id: "{{ lookup('env', 'GOOGLE_OAUTH_CLIENT_ID') | default('') }}"
+    google_oauth_client_secret: "{{ lookup('env', 'GOOGLE_OAUTH_CLIENT_SECRET') | default('') }}"
+    allowed_email_domain: "status.im"
     #   Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
     #   YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
     #   See https://docs.k3s.io/installation/private-registry
