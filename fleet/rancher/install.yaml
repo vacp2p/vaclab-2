@@ -14,6 +14,17 @@ spec:
     bootstrapPassword: vaclab
     replicas: 1
     
+    # Cluster branding
+    extraEnv:
+      - name: CATTLE_UI_BRAND
+        value: "vaclab"
+      - name: CATTLE_CLUSTER_NAME
+        value: "vaclab"
+      - name: CATTLE_UI_LOGO_LIGHT
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light.jpeg"
+      - name: CATTLE_UI_LOGO_DARK
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-dark.jpeg"
+    
     ingress:
       enabled: true
       tls:
