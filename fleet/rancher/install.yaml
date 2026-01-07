@@ -11,7 +11,7 @@ spec:
   version: "2.13.1"
   valuesContent: |-
     hostname: rancher.vaclab.diarra.tech
-    bootstrapPassword: vaclab
+    bootstrapPassword: ""
     replicas: 1
     
     # Cluster branding
@@ -23,9 +23,9 @@ spec:
       - name: CATTLE_UI_PL
         value: "vaclab"
       - name: CATTLE_UI_LOGO_LIGHT
-        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light.jpeg"
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
       - name: CATTLE_UI_LOGO_DARK
-        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light.jpeg"
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
     
     ingress:
       enabled: true

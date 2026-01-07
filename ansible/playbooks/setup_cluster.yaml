@@ -72,3 +72,40 @@
   tasks:
     - name: Import Rancher Fleet installation tasks
       ansible.builtin.import_tasks: tasks/rancher_fleet.yaml
+
+- name: Change Cluster Name
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import Cluster Name change tasks
+      ansible.builtin.import_tasks: tasks/rancher_branding.yaml
+
+- name: Display Rancher Bootstrap Password
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Wait for bootstrap-secret to be created
+      kubernetes.core.k8s_info:
+        kind: Secret
+        namespace: cattle-system
+        name: bootstrap-secret
+        wait: yes
+        wait_timeout: 300
+      register: bootstrap_secret
+      
+    - name: Retrieve bootstrap password
+      set_fact:
+        rancher_password: "{{ bootstrap_secret.resources[0].data.bootstrapPassword | b64decode }}"
+      when: bootstrap_secret.resources | length > 0
+      
+    - name: Display Rancher access information
+      debug:
+        msg:
+          - "=============================================="
+          - "Rancher Bootstrap Password"
+          - "=============================================="
+          - "URL: https://rancher.vaclab.diarra.tech"
+          - "Username: admin"
+          - "Password: {{ rancher_password }}"
+          - "=============================================="
+      when: rancher_password is defined
