@@ -1,7 +1,7 @@
 defaultNamespace: vmetrics
 dependsOn: 
   - name: vaclab-2-fleet-longhorn
-  - name: vaclab-2-fleet-grafana-dashbords
+  - name: vaclab-2-fleet-grafana-dashboards
 
 helm:
   repo: https://victoriametrics.github.io/helm-charts/
