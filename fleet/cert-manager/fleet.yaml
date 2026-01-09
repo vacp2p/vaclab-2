@@ -4,7 +4,6 @@ helm:
   chart: cert-manager
   version: v1.19.2
   releaseName: cert-manager
-  force: true
   values:
     crds:
       enabled: true

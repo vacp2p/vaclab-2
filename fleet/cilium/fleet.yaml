@@ -6,7 +6,6 @@ helm:
   chart: cilium
   version: 1.18.5
   releaseName: cilium
-  force: true
   values:
     # CNI chaining configuration for Kube-OVN
     cni:
