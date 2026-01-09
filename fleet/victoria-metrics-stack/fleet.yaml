@@ -8,7 +8,6 @@ helm:
   chart: victoria-metrics-k8s-stack
   version: v0.28.1
   releaseName: vmks
-  force: true
   values:
       global:
         clusterLabel: cluster 
@@ -354,6 +353,7 @@ helm:
                       storage: 5Gi # set to 100Gi in production
                   storageClassName: longhorn-vaclab
           vmstorage:
+            enabled: true
             replicaCount: 2
             resources:
               limits:
@@ -1211,3 +1211,9 @@ diff:
     operations:
     - {"op": "remove", "path": "/metadata/annotations"}
     - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: operator.victoriametrics.com/v1beta1
+    kind: VMCluster
+    jsonPointers:
+    - "/spec/vminsert/enabled"
+    - "/spec/vmselect/enabled"
+    - "/spec/vmstorage/enabled"
