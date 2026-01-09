@@ -1,1 +1,8 @@
+diff:
+  comparePatches:
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
 # This will be deployed by Fleet when the vaclab-2 GitRepo is synced

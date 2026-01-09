@@ -6,6 +6,7 @@ helm:
   chart: rancher
   version: 2.13.1
   releaseName: rancher
+  force: true
   values:
     hostname: rancher.vaclab.diarra.tech
     bootstrapPassword: ""
@@ -39,3 +40,25 @@ helm:
     # Use existing cert-manager installation
     certmanager:
       install: false
+diff:
+  comparePatches:
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: apps/v1
+    kind: Deployment
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: cert-manager.io/v1
+    kind: Issuer
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}

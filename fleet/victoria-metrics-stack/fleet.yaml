@@ -8,6 +8,7 @@ helm:
   chart: victoria-metrics-k8s-stack
   version: v0.28.1
   releaseName: vmks
+  force: true
   values:
       global:
         clusterLabel: cluster 
@@ -1192,3 +1193,21 @@ helm:
                 scheme: https
                 tlsConfig:
                   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt 
+
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: DaemonSet
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: apps/v1
+    kind: Deployment
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}

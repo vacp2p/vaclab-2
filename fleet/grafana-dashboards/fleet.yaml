@@ -1,1 +1,8 @@
 defaultNamespace: vmetrics
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: ConfigMap
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}

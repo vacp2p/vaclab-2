@@ -1,3 +1,10 @@
 defaultNamespace: kube-system
 dependsOn:
   - name: vaclab-2-fleet-cilium
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: Service
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}

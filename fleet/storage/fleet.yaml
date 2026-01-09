@@ -1,2 +1,9 @@
 dependsOn:
   - name: vaclab-2-fleet-longhorn
+diff:
+  comparePatches:
+  - apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}

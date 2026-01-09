@@ -4,6 +4,7 @@ helm:
   chart: kube-ovn
   version: 1.14.0
   releaseName: kube-ovn
+  force: true
   values:
     # Auto-discover master nodes via label instead of static IPs
     MASTER_NODES: ""
@@ -82,4 +83,11 @@ helm:
     
     image:
       pullPolicy: IfNotPresent
+diff:
+  comparePatches:
+  - apiVersion: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    operations:
+    - {"op": "remove", "path": "/metadata/annotations"}
+    - {"op": "remove", "path": "/metadata/labels"}
 
