@@ -1,1 +1,9 @@
-# This will be deployed by Fleet when the vaclab-2 GitRepo is synced
+defaultNamespace: cert-manager
+helm:
+  repo: https://charts.jetstack.io
+  chart: cert-manager
+  version: v1.19.2
+  releaseName: cert-manager
+  values:
+    crds:
+      enabled: true
