@@ -324,7 +324,7 @@ helm:
             enabled: true
             extraArgs: {}
             port: "8480"
-            replicaCount: 3
+            replicaCount: 2
             resources:
               limits:
                 cpu: "4"
@@ -337,7 +337,7 @@ helm:
             enabled: true
             extraArgs: {}
             port: "8481"
-            replicaCount: 3
+            replicaCount: 2
             resources:
               limits:
                 cpu: "4" # set to 8 in production
@@ -350,20 +350,23 @@ helm:
                 spec:
                   resources:
                     requests:
-                      storage: 10Gi # set to 100Gi in production
+                      storage: 5Gi # set to 100Gi in production
                   storageClassName: longhorn
           vmstorage:
-            replicaCount: 3
+            replicaCount: 2
             resources:
               limits:
                 cpu: "4" # set to 8 in production
                 memory: 4000Mi
+              requests:
+                cpu: "0.5"
+                memory: 500Mi
             storage:
               volumeClaimTemplate:
                 spec:
                   resources:
                     requests:
-                      storage: 10Gi # set to 1Ti in production
+                      storage: 5Gi # set to 1Ti in production
                   storageClassName: longhorn
             storageDataPath: /vm-data
         
@@ -812,7 +815,7 @@ helm:
           accessModes:
           - ReadWriteOnce
           enabled: true
-          size: 10Gi
+          size: 5Gi
           storageClassName: longhorn
           type: pvc
         
