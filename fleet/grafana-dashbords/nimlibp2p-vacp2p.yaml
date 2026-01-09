@@ -1,0 +1,565 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nimlibp2p-vacp2p
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "vac"  
+data:
+  dashboard.json: |
+    {
+      "annotations": {
+      "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 22,
+      "links": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"in\", instance=~\"$libp2p_traffic_in_top5\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": true,
+              "legendFormat": "{{instance}}-Top",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"in\", instance=~\"$libp2p_traffic_in_bottom5\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": true,
+              "legendFormat": "{{label_name}}-Bottom",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"in\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "libp2p traffic - In",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_VICTORIAMETRICS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "Bps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"out\", instance=~\"$libp2p_traffic_out_top5\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": true,
+              "legendFormat": "{{instance}}-Top",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"out\", instance=~\"$libp2p_traffic_out_bottom5\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": true,
+              "legendFormat": "{{instance}}-Bottom",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(libp2p_network_bytes_total{direction=\"out\", namespace=\"p2p-team\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "libp2p traffic - Out",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_VICTORIAMETRICS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 9
+          },
+          "id": 5,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "container_memory_usage_bytes{namespace=\"p2p-team\", container=\"container-0\", pod=~\"$container_memory_usage_bytes_top5\"}",
+              "hide": true,
+              "legendFormat": "{{pod}}-Top",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "container_memory_usage_bytes{namespace=\"p2p-team\", container=\"container-0\", pod=~\"$container_memory_usage_bytes_bottom5\"}",
+              "hide": true,
+              "legendFormat": "{{pod}}-Bottom",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_VICTORIAMETRICS}"
+              },
+              "editorMode": "code",
+              "expr": "container_memory_usage_bytes{namespace=\"p2p-team\", container=\"container-0\"}",
+              "hide": false,
+              "legendFormat": "{{pod}}",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Container memory usage",
+          "type": "timeseries"
+        }
+      ],
+      "preload": false,
+      "refresh": "",
+      "schemaVersion": 41,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(topk(5, rate(container_memory_usage_bytes{namespace=\"p2p-team\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "container_memory_usage_bytes_top5",
+            "options": [],
+            "query": {
+              "qryType": 3,
+              "query": "query_result(topk(5, rate(container_memory_usage_bytes{namespace=\"p2p-team\"}[${__range_s}s])))",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*pod=\"(.*?)\".*",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(bottomk(5, rate(container_memory_usage_bytes{namespace=\"p2p-team\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "container_memory_usage_bytes_bottom5",
+            "options": [],
+            "query": {
+              "qryType": 3,
+              "query": "query_result(bottomk(5, rate(container_memory_usage_bytes{namespace=\"p2p-team\"}[${__range_s}s])))",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*pod=\"(.*?)\".*",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(topk(5, rate(libp2p_network_bytes_total{direction=\"in\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "libp2p_traffic_in_top5",
+            "options": [],
+            "query": {
+              "query": "query_result(topk(5, rate(libp2p_network_bytes_total{direction=\"in\"}[${__range_s}s])))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*instance=\"(.*?)\".*",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(bottomk(5, rate(libp2p_network_bytes_total{direction=\"in\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "libp2p_traffic_in_bottom5",
+            "options": [],
+            "query": {
+              "query": "query_result(bottomk(5, rate(libp2p_network_bytes_total{direction=\"in\"}[${__range_s}s])))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*instance=\"(.*?)\".*",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(topk(5, rate(libp2p_network_bytes_total{direction=\"out\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "libp2p_traffic_out_top5",
+            "options": [],
+            "query": {
+              "query": "query_result(topk(5, rate(libp2p_network_bytes_total{direction=\"out\"}[${__range_s}s])))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*instance=\"(.*?)\".*",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_VICTORIAMETRICS}"
+            },
+            "definition": "query_result(bottomk(5, rate(libp2p_network_bytes_total{direction=\"out\"}[${__range_s}s])))",
+            "hide": 2,
+            "includeAll": true,
+            "multi": true,
+            "name": "libp2p_traffic_out_bottom5",
+            "options": [],
+            "query": {
+              "query": "query_result(bottomk(5, rate(libp2p_network_bytes_total{direction=\"out\"}[${__range_s}s])))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": ".*instance=\"(.*?)\".*",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "nimlibp2p-vacp2p",
+      "uid": "-ERzk7sSk",
+      "version": 16
+    }
