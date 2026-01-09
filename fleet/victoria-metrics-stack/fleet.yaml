@@ -351,7 +351,7 @@ helm:
                   resources:
                     requests:
                       storage: 5Gi # set to 100Gi in production
-                  storageClassName: longhorn
+                  storageClassName: longhorn-vaclab
           vmstorage:
             replicaCount: 2
             resources:
@@ -367,7 +367,7 @@ helm:
                   resources:
                     requests:
                       storage: 5Gi # set to 1Ti in production
-                  storageClassName: longhorn
+                  storageClassName: longhorn-vaclab
             storageDataPath: /vm-data
         
 
@@ -816,7 +816,7 @@ helm:
           - ReadWriteOnce
           enabled: true
           size: 5Gi
-          storageClassName: longhorn
+          storageClassName: longhorn-vaclab
           type: pvc
         
 

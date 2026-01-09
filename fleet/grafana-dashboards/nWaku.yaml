@@ -7,7 +7,7 @@ metadata:
   annotations:
     grafana_folder: "vac"  
 data:
-  dashboard.json: |
+  nwaku.json: |
     {
       "__inputs": [
         {
