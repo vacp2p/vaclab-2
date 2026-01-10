@@ -18,11 +18,11 @@
       metadata:
         name: cni-configuration
         namespace: kube-system
-        labels:
-          app.kubernetes.io/managed-by: Helm
-        annotations:
-          meta.helm.sh/release-name: vaclab-2-fleet-cilium
-          meta.helm.sh/release-namespace: default
+        #labels:
+        #  app.kubernetes.io/managed-by: Helm
+        #annotations:
+        #  meta.helm.sh/release-name: vaclab-2-fleet-cilium
+        #  meta.helm.sh/release-namespace: default
       data:
         cni-config: |
           {
