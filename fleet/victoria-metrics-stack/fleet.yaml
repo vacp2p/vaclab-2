@@ -719,7 +719,7 @@ helm:
             version: 1
             orgId: 1
             isDefault: false
-            editable: true
+            editable: false
         grafanaOperator:
           # -- Create datasources as CRDs (requires grafana-operator to be installed)
           enabled: false
