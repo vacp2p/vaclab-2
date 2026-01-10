@@ -1,0 +1,44 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: rancher
+  namespace: kube-system
+spec:
+  chart: rancher
+  repo: https://releases.rancher.com/server-charts/stable
+  targetNamespace: cattle-system
+  createNamespace: true
+  version: "2.13.1"
+  valuesContent: |-
+    hostname: rancher.vaclab.diarra.tech
+    bootstrapPassword: ""
+    replicas: 1
+    
+    # Cluster branding
+    extraEnv:
+      - name: CATTLE_UI_BRAND
+        value: "vaclab"
+      - name: CATTLE_CLUSTER_NAME
+        value: "vaclab"
+      - name: CATTLE_UI_PL
+        value: "vaclab"
+      - name: CATTLE_UI_LOGO_LIGHT
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
+      - name: CATTLE_UI_LOGO_DARK
+        value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
+    
+    ingress:
+      enabled: true
+      tls:
+        source: letsEncrypt
+      ingressClassName: traefik
+    
+    letsEncrypt:
+      email: mamoutou@status.im
+      ingress:
+        class: traefik
+      environment: staging
+    
+    # Use existing cert-manager installation
+    certmanager:
+      install: false
