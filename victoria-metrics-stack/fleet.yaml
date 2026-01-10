@@ -11,12 +11,12 @@ helm:
   takeOwnership: true
   values:
       global:
-        clusterLabel: cluster 
-        license:
-          key: ""
-          keyRef: {}
-        cluster:
-          dnsDomain: cluster.local.
+        clusterLabel: local 
+        #license:
+        #  key: ""
+        #  keyRef: {}
+        #cluster:
+        #  dnsDomain: cluster.local.
 
       nameOverride: ""
       fullnameOverride: ""
