@@ -1,6 +1,6 @@
 defaultNamespace: longhorn-system
-dependsOn: 
-  - name: vaclab-2-fleet-kube-ovn
+# dependsOn: 
+#   - name: vaclab-2-fleet-kube-ovn
 helm:
   repo: https://charts.longhorn.io
   chart: longhorn
