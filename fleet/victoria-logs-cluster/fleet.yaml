@@ -115,7 +115,6 @@ helm:
         registry: ""
         repository: victoriametrics/victoria-logs
         tag: ""
-        variant: victorialogs
       ingress:
         annotations: {}
         enabled: false
@@ -227,7 +226,6 @@ helm:
         registry: ""
         repository: victoriametrics/victoria-logs
         tag: ""
-        variant: victorialogs
       ingress:
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-staging
@@ -341,7 +339,6 @@ helm:
         registry: ""
         repository: victoriametrics/victoria-logs
         tag: ""
-        variant: victorialogs
       initContainers: []
       lifecycle: {}
       minReadySeconds: 5
@@ -356,7 +353,7 @@ helm:
         labels: {}
         mountPath: /storage
         name: vlstorage-volume
-        size: 5Gi # set to 500Gi in prod
+        size: 2Gi # set to 500Gi in prod
         storageClassName: longhorn-vaclab
         subPath: ""
       podAnnotations: {}
