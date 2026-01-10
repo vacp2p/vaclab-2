@@ -1,5 +1,0 @@
-# Kube-OVN CNI Installation
-# This will be deployed by Fleet when the vaclab-2 GitRepo is synced
-# 
-# Configuration is in the ConfigMap within install.yaml
-# Adjust POD_CIDR, SVC_CIDR, JOIN_CIDR, and IFACE as needed
