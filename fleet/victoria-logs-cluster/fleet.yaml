@@ -353,7 +353,7 @@ helm:
         labels: {}
         mountPath: /storage
         name: vlstorage-volume
-        size: 2Gi # set to 500Gi in prod
+        size: 1Gi # set to 500Gi in prod
         storageClassName: longhorn-vaclab
         subPath: ""
       podAnnotations: {}
