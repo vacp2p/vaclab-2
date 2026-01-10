@@ -28,6 +28,19 @@
   retries: 3
   delay: 10
 
+- name: Update Fleet cluster label to vaclab
+  kubernetes.core.k8s:
+    state: patched
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    api_version: fleet.cattle.io/v1alpha1
+    kind: Cluster
+    name: local
+    namespace: fleet-local
+    definition:
+      metadata:
+        labels:
+          management.cattle.io/cluster-name: vaclab
+
 - name: Create Fleet GitRepo manifest to watch vaclab-2 repo
   kubernetes.core.k8s:
     state: present
@@ -40,12 +53,21 @@
         namespace: fleet-local
       spec:
         targets:
-          - name: local
+          - clusterSelector:
+              matchLabels:
+                management.cattle.io/cluster-name: vaclab
         repo: "https://github.com/vacp2p/vaclab-2"
         branch: "feat/add_lab_components"
         #branch: main
         paths:
           - fleet
+
+- name: Get cluster name from kubeconfig
+  ansible.builtin.shell: kubectl config view --minify -o jsonpath='{.clusters[0].name}'
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: k8s_cluster_name
+  changed_when: false
 
 - name: Get Fleet status
   command: kubectl get gitrepo -n fleet-local
