@@ -12,9 +12,9 @@ helm:
   values:
       global:
         clusterLabel: cluster 
-        #license:
-        #  key: ""
-        #  keyRef: {}
+        license:
+          key: ""
+          keyRef: {}
         cluster:
           dnsDomain: cluster.local.
 
@@ -718,7 +718,6 @@ helm:
                 dashboards: grafana
             allowCrossNamespaceImport: false
         victoriametrics:
-          enabled: true
           # -- Create per replica prometheus compatible datasource
           perReplica: false
           # -- List of prometheus compatible datasource configurations.
