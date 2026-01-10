@@ -11,12 +11,12 @@ helm:
   takeOwnership: true
   values:
       global:
-        clusterLabel: local 
+        clusterLabel: cluster 
         #license:
         #  key: ""
         #  keyRef: {}
-        #cluster:
-        #  dnsDomain: cluster.local.
+        cluster:
+          dnsDomain: cluster.local.
 
       nameOverride: ""
       fullnameOverride: ""
@@ -718,7 +718,7 @@ helm:
                 dashboards: grafana
             allowCrossNamespaceImport: false
         victoriametrics:
-          enabled: false
+          enabled: true
           # -- Create per replica prometheus compatible datasource
           perReplica: false
           # -- List of prometheus compatible datasource configurations.
