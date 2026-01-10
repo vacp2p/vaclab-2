@@ -711,10 +711,10 @@ helm:
 
       defaultDatasources:
         extra:
-          - name: VictoriaLogs
+          - name: VictoriaLogs (DS)
             type: victoriametrics-logs-datasource
             url: http://vlc-victoria-logs-cluster-vlselect.victorialogs:9471
-            uid: VictoriaLogs (DS)
+            uid: victorialogs
             access: proxy
             version: 1
             orgId: 1
