@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: set-fleet-cluster-label
+  namespace: fleet-local
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      serviceAccountName: fleet-cluster-labeler
+      restartPolicy: OnFailure
+      containers:
+      - name: kubectl
+        image: rancher/kubectl:v1.29.0
+        command:
+        - kubectl
+        - label
+        - cluster.fleet.cattle.io/local
+        - management.cattle.io/cluster-name=local
+        - --overwrite
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fleet-cluster-labeler
+  namespace: fleet-local
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: fleet-cluster-labeler
+  namespace: fleet-local
+rules:
+- apiGroups: ["fleet.cattle.io"]
+  resources: ["clusters"]
+  verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fleet-cluster-labeler
+  namespace: fleet-local
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: fleet-cluster-labeler
+subjects:
+- kind: ServiceAccount
+  name: fleet-cluster-labeler
+  namespace: fleet-local

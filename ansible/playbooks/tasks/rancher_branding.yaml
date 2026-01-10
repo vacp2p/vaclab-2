@@ -20,3 +20,8 @@
     definition:
       spec:
         displayName: vaclab
+
+- name: Re-apply Fleet cluster label after Rancher installation
+  command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=local --overwrite
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
