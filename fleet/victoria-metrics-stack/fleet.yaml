@@ -320,7 +320,7 @@ helm:
         labels: {}
         spec:
           replicationFactor: 2
-          retentionPeriod: "1"
+          retentionPeriod: "3"
           vminsert:
             enabled: true
             extraArgs: {}
@@ -652,7 +652,7 @@ helm:
                 
           port: "8429"
           selectAllByDefault: true
-          scrapeInterval: 15s
+          scrapeInterval: 10s
           externalLabels:
             cluster: "rancher-desktop"
             # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
@@ -929,7 +929,7 @@ helm:
           spec:
             scheme: "https"
             honorLabels: true
-            interval: "15s"
+            interval: "10s"
             scrapeTimeout: "5s"
             tlsConfig:
               insecureSkipVerify: true
