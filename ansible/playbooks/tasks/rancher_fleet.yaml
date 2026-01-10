@@ -39,6 +39,8 @@
         name: vaclab-2
         namespace: fleet-local
       spec:
+        targets:
+          - name: local
         repo: "https://github.com/vacp2p/vaclab-2"
         branch: "feat/add_lab_components"
         #branch: main
