@@ -79,13 +79,6 @@
     - name: Import Rancher Fleet installation tasks
       ansible.builtin.import_tasks: tasks/rancher_fleet.yaml
 
-- name: Change Cluster Name
-  hosts: server
-  run_once: true
-  tasks:
-    - name: Import Cluster Name change tasks
-      ansible.builtin.import_tasks: tasks/rancher_branding.yaml
-
 - name: Display Rancher Bootstrap Password
   hosts: server
   run_once: true
@@ -115,3 +108,10 @@
           - "Password: {{ rancher_password }}"
           - "=============================================="
       when: rancher_password is defined
+
+- name: Change Cluster Name
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import Cluster Name change tasks
+      ansible.builtin.import_tasks: tasks/rancher_branding.yaml

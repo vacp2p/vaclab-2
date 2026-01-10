@@ -28,10 +28,10 @@
   retries: 3
   delay: 10
 
-- name: Update Fleet cluster label to vaclab
-  command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=vaclab --overwrite
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+#- name: Update Fleet cluster label to vaclab
+#  command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=vaclab --overwrite
+#  environment:
+#    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 - name: Create Fleet GitRepo manifest to watch vaclab-2 repo
   kubernetes.core.k8s:
@@ -47,7 +47,7 @@
         targets:
           - clusterSelector:
               matchLabels:
-                management.cattle.io/cluster-name: vaclab
+                management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
         branch: "feat/add_lab_components"
         #branch: main
