@@ -5,10 +5,4 @@ dependsOn:
   - name: vaclab-2-fleet-cilium
   - name: vaclab-2-fleet-longhorn
   - name: vaclab-2-fleet-rancher
-diff:
-  comparePatches:
-  - apiVersion: networking.k8s.io/v1
-    kind: Ingress
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
+

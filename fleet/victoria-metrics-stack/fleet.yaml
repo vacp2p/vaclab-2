@@ -1196,21 +1196,6 @@ helm:
 
 diff:
   comparePatches:
-  - apiVersion: apps/v1
-    kind: DaemonSet
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
-  - apiVersion: apps/v1
-    kind: Deployment
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
-  - apiVersion: admissionregistration.k8s.io/v1
-    kind: ValidatingWebhookConfiguration
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
   - apiVersion: operator.victoriametrics.com/v1beta1
     kind: VMCluster
     jsonPointers:

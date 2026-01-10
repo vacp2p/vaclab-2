@@ -1,9 +1,2 @@
 dependsOn:
   - name: vaclab-2-fleet-cert-manager
-diff:
-  comparePatches:
-  - apiVersion: cert-manager.io/v1
-    kind: ClusterIssuer
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}

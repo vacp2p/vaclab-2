@@ -59,20 +59,3 @@ helm:
       requests:
         cpu: 100m
         memory: 128Mi
-diff:
-  comparePatches:
-  - apiVersion: apps/v1
-    kind: DaemonSet
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
-  - apiVersion: apps/v1
-    kind: Deployment
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
-  - apiVersion: v1
-    kind: ConfigMap
-    operations:
-    - {"op": "remove", "path": "/metadata/annotations"}
-    - {"op": "remove", "path": "/metadata/labels"}
