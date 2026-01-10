@@ -758,7 +758,7 @@ helm:
                 implementation: prometheus
         # -- Configure additional grafana datasources (passed through tpl).
         # Check [here](http://docs.grafana.org/administration/provisioning/#datasources) for details
-        extra: []
+        
 
       # -- Grafana dependency chart configuration. For possible values refer [here](https://github.com/grafana/helm-charts/tree/main/charts/grafana#configuration)
       grafana:
