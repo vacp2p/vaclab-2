@@ -162,7 +162,7 @@ helm:
           cpu: "4" # set to 8 in prod
           memory: 500Mi # set to 4000Mi in prod
         requests:
-          cpu: "0.5" 
+          cpu: "0.2"  # set to 2 in prod
           memory: 100Mi
       securityContext:
         enabled: true
@@ -377,7 +377,9 @@ helm:
           timeoutSeconds: 5
         startup: {}
       replicaCount: 1
-      resources: {}
+      resources:
+        requests:
+          cpu: "0.2"
       retentionDiskSpaceUsage: ""
       retentionPeriod: 1
       securityContext:
