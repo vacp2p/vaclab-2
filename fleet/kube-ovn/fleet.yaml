@@ -4,6 +4,7 @@ helm:
   chart: kube-ovn
   version: 1.14.0
   releaseName: kube-ovn
+  takeOwnership: true
   values:
     # Auto-discover master nodes via label instead of static IPs
     MASTER_NODES: ""

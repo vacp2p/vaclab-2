@@ -6,6 +6,7 @@ helm:
   chart: cilium
   version: 1.18.5
   releaseName: cilium
+  takeOwnership: true
   values:
     # CNI chaining configuration for Kube-OVN
     cni:

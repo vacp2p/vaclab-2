@@ -6,6 +6,7 @@ helm:
   chart: rancher
   version: v2.13.1
   releaseName: rancher
+  takeOwnership: true
   values:
     hostname: rancher.vaclab.diarra.tech
     bootstrapPassword: ""

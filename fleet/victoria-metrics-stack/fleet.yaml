@@ -6,8 +6,9 @@ dependsOn:
 helm:
   repo: https://victoriametrics.github.io/helm-charts/
   chart: victoria-metrics-k8s-stack
-  version: v0.28.1
+  version: v0.67.0
   releaseName: vmks
+  takeOwnership: true
   values:
       global:
         clusterLabel: cluster 
