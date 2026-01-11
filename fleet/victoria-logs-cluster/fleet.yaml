@@ -228,7 +228,7 @@ helm:
         tag: ""
       ingress:
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: letsencrypt-prod
           kubernetes.io/tls-acme: "true"
           # Homepage self-discovery annotations
           #gethomepage.dev/enabled: "true"

@@ -43,7 +43,7 @@ spec:
       email: mamoutou@status.im
       ingress:
         class: traefik
-      environment: staging
+      environment: production
     
     # Use existing cert-manager installation
     certmanager:

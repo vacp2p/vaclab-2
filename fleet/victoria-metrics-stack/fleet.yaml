@@ -294,7 +294,7 @@ helm:
             tls: []
           select:
             annotations:
-              cert-manager.io/cluster-issuer: letsencrypt-staging
+              cert-manager.io/cluster-issuer: letsencrypt-prod
               kubernetes.io/tls-acme: "true"
             enabled: true
             extraPaths: []
@@ -807,7 +807,7 @@ helm:
           enabled: true
           ingressClassName: traefik
           annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-staging
+            cert-manager.io/cluster-issuer: letsencrypt-pro
           labels: {}
           path: /
           pathType: Prefix
