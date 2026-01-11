@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+    ingress: true
+    traefik: true
+    gateway: true
+  
+  settings.yaml: |
+    title: Vaclab Home
+    favicon: https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png
+    headerStyle: clean
+    theme: dark
+    color: slate
+    layout:
+      Cluster Management:
+        style: row
+        columns: 3
+      Monitoring:
+        style: row
+        columns: 3
+      Storage:
+        style: row
+        columns: 2
+      Observability:
+        style: row
+        columns: 2
+  
+  bookmarks.yaml: |
+    - Documentation:
+        - Kubernetes:
+            - abbr: K3s
+              href: https://k3s.io/
+        - Rancher:
+            - abbr: RC
+              href: https://rancher.com/docs/
+        - Homepage:
+            - abbr: HP
+              href: https://gethomepage.dev/
+    
+    - Git Repositories:
+        - vaclab:
+            - abbr: VL
+              href: https://github.com/vacp2p/vaclab-2
+  
+  services.yaml: |
+    - Cluster Management:
+        - Rancher:
+            icon: rancher
+            href: https://rancher.vaclab.diarra.tech
+            description: Kubernetes Management Platform
+            namespace: cattle-system
+            app: rancher
+
+    - Storage:
+        - Longhorn:
+            icon: longhorn
+            href: https://longhorn.vaclab.diarra.tech
+            description: Distributed Block Storage
+            namespace: longhorn-system
+            app: longhorn
+            widget:
+              type: longhorn
+              expanded: true
+              total: true
+              labels: true
+              nodes: true
+
+    - Monitoring:
+        - Grafana:
+            icon: grafana
+            href: https://grafana.vaclab.diarra.tech
+            description: Metrics Visualization
+            namespace: vmetrics
+            app: grafana
+
+        - VictoriaLogs:
+            icon: victoriametrics
+            href: https://vlselect.vaclab.diarra.tech
+            description: Log Aggregation & Search
+            namespace: victorialogs
+            app: vlselect
+
+    - Observability:
+        - Hubble UI:
+            icon: cilium
+            href: https://hubble.vaclab.diarra.tech
+            description: Network Observability
+            namespace: kube-system
+            app: hubble-ui
+  
+  widgets.yaml: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "Vaclab Cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    
+    - resources:
+        backend: kubernetes
+        expanded: true
+        cpu: true
+        memory: true
+    
+    - longhorn:
+        expanded: false
+        total: true
+        labels: false
+        nodes: false
+    
+    - search:
+        provider: duckduckgo
+        target: _blank
+    
+    - greeting:
+        text_size: xl
+        text: "Welcome to Vaclab"
+    
+    - datetime:
+        text_size: xl
+        format:
+          dateStyle: long
+          timeStyle: short
+          hour12: false
+  
+  docker.yaml: ""
+  custom.css: ""
+  custom.js: ""
