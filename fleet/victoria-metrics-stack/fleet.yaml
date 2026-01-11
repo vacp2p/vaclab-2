@@ -807,7 +807,7 @@ helm:
           enabled: true
           ingressClassName: traefik
           annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-pro
+            cert-manager.io/cluster-issuer: letsencrypt-prod
           labels: {}
           path: /
           pathType: Prefix
