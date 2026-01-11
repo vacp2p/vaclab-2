@@ -32,12 +32,12 @@ spec:
       tls:
         source: letsEncrypt
       ingressClassName: traefik
-      extraAnnotations:
-        gethomepage.dev/enabled: "true"
-        gethomepage.dev/name: "Rancher"
-        gethomepage.dev/description: "Kubernetes Management Platform"
-        gethomepage.dev/group: "Cluster Management"
-        gethomepage.dev/icon: "rancher"
+      #extraAnnotations:
+      #  gethomepage.dev/enabled: "true"
+      #  gethomepage.dev/name: "Rancher"
+      #  gethomepage.dev/description: "Kubernetes Management Platform"
+      #  gethomepage.dev/group: "Cluster Management"
+      #  gethomepage.dev/icon: "rancher"
     
     letsEncrypt:
       email: mamoutou@status.im

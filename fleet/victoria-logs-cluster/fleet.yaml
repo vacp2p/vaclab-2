@@ -231,11 +231,11 @@ helm:
           cert-manager.io/cluster-issuer: letsencrypt-staging
           kubernetes.io/tls-acme: "true"
           # Homepage self-discovery annotations
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: "VictoriaLogs"
-          gethomepage.dev/description: "Log Aggregation & Search"
-          gethomepage.dev/group: "Monitoring"
-          gethomepage.dev/icon: "victoriametrics"
+          #gethomepage.dev/enabled: "true"
+          #gethomepage.dev/name: "VictoriaLogs"
+          #gethomepage.dev/description: "Log Aggregation & Search"
+          #gethomepage.dev/group: "Monitoring"
+          #gethomepage.dev/icon: "victoriametrics"
           
         enabled: true
         extraLabels: {}
