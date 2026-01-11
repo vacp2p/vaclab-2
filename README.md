@@ -6,6 +6,10 @@
 
 > Automated deployment and configuration for the Vaclab-2 Kubernetes cluster using Ansible and Fleet.
 
+## Quick Links
+
+- **Homepage (Dev)**: [home.vaclab](https://home.vaclab.diarra.tech/)
+
 ## Project Status
 
 | Component | Status | Description |
