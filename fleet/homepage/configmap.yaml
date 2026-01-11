@@ -18,36 +18,34 @@ data:
     headerStyle: clean
     theme: dark
     color: slate
-    layout:
-      Cluster Management:
-        style: row
-        columns: 3
-      Monitoring:
-        style: row
-        columns: 3
-      Storage:
-        style: row
-        columns: 2
-      Observability:
-        style: row
-        columns: 2
+    providers:
+      longhorn:
+        url: https://longhorn.vaclab.diarra.tech
   
   bookmarks.yaml: |
     - Documentation:
         - Kubernetes:
             - abbr: K3s
               href: https://k3s.io/
-        - Rancher:
-            - abbr: RC
-              href: https://rancher.com/docs/
-        - Homepage:
-            - abbr: HP
-              href: https://gethomepage.dev/
+        - Vaclab 2.0 Stack:
+            - abbr: vaclab-2.0-stack
+              href: https://www.notion.so/Vaclab-2-0-Full-Software-Stack-2d08f96fb65c8008abfdcfe86a2c3324
+        - Vaclab 2.0 Bandwidth Aware Scheduling:
+            - abbr: vaclab-2.0-bw-scheduling
+              href: https://www.notion.so/Vaclab-2-0-Bandwidth-Aware-Scheduling-2d08f96fb65c804eb44fdc7b75e079f9
+        
     
     - Git Repositories:
-        - vaclab:
-            - abbr: VL
+        - Vaclab 2.0:
+            - abbr:vaclab-2
               href: https://github.com/vacp2p/vaclab-2
+        - Local Vaclab:
+            - abbr: vaclab-local
+              href: https://github.com/vacp2p/vaclab-2
+        - Vaclab K8S Plugins:
+            - abbr: vaclab-k8s-plugins
+              href: https://github.com/vacp2p/vaclab-k8s-plugins
+    
   
   services.yaml: |
     - Cluster Management:
@@ -64,14 +62,10 @@ data:
             href: https://longhorn.vaclab.diarra.tech
             description: Distributed Block Storage
             namespace: longhorn-system
-            app: longhorn
+            podSelector: app.kubernetes.io/name=longhorn
             widget:
               type: longhorn
-              url: https://longhorn.vaclab.diarra.tech
-              expanded: true
-              total: true
-              labels: true
-              nodes: true
+              provider: longhorn
 
     - Monitoring:
         - Grafana:
@@ -118,12 +112,6 @@ data:
         expanded: true
         cpu: true
         memory: true
-    
-    - longhorn:
-        expanded: false
-        total: true
-        labels: false
-        nodes: false
     
     - search:
         provider: duckduckgo
