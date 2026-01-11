@@ -48,24 +48,7 @@ data:
     
   
   services.yaml: |
-    - Cluster Management:
-        - Rancher:
-            icon: rancher
-            href: https://rancher.vaclab.diarra.tech
-            description: Kubernetes Management Platform
-            namespace: cattle-system
-            podSelector: >-
-              app in (rancher)
-
-    - Storage:
-        - Longhorn:
-            icon: longhorn
-            href: https://longhorn.vaclab.diarra.tech
-            description: Distributed Block Storage
-            namespace: longhorn-system
-            podSelector: >-
-              app in (longhorn-ui)
-
+    
     - Monitoring:
         - Grafana:
             icon: grafana
@@ -73,23 +56,6 @@ data:
             description: Metrics Visualization
             namespace: vmetrics
             app: grafana
-
-        - VictoriaLogs:
-            icon: victoriametrics
-            href: https://vlselect.vaclab.diarra.tech
-            description: Log Aggregation & Search
-            namespace: victorialogs
-            podSelector: >-
-              app in (vlselect)
-
-    - Observability:
-        - Hubble UI:
-            icon: cilium
-            href: https://hubble.vaclab.diarra.tech
-            description: Network Observability
-            namespace: kube-system
-            podSelector: >-
-              k8s-app in (hubble-ui)
   
   widgets.yaml: |
     - logo:

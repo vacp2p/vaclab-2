@@ -6,6 +6,12 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-staging
+    # Homepage self-discovery annotations
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Hubble UI"
+    gethomepage.dev/description: "Network Observability"
+    gethomepage.dev/group: "Observability"
+    gethomepage.dev/icon: "cilium"
 spec:
   ingressClassName: traefik
   tls:

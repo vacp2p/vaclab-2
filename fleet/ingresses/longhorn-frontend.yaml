@@ -6,6 +6,13 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-staging
+    # Homepage self-discovery annotations
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Longhorn"
+    gethomepage.dev/description: "Distributed Block Storage"
+    gethomepage.dev/group: "Storage"
+    gethomepage.dev/icon: "longhorn"
+    
 spec:
   ingressClassName: traefik
   tls:
