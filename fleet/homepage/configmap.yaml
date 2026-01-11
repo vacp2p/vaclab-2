@@ -132,5 +132,6 @@ data:
           hour12: false
   
   docker.yaml: ""
+  proxmox.yaml: ""
   custom.css: ""
   custom.js: ""
