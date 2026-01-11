@@ -37,7 +37,7 @@ data:
     
     - Git Repositories:
         - Vaclab 2.0:
-            - abbr:vaclab-2
+            - abbr: vaclab-2
               href: https://github.com/vacp2p/vaclab-2
         - Local Vaclab:
             - abbr: vaclab-local
