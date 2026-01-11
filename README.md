@@ -15,15 +15,16 @@
 | Rancher Fleet | ✅ OK | GitOps deployment engine |
 | traefik | ✅ OK | K3S-friendly ingress |
 | containerd | ✅ OK | Container Runtime |
-| Cert Manager | 🚧 WIP | Autamed TLS via HTTP-01 challenges |
+| Cert Manager | ✅ OK | Autamed TLS via HTTP-01 challenges |
 | Kube-OVN | ✅ OK | Primary CNI |
 | Cilium | ✅ OK | Chained CNI |
 | Hubble | ✅ OK | Cilium real-time flow observability UI |
-| Longhorn | 🚧 WIP | CSI - Distributed block storage |
-| Rancher UI | 🚧 WIP | Rancher management UI |
+| Longhorn | ✅ OK | CSI - Distributed block storage |
+| Rancher UI | ✅ OK | Rancher management UI |
+| GetHomePage | ✅ OK | Home Page UI (App Launcher) for vaclab|
 | Authentik | 🚧 WIP | Identity & Access Management |
-| VictoriaMetrics K8s Stack | 🚧 WIP | VictoriaMetrics Helm charts, including Grafana |
-| VictoriaLogs Cluster | 🚧 WIP | VictoriaLogs Helm chart |
+| VictoriaMetrics K8s Stack | ✅ OK | VictoriaMetrics Helm charts, including Grafana |
+| VictoriaLogs Cluster | ✅ OK | VictoriaLogs Helm chart |
 | Kyverno | 🚧 WIP | Admission & mutation webhook manager |
 | Vaclab Bandwidth-Aware Scheduler | 🚧 WIP | Custom bandwidth-aware scheduler |
 
