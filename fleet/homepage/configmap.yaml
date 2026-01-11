@@ -25,25 +25,25 @@ data:
   bookmarks.yaml: |
     - Documentation:
         - Kubernetes:
-            - abbr: K3s
+            - abbr: 1
               href: https://k3s.io/
         - Vaclab 2.0 Stack:
-            - abbr: vaclab-2.0-stack
+            - abbr: 2
               href: https://www.notion.so/Vaclab-2-0-Full-Software-Stack-2d08f96fb65c8008abfdcfe86a2c3324
         - Vaclab 2.0 Bandwidth Aware Scheduling:
-            - abbr: vaclab-2.0-bw-scheduling
+            - abbr: 3
               href: https://www.notion.so/Vaclab-2-0-Bandwidth-Aware-Scheduling-2d08f96fb65c804eb44fdc7b75e079f9
         
     
     - Git Repositories:
         - Vaclab 2.0:
-            - abbr: vaclab-2
+            - abbr: 1
               href: https://github.com/vacp2p/vaclab-2
         - Local Vaclab:
-            - abbr: vaclab-local
+            - abbr: 2
               href: https://github.com/vacp2p/vaclab-2
         - Vaclab K8S Plugins:
-            - abbr: vaclab-k8s-plugins
+            - abbr: 3
               href: https://github.com/vacp2p/vaclab-k8s-plugins
     
   
@@ -63,9 +63,6 @@ data:
             description: Distributed Block Storage
             namespace: longhorn-system
             podSelector: app.kubernetes.io/name=longhorn
-            widget:
-              type: longhorn
-              provider: longhorn
 
     - Monitoring:
         - Grafana:
@@ -113,6 +110,12 @@ data:
         cpu: true
         memory: true
     
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true
+    
     - search:
         provider: duckduckgo
         target: _blank
@@ -124,7 +127,7 @@ data:
     - datetime:
         text_size: xl
         format:
-          dateStyle: long
+          dateStyle: short
           timeStyle: short
           hour12: false
   
