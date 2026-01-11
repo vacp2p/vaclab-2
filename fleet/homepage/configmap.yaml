@@ -56,7 +56,7 @@ data:
             href: https://rancher.vaclab.diarra.tech
             description: Kubernetes Management Platform
             namespace: cattle-system
-            app: rancher
+            podSelector: app=rancher
 
     - Storage:
         - Longhorn:
@@ -67,6 +67,7 @@ data:
             app: longhorn
             widget:
               type: longhorn
+              url: https://longhorn.vaclab.diarra.tech
               expanded: true
               total: true
               labels: true
@@ -85,7 +86,7 @@ data:
             href: https://vlselect.vaclab.diarra.tech
             description: Log Aggregation & Search
             namespace: victorialogs
-            app: vlselect
+            podSelector: app=vlselect
 
     - Observability:
         - Hubble UI:
@@ -93,9 +94,12 @@ data:
             href: https://hubble.vaclab.diarra.tech
             description: Network Observability
             namespace: kube-system
-            app: hubble-ui
+            podSelector: k8s-app=hubble-ui
   
   widgets.yaml: |
+    - logo:
+        icon: https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png
+    
     - kubernetes:
         cluster:
           show: true
