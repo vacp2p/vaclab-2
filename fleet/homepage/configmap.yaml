@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    mode: cluster
+    ingress: true
+    traefik: true
+    gateway: true
+  
+  settings.yaml: |
+    title: Vaclab Home
+    background:
+       image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+       blur: sm # sm, md, xl... see https://tailwindcss.com/docs/backdrop-blur
+       saturate: 100 # 0, 50, 100... see https://tailwindcss.com/docs/backdrop-saturate
+       brightness: 50 # 0, 50, 75... see https://tailwindcss.com/docs/backdrop-brightness
+       opacity: 100 # 0-100
+    favicon: https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png
+    #headerStyle: clean
+    theme: dark
+    color: slate
+    providers:
+      longhorn:
+        url: https://longhorn.vaclab.diarra.tech
+  
+  bookmarks.yaml: |
+    - Documentation:
+        - Kubernetes:
+            - abbr: 1
+              href: https://k3s.io/
+        - Vaclab 2.0 Stack:
+            - abbr: 2
+              href: https://www.notion.so/Vaclab-2-0-Full-Software-Stack-2d08f96fb65c8008abfdcfe86a2c3324
+        - Vaclab 2.0 Bandwidth Aware Scheduling:
+            - abbr: 3
+              href: https://www.notion.so/Vaclab-2-0-Bandwidth-Aware-Scheduling-2d08f96fb65c804eb44fdc7b75e079f9
+        
+    
+    - Git Repositories:
+        - Vaclab 2.0:
+            - abbr: 1
+              href: https://github.com/vacp2p/vaclab-2
+        - Local Vaclab:
+            - abbr: 2
+              href: https://github.com/vacp2p/vaclab-2
+        - Vaclab K8S Plugins:
+            - abbr: 3
+              href: https://github.com/vacp2p/vaclab-k8s-plugins
+    
+  
+  services.yaml: |
+    - Cluster Management:
+        - Rancher:
+            icon: rancher
+            href: https://rancher.vaclab.diarra.tech
+            description: Kubernetes Management Platform
+            namespace: cattle-system
+            podSelector: >-
+              app in (rancher)
+
+    - Storage:
+        - Longhorn:
+            icon: longhorn
+            href: https://longhorn.vaclab.diarra.tech
+            description: Distributed Block Storage
+            namespace: longhorn-system
+            podSelector: >-
+              app in (longhorn-ui)
+
+    - Monitoring:
+        - Grafana:
+            icon: grafana
+            href: https://grafana.vaclab.diarra.tech
+            description: Metrics Visualization
+            namespace: vmetrics
+            app: grafana
+
+        - VictoriaLogs:
+            icon: victoriametrics
+            href: https://vlselect.vaclab.diarra.tech
+            description: Log Aggregation & Search
+            namespace: victorialogs
+            podSelector: >-
+              app in (vlselect)
+  
+  widgets.yaml: |
+    - logo:
+        icon: https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png
+    
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "Vaclab Cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    
+    - resources:
+        backend: kubernetes
+        expanded: true
+        cpu: true
+        memory: true
+    
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true
+    
+    - search:
+        provider: google
+        target: _blank
+    
+    - greeting:
+        text_size: xl
+        text: "Welcome to Vaclab"
+    
+    - datetime:
+        text_size: xl
+        format:
+          dateStyle: long
+          timeStyle: short
+          hour12: false
+  
+  docker.yaml: ""
+  proxmox.yaml: ""
+  custom.css: ""
+  custom.js: ""

@@ -1,0 +1,147 @@
+---
+# Configure Authentik with Google OAuth and status.im email restriction
+# Run this playbook: ansible-playbook -i ansible/inventory.yaml ansible/playbooks/setup_authentik_google.yaml
+
+- name: Setup Authentik with Google OAuth
+  hosts: server
+  run_once: true
+  vars:
+    authentik_api_token: "{{ lookup('env', 'AUTHENTIK_API_TOKEN') | default('') }}"
+    
+  tasks:
+    - name: Check if Authentik API token is provided
+      fail:
+        msg: "AUTHENTIK_API_TOKEN environment variable is required. Get it from Authentik: Admin Interface > Tokens"
+      when: authentik_api_token | length == 0
+
+    - name: Check if Google OAuth credentials are provided
+      fail:
+        msg: |
+          Google OAuth credentials are required. Set environment variables:
+          - GOOGLE_OAUTH_CLIENT_ID
+          - GOOGLE_OAUTH_CLIENT_SECRET
+          Get them from: https://console.cloud.google.com/apis/credentials
+      when: google_oauth_client_id | length == 0 or google_oauth_client_secret | length == 0
+
+    - name: Wait for Authentik to be ready
+      uri:
+        url: "{{ authentik_url }}/api/v3/root/config/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+        status_code: 200
+      register: authentik_ready
+      until: authentik_ready.status == 200
+      retries: 30
+      delay: 5
+
+    - name: Get authentication flows
+      uri:
+        url: "{{ authentik_url }}/api/v3/flows/instances/"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: flows
+
+    - name: Find default authentication flow
+      set_fact:
+        default_auth_flow: "{{ (flows.json.results | selectattr('slug', 'equalto', 'default-authentication-flow') | first).pk }}"
+
+    - name: Create Google OAuth Source
+      uri:
+        url: "{{ authentik_url }}/api/v3/sources/oauth/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "Google"
+          slug: "google"
+          enabled: true
+          authentication_flow: "{{ default_auth_flow }}"
+          enrollment_flow: "{{ default_auth_flow }}"
+          provider_type: "google"
+          consumer_key: "{{ google_oauth_client_id }}"
+          consumer_secret: "{{ google_oauth_client_secret }}"
+          user_matching_mode: "email_link"
+        validate_certs: false
+        status_code: [201, 400]
+      register: google_source
+
+    - name: Get Google source details (if already exists)
+      uri:
+        url: "{{ authentik_url }}/api/v3/sources/oauth/?slug=google"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: existing_google_source
+      when: google_source.status == 400
+
+    - name: Set Google source ID
+      set_fact:
+        google_source_id: "{{ google_source.json.pk if google_source.status == 201 else existing_google_source.json.results[0].pk }}"
+
+    - name: Create policy expression for email domain restriction
+      uri:
+        url: "{{ authentik_url }}/api/v3/policies/expression/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          name: "Allow only {{ allowed_email_domain }} emails"
+          expression: |
+            return request.context.get('prompt_data', {}).get('email', '').endswith('@{{ allowed_email_domain }}')
+        validate_certs: false
+        status_code: [201, 400]
+      register: email_policy
+
+    - name: Get policy details (if already exists)
+      uri:
+        url: "{{ authentik_url }}/api/v3/policies/expression/?name=Allow%20only%20{{ allowed_email_domain }}%20emails"
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+        validate_certs: false
+      register: existing_policy
+      when: email_policy.status == 400
+
+    - name: Set policy ID
+      set_fact:
+        email_policy_id: "{{ email_policy.json.pk if email_policy.status == 201 else existing_policy.json.results[0].pk }}"
+
+    - name: Bind policy to Google source
+      uri:
+        url: "{{ authentik_url }}/api/v3/policies/bindings/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_api_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          policy: "{{ email_policy_id }}"
+          target: "{{ google_source_id }}"
+          enabled: true
+          order: 0
+        validate_certs: false
+        status_code: [201, 400]
+      register: policy_binding
+
+    - name: Display Google OAuth configuration
+      debug:
+        msg:
+          - "=============================================="
+          - "Authentik Google OAuth Configuration"
+          - "=============================================="
+          - "Status: Configured"
+          - "Provider: Google OAuth"
+          - "Allowed Email Domain: @{{ allowed_email_domain }}"
+          - "Redirect URI for Google Console:"
+          - "  {{ authentik_url }}/source/oauth/callback/google/"
+          - "=============================================="
+          - "Next Steps:"
+          - "1. Add redirect URI to Google Cloud Console"
+          - "2. Run configure_authentik_provider.yaml to setup Rancher"
+          - "3. Run configure_authentik.yaml to link Rancher to Authentik"
+          - "=============================================="

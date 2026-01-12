@@ -2,10 +2,17 @@
 - name: Import kube cluster playbook
   ansible.builtin.import_playbook: ../k3s-ansible/playbooks/site.yml
 
+- name: Label nodes for CNI and cluster components
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import node labeling tasks
+      ansible.builtin.import_tasks: tasks/label_nodes.yaml
+
 - name: Install Python kubernetes library
   hosts: k3s_cluster
   tasks:
-    - name: Import Helm installation tasks
+    - name: Import Python modules installation tasks
       ansible.builtin.import_tasks: tasks/modules_requirements.yaml
 
 - name: Install Helm
@@ -13,6 +20,12 @@
   tasks:
     - name: Import Helm installation tasks
       ansible.builtin.import_tasks: tasks/helm.yaml
+
+- name: Install Longhorn prerequisites
+  hosts: k3s_cluster
+  tasks:
+    - name: Import Longhorn prerequisites tasks
+      ansible.builtin.import_tasks: tasks/longhorn_prerequisites.yaml
 
 - name: Install Kube-OVN CNI
   hosts: server
@@ -27,6 +40,20 @@
   tasks:
     - name: Import Cilium installation tasks
       ansible.builtin.import_tasks: tasks/cilium.yaml
+
+- name: Install Cilium CLI
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Import Cilium CLI installation tasks
+      ansible.builtin.import_tasks: tasks/cilium_cli.yaml
+
+- name: Install Hubble CLI
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Import Hubble CLI installation tasks
+      ansible.builtin.import_tasks: tasks/hubble_cli.yaml
 
 - name: Verify nodes are ready
   hosts: server
@@ -51,3 +78,40 @@
   tasks:
     - name: Import Rancher Fleet installation tasks
       ansible.builtin.import_tasks: tasks/rancher_fleet.yaml
+
+- name: Display Rancher Bootstrap Password
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Wait for bootstrap-secret to be created
+      kubernetes.core.k8s_info:
+        kind: Secret
+        namespace: cattle-system
+        name: bootstrap-secret
+        wait: yes
+        wait_timeout: 300
+      register: bootstrap_secret
+      
+    - name: Retrieve bootstrap password
+      set_fact:
+        rancher_password: "{{ bootstrap_secret.resources[0].data.bootstrapPassword | b64decode }}"
+      when: bootstrap_secret.resources | length > 0
+      
+    - name: Display Rancher access information
+      debug:
+        msg:
+          - "=============================================="
+          - "Rancher Bootstrap Password"
+          - "=============================================="
+          - "URL: https://rancher.vaclab.diarra.tech"
+          - "Username: admin"
+          - "Password: {{ rancher_password }}"
+          - "=============================================="
+      when: rancher_password is defined
+
+- name: Change Cluster Name
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import Cluster Name change tasks
+      ansible.builtin.import_tasks: tasks/rancher_branding.yaml

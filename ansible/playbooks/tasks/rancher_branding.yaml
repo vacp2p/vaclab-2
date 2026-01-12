@@ -1,0 +1,27 @@
+---
+# Patch Rancher local cluster displayName
+- name: Wait for Rancher to be ready
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: cattle-system
+    name: rancher
+    wait: yes
+    wait_condition:
+      type: Available
+      status: "True"
+    wait_timeout: 600
+
+- name: Patch local cluster displayName to vaclab
+  kubernetes.core.k8s:
+    state: patched
+    kind: Cluster
+    api_version: management.cattle.io/v3
+    name: local
+    definition:
+      spec:
+        displayName: vaclab
+
+- name: Re-apply Fleet cluster label after Rancher installation
+  command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=local --overwrite
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml

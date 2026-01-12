@@ -1,0 +1,53 @@
+---
+- name: Download Hubble CLI
+  ansible.builtin.get_url:
+    url: https://github.com/cilium/hubble/releases/download/v1.18.3/hubble-linux-amd64.tar.gz
+    dest: /tmp/hubble-linux-amd64.tar.gz
+    mode: '0644'
+    checksum: sha256:https://github.com/cilium/hubble/releases/download/v1.18.3/hubble-linux-amd64.tar.gz.sha256sum
+  register: hubble_download
+
+- name: Extract Hubble CLI to /usr/local/bin
+  ansible.builtin.unarchive:
+    src: /tmp/hubble-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: '0755'
+  when: hubble_download.changed
+
+- name: Verify Hubble CLI installation
+  ansible.builtin.command: hubble version
+  register: hubble_version
+  changed_when: false
+  failed_when: false
+
+- name: Display Hubble version
+  ansible.builtin.debug:
+    var: hubble_version.stdout_lines
+
+- name: Clean up downloaded tarball
+  ansible.builtin.file:
+    path: /tmp/hubble-linux-amd64.tar.gz
+    state: absent
+
+- name: Set HUBBLE_SERVER environment variable for all users
+  ansible.builtin.blockinfile:
+    path: /etc/profile.d/hubble.sh
+    create: yes
+    mode: '0644'
+    block: |
+      # Hubble CLI configuration (IPv4 to avoid IPv6 issues)
+      export HUBBLE_SERVER=127.0.0.1:31245
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - Hubble"
+
+- name: Display Hubble CLI usage instructions
+  ansible.builtin.debug:
+    msg:
+      - "Hubble CLI v1.18.3 installed successfully!"
+      - ""
+      - "HUBBLE_SERVER=localhost:31245 configured system-wide"
+      - "To use Hubble CLI:"
+      - "  hubble status"
+      - "  hubble observe --follow"
+      - ""
+      - "Environment is persistent across reboots and new shells"

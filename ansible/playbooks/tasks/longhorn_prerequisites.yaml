@@ -1,0 +1,107 @@
+---
+# Install Longhorn prerequisites on all nodes
+# This task file should be imported in the main playbook
+
+- name: Install open-iscsi package
+  become: true
+  apt:
+    name: open-iscsi
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install nfs-common package
+  become: true
+  apt:
+    name: nfs-common
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install cryptsetup package
+  become: true
+  apt:
+    name: cryptsetup
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install dmsetup package
+  become: true
+  apt:
+    name: dmsetup
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Check NFSv4 support in kernel
+  command: grep CONFIG_NFS_V4 /boot/config-{{ ansible_kernel }}
+  register: nfs_v4_check
+  changed_when: false
+  failed_when: false
+
+- name: Check NFSv4.1 support in kernel
+  command: grep CONFIG_NFS_V4_1 /boot/config-{{ ansible_kernel }}
+  register: nfs_v4_1_check
+  changed_when: false
+  failed_when: false
+
+- name: Check NFSv4.2 support in kernel
+  command: grep CONFIG_NFS_V4_2 /boot/config-{{ ansible_kernel }}
+  register: nfs_v4_2_check
+  changed_when: false
+  failed_when: false
+
+- name: Ensure iscsid service is enabled and started
+  become: true
+  systemd:
+    name: iscsid
+    enabled: yes
+    state: started
+
+- name: Display NFS kernel support status
+  debug:
+    msg:
+      - "NFSv4 support: {{ 'Enabled' if nfs_v4_check.rc == 0 else 'Not enabled' }}"
+      - "NFSv4.1 support: {{ 'Enabled' if nfs_v4_1_check.rc == 0 else 'Not enabled' }}"
+      - "NFSv4.2 support: {{ 'Enabled' if nfs_v4_2_check.rc == 0 else 'Not enabled' }}"
+
+- name: Download longhornctl for AMD64
+  become: true
+  get_url:
+    url: https://github.com/longhorn/cli/releases/download/v1.10.1/longhornctl-linux-amd64
+    dest: /usr/local/bin/longhornctl
+    mode: '0755'
+  when: ansible_architecture == "x86_64"
+
+- name: Download longhornctl for ARM64
+  become: true
+  get_url:
+    url: https://github.com/longhorn/cli/releases/download/v1.10.1/longhornctl-linux-arm64
+    dest: /usr/local/bin/longhornctl
+    mode: '0755'
+  when: ansible_architecture == "aarch64"
+
+- name: Run longhornctl preflight check
+  command: /usr/local/bin/longhornctl check preflight
+  register: longhorn_preflight
+  changed_when: false
+  failed_when: false
+
+- name: Display longhornctl preflight check results
+  debug:
+    var: longhorn_preflight.stdout_lines
+
+- name: Display Longhorn prerequisites installation summary
+  debug:
+    msg:
+      - "=============================================="
+      - "Longhorn Prerequisites Installation Complete"
+      - "=============================================="
+      - "Packages installed:"
+      - "  - open-iscsi"
+      - "  - nfs-common"
+      - "  - cryptsetup"
+      - "  - dmsetup"
+      - "Services:"
+      - "  - iscsid: enabled and started"
+      - "Tools:"
+      - "  - longhornctl: installed at /usr/local/bin/longhornctl"
+      - "=============================================="

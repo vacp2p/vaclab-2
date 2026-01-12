@@ -1,0 +1,6 @@
+# cert-manager Helm Values
+# Reference values for manual deployment
+
+# Install CRDs with the chart
+crds:
+  enabled: true
