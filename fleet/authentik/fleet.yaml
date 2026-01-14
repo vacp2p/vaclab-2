@@ -63,6 +63,13 @@ helm:
               name: authentik-bootstrap
               key: bootstrap_email
 
+        # PostgreSQL credentials
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-postgresql
+              key: password
+
         # Blueprint env vars:
         - name: GOOGLE_CLIENT_ID
           valueFrom:
