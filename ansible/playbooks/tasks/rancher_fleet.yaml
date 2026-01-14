@@ -146,7 +146,8 @@
               matchLabels:
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
-        branch: main
+        #branch: main
+        branch: feat/add_lab_components_part_2
         paths:
           - fleet
 
