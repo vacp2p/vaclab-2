@@ -774,13 +774,29 @@ helm:
         #  # Overrides the Grafana image tag whose default is the chart appVersion
         #  tag: ""
         grafana.ini:
+          server:
+            root_url: "https://grafana.vaclab.diarra.tech"
+          users:
+            auto_assign_org: true
           auth:
             disable_login_form: true
-            disable_signout_menu: true
-          auth.anonymous:
+            oauth_auto_login: true
+            #disable_signout_menu: true
+          auth.generic_oauth:
             enabled: true
-            org_name: "Main Org."
-            org_role: "Admin"
+            name: "authentik"
+            allow_sign_up: true
+            client_id: $__file{/etc/secrets/authentik-oidc/client_id}
+            client_secret: $__file{/etc/secrets/authentik-oidc/client_secret}
+            scopes: "openid profile email"
+            auth_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/authorize/"
+            token_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/token/"
+            api_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/userinfo/"
+        extraSecretMounts:
+          - name: authentik-oidc
+            secretName: grafana-authentik-oidc
+            mountPath: /etc/secrets/authentik-oidc
+            readOnly: true
         sidecar:
           datasources:
             enabled: true

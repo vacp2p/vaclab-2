@@ -1,0 +1,112 @@
+---
+
+# Create authentik namespace (if not exists)
+- name: Create authentik namespace if not exists
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: authentik
+
+- name: Create authentik bootstrap secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: authentik-bootstrap
+        namespace: authentik
+      type: Opaque
+      stringData:
+        secret_key: "{{ authentik_secret_key }}"
+        bootstrap_password: "{{ bootstrap_password }}"
+        bootstrap_email: "{{ bootstrap_email }}"
+
+- name: Create authentik Google oauth secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: google-oauth
+        namespace: authentik
+      type: Opaque
+      stringData:
+        client_id: "{{ google_client_id }}"
+        client_secret: "{{ google_client_secret }}"
+
+- name: Create authentik postgresql secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: authentik-postgresql
+        namespace: authentik
+      type: Opaque
+      stringData:
+        password: "{{ pg_user_password }}"
+        postgres-password: "{{ pg_postgres_password }}"
+
+- name: Create authentik outpost token secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: authentik-outpost-token
+        namespace: authentik
+      type: Opaque
+      stringData:
+        token: "{{ outpost_token }}"
+
+- name: Ensure vmetrics namespace exists
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: vmetrics
+
+- name: Create Grafana OIDC secret (vmetrics namespace)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: grafana-authentik-oidc
+        namespace: vmetrics
+      type: Opaque
+      stringData:
+        client_id: "{{ grafana_oidc_client_id }}"
+        client_secret: "{{ grafana_oidc_client_secret }}"
+
+- name: Create Grafana OIDC secret (authentik namespace)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: grafana-authentik-oidc
+        namespace: authentik
+      type: Opaque
+      stringData:
+        client_id: "{{ grafana_oidc_client_id }}"
+        client_secret: "{{ grafana_oidc_client_secret }}"

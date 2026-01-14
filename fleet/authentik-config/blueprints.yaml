@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentik-blueprints
+  namespace: authentik
+data:
+  00-google-source.yaml: |
+    version: 1
+    metadata:
+      name: google-source
+    entries:
+      - model: authentik_sources_oauth.oauthsource
+        id: google
+        identifiers:
+          name: Google
+        attrs:
+          name: Google
+          provider_type: google
+          client_id: !Env GOOGLE_CLIENT_ID
+          client_secret: !Env GOOGLE_CLIENT_SECRET
+
+  10-proxy-forwardauth.yaml: |
+    version: 1
+    metadata:
+      name: proxy-forwardauth
+    entries:
+      - model: authentik_providers_proxy.proxyprovider
+        id: k8s-forwardauth-provider
+        identifiers:
+          name: k8s-forwardauth
+        attrs:
+          name: k8s-forwardauth
+          mode: forward_single
+          external_host: "https://authentik.vaclab.diarra.tech"
+          cookie_domain: "vaclab.diarra.tech"
+
+      - model: authentik_core.application
+        id: k8s-forwardauth-app
+        identifiers:
+          slug: k8s-forwardauth
+        attrs:
+          name: "K8s ForwardAuth"
+          slug: "k8s-forwardauth"
+          provider: !KeyOf k8s-forwardauth-provider
+
+  20-outpost-and-apps.yaml: |
+    version: 1
+    metadata:
+      name: outpost-proxy
+    entries:
+      - model: authentik_outposts.outpost
+        id: k8s-outpost
+        identifiers:
+          name: "k8s-outpost"
+        attrs:
+          name: "k8s-outpost"
+          type: proxy
+          providers:
+            - !KeyOf k8s-forwardauth-provider
+
+      # Token object: deterministic so it can match the OUTPOST_TOKEN
+      # Note: model/fields can differ by authentik version
+      - model: authentik_core.token
+        id: k8s-outpost-token
+        identifiers:
+          identifier: "k8s-outpost-token"
+        attrs:
+          identifier: "k8s-outpost-token"
+          key: !Env OUTPOST_TOKEN
+          intent: outpost
+          user: null
+          description: "Token for k8s outpost"
+  
+  30-grafana-oidc.yaml: |
+    version: 1
+    metadata:
+      name: grafana-oidc
+    entries:
+      - model: authentik_providers_oauth2.oauth2provider
+        id: grafana-provider
+        identifiers:
+          name: grafana
+        attrs:
+          name: grafana
+          client_id: !Env GRAFANA_OIDC_CLIENT_ID
+          client_secret: !Env GRAFANA_OIDC_CLIENT_SECRET
+          redirect_uris: |
+            https://grafana.vaclab.diarra.tech/login/generic_oauth
+          signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
+          authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-explicit-consent"]]
+          # if you want "no consent screen", use the implicit/skip-consent flow if enabled in your instance
+
+      - model: authentik_core.application
+        id: grafana-app
+        identifiers:
+          slug: grafana
+        attrs:
+          name: Grafana
+          slug: grafana
+          provider: !KeyOf grafana-provider

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-outpost
+  namespace: authentik
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: authentik-outpost
+  template:
+    metadata:
+      labels:
+        app: authentik-outpost
+    spec:
+      containers:
+        - name: outpost
+          image: ghcr.io/goauthentik/proxy:2025.10.3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: AUTHENTIK_HOST
+              value: "https://authentik.vaclab.diarra.tech"
+            - name: AUTHENTIK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-outpost-token
+                  key: token
+          ports:
+            - name: http
+              containerPort: 9000
+
+          readinessProbe:
+            httpGet:
+              path: /outpost.goauthentik.io/ping
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /outpost.goauthentik.io/ping
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+

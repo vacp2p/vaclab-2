@@ -1,27 +1,123 @@
 ---
-- name: Add Fleet Helm repository
+# Install cert-manager
+- name: Add Jetstack Helm repository
   kubernetes.core.helm_repository:
-    name: fleet
-    repo_url: https://rancher.github.io/fleet-helm-charts/
+    name: jetstack
+    repo_url: https://charts.jetstack.io
     state: present
 
-- name: Install Fleet CRD Helm chart
+- name: Install cert-manager
   kubernetes.core.helm:
-    name: fleet-crd
-    chart_ref: fleet/fleet-crd
-    release_namespace: cattle-fleet-system
+    name: cert-manager
+    chart_ref: jetstack/cert-manager
+    chart_version: "v1.19.2"
+    release_namespace: cert-manager
     create_namespace: true
     wait: true
+    values:
+      crds:
+        enabled: true
 
-- name: Install Fleet Helm chart
+- name: Wait for cert-manager to be ready
+  command: kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=300s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  retries: 3
+  delay: 10
+
+# Create Let's Encrypt ClusterIssuers
+- name: Create Let's Encrypt Production ClusterIssuer
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt-prod
+      spec:
+        acme:
+          email: mamoutou@status.im
+          server: https://acme-v02.api.letsencrypt.org/directory
+          privateKeySecretRef:
+            name: letsencrypt-prod
+          solvers:
+          - http01:
+              ingress:
+                class: traefik
+
+- name: Create Let's Encrypt Staging ClusterIssuer
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: cert-manager.io/v1
+      kind: ClusterIssuer
+      metadata:
+        name: letsencrypt-staging
+      spec:
+        acme:
+          email: mamoutou@status.im
+          server: https://acme-staging-v02.api.letsencrypt.org/directory
+          privateKeySecretRef:
+            name: letsencrypt-staging
+          solvers:
+          - http01:
+              ingress:
+                class: traefik
+
+# Install Rancher
+- name: Add Rancher Helm repository
+  kubernetes.core.helm_repository:
+    name: rancher-stable
+    repo_url: https://releases.rancher.com/server-charts/stable
+    state: present
+
+- name: Install Rancher
   kubernetes.core.helm:
-    name: fleet
-    chart_ref: fleet/fleet
-    release_namespace: cattle-fleet-system
+    name: rancher
+    chart_ref: rancher-stable/rancher
+    chart_version: "2.13.1"
+    release_namespace: cattle-system
     create_namespace: true
     wait: true
+    values:
+      hostname: rancher.vaclab.diarra.tech
+      bootstrapPassword: ""
+      replicas: 1
+      extraEnv:
+        - name: CATTLE_UI_BRAND
+          value: "vaclab"
+        - name: CATTLE_CLUSTER_NAME
+          value: "vaclab"
+        - name: CATTLE_UI_PL
+          value: "vaclab"
+        - name: CATTLE_UI_LOGO_LIGHT
+          value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
+        - name: CATTLE_UI_LOGO_DARK
+          value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
+      ingress:
+        enabled: true
+        tls:
+          source: letsEncrypt
+        ingressClassName: traefik
+      letsEncrypt:
+        email: mamoutou@status.im
+        ingress:
+          class: traefik
+        environment: production
+      certmanager:
+        install: false
 
-- name: Wait for Fleet to be ready
+- name: Wait for Rancher to be ready
+  command: kubectl wait --for=condition=ready pod -l app=rancher -n cattle-system --timeout=600s
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  retries: 5
+  delay: 30
+
+# Wait for Fleet (installed by Rancher) to be ready
+- name: Wait for Fleet controller to be ready
   command: kubectl wait --for=condition=ready pod -l app=fleet-controller -n cattle-fleet-system --timeout=300s
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
@@ -33,6 +129,7 @@
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
+# Create Fleet GitRepo to manage cluster components
 - name: Create Fleet GitRepo manifest to watch vaclab-2 repo
   kubernetes.core.k8s:
     state: present
@@ -49,17 +146,17 @@
               matchLabels:
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
-        #branch: "feat/add_lab_components"
         branch: main
         paths:
           - fleet
 
-- name: Get cluster name from kubeconfig
-  ansible.builtin.shell: kubectl config view --minify -o jsonpath='{.clusters[0].name}'
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  register: k8s_cluster_name
-  changed_when: false
+#- name: Wait for GitRepo to sync
+#  command: kubectl wait --for=condition=Ready gitrepo/vaclab-2 -n fleet-local --timeout=300s
+#  environment:
+#    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+#  retries: 3
+#  delay: 10
+#  ignore_errors: true
 
 - name: Get Fleet status
   command: kubectl get gitrepo -n fleet-local
@@ -71,3 +168,14 @@
 - name: Display Fleet status
   debug:
     var: fleet_status.stdout_lines
+
+- name: Get Fleet bundles
+  command: kubectl get bundles -n fleet-local
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: fleet_bundles
+  changed_when: false
+
+- name: Display Fleet bundles
+  debug:
+    var: fleet_bundles.stdout_lines

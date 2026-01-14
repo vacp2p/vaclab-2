@@ -230,6 +230,7 @@ helm:
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
           kubernetes.io/tls-acme: "true"
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
           # Homepage self-discovery annotations
           #gethomepage.dev/enabled: "true"
           #gethomepage.dev/name: "VictoriaLogs"
