@@ -44,6 +44,12 @@ helm:
         storageClass: longhorn-vaclab
 
     global:
+      postgresql:
+        auth:
+          existingSecret: authentik-postgresql
+          secretKeys:
+            userPasswordKey: password
+            adminPasswordKey: postgres-password
       env:
         - name: AUTHENTIK_SECRET_KEY
           valueFrom:
