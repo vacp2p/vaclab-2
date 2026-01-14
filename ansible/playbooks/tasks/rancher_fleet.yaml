@@ -117,8 +117,26 @@
   delay: 30
 
 # Wait for Fleet (installed by Rancher) to be ready
+- name: Wait for Fleet namespace to be created
+  command: kubectl get namespace cattle-fleet-system
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: fleet_namespace
+  until: fleet_namespace.rc == 0
+  retries: 30
+  delay: 10
+
+- name: Wait for Fleet controller deployment to exist
+  command: kubectl get deployment fleet-controller -n cattle-fleet-system
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  register: fleet_deployment
+  until: fleet_deployment.rc == 0
+  retries: 30
+  delay: 10
+
 - name: Wait for Fleet controller to be ready
-  command: kubectl wait --for=condition=ready pod -l app=fleet-controller -n cattle-fleet-system --timeout=300s
+  command: kubectl wait --for=condition=available deployment/fleet-controller -n cattle-fleet-system --timeout=300s
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   retries: 3

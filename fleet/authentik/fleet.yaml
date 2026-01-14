@@ -1,6 +1,6 @@
 dependsOn:
   - name: vaclab-2-fleet-storage
-  - name: vaclab-2-fleet-authentik-config
+  - name: vaclab-2-fleet-authentik-blueprints
 
 defaultNamespace: authentik
 
