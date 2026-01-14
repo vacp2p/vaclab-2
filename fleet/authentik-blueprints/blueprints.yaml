@@ -15,15 +15,17 @@ data:
           name: Google
         attrs:
           name: Google
+          slug: google
           provider_type: google
-          client_id: !Env GOOGLE_CLIENT_ID
-          client_secret: !Env GOOGLE_CLIENT_SECRET
+          consumer_key: !Env GOOGLE_CLIENT_ID
+          consumer_secret: !Env GOOGLE_CLIENT_SECRET
 
-  10-proxy-forwardauth.yaml: |
+  10-proxy-forwardauth-with-outpost.yaml: |
     version: 1
     metadata:
-      name: proxy-forwardauth
+      name: proxy-forwardauth-with-outpost
     entries:
+      # 1. Proxy provider for forward auth (forward_single mode)
       - model: authentik_providers_proxy.proxyprovider
         id: k8s-forwardauth-provider
         identifiers:
@@ -31,45 +33,46 @@ data:
         attrs:
           name: k8s-forwardauth
           mode: forward_single
-          external_host: "https://authentik.vaclab.diarra.tech"
-          cookie_domain: "vaclab.diarra.tech"
+          internal_host: ""
+          external_host: https://auth.vaclab.diarra.tech
+          cookie_domain: vaclab.diarra.tech
+          authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-implicit-consent"]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, "default-provider-invalidation-flow"]]
 
+      # 2. Single application for forward auth (protects all ingresses with the middleware)
       - model: authentik_core.application
-        id: k8s-forwardauth-app
         identifiers:
           slug: k8s-forwardauth
         attrs:
           name: "K8s ForwardAuth"
           slug: "k8s-forwardauth"
           provider: !KeyOf k8s-forwardauth-provider
-
-  20-outpost-and-apps.yaml: |
+          meta_launch_url: "https://auth.vaclab.diarra.tech"
+  
+  20-outpost.yaml: |
     version: 1
     metadata:
-      name: outpost-proxy
+      name: k8s-outpost
     entries:
       - model: authentik_outposts.outpost
-        id: k8s-outpost
         identifiers:
           name: "k8s-outpost"
         attrs:
           name: "k8s-outpost"
           type: proxy
+          config:
+            authentik_host: "https://authentik.vaclab.diarra.tech"
+            kubernetes_replicas: 2
+            kubernetes_namespace: "authentik"
+            kubernetes_ingress_annotations:
+              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+            kubernetes_ingress_secret_name: "authentik-outpost-tls"
+            kubernetes_service_type: "ClusterIP"
+            kubernetes_disabled_components: []
+            log_level: "info"
           providers:
-            - !KeyOf k8s-forwardauth-provider
+            - !Find [authentik_providers_proxy.proxyprovider, [name, "k8s-forwardauth"]]
 
-      # Token object: deterministic so it can match the OUTPOST_TOKEN
-      # Note: model/fields can differ by authentik version
-      - model: authentik_core.token
-        id: k8s-outpost-token
-        identifiers:
-          identifier: "k8s-outpost-token"
-        attrs:
-          identifier: "k8s-outpost-token"
-          key: !Env OUTPOST_TOKEN
-          intent: outpost
-          user: null
-          description: "Token for k8s outpost"
   
   30-grafana-oidc.yaml: |
     version: 1
@@ -84,11 +87,12 @@ data:
           name: grafana
           client_id: !Env GRAFANA_OIDC_CLIENT_ID
           client_secret: !Env GRAFANA_OIDC_CLIENT_SECRET
-          redirect_uris: |
-            https://grafana.vaclab.diarra.tech/login/generic_oauth
+          _redirect_uris:
+            - matching_mode: strict
+              url: "https://grafana.vaclab.diarra.tech/login/generic_oauth"
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
           authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-explicit-consent"]]
-          # if you want "no consent screen", use the implicit/skip-consent flow if enabled in your instance
+          invalidation_flow: !Find [authentik_flows.flow, [slug, "default-provider-invalidation-flow"]]
 
       - model: authentik_core.application
         id: grafana-app

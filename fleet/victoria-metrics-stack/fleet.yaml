@@ -3,7 +3,7 @@ dependsOn:
   - name: vaclab-2-fleet-longhorn
   - name: vaclab-2-fleet-grafana-dashboards
   - name: vaclab-2-fleet-storage
-  - name: vaclab-2-fleet-cert-issuers
+  #- name: vaclab-2-fleet-cert-issuers
 
 helm:
   repo: https://victoriametrics.github.io/helm-charts/
@@ -778,6 +778,7 @@ helm:
             root_url: "https://grafana.vaclab.diarra.tech"
           users:
             auto_assign_org: true
+            auto_assign_org_role: Editor
           auth:
             disable_login_form: true
             oauth_auto_login: true
@@ -789,9 +790,10 @@ helm:
             client_id: $__file{/etc/secrets/authentik-oidc/client_id}
             client_secret: $__file{/etc/secrets/authentik-oidc/client_secret}
             scopes: "openid profile email"
-            auth_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/authorize/"
-            token_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/token/"
-            api_url: "https://authentik.vaclab.diarra.tech/application/o/grafana/userinfo/"
+            auth_url: https://authentik.vaclab.diarra.tech/application/o/authorize/
+            token_url: https://authentik.vaclab.diarra.tech/application/o/token/
+            api_url: https://authentik.vaclab.diarra.tech/application/o/userinfo/
+            role_attribute_path: contains(groups, 'admins') && 'Admin' || 'Editor'
         extraSecretMounts:
           - name: authentik-oidc
             secretName: grafana-authentik-oidc

@@ -2,7 +2,7 @@ defaultNamespace: victorialogs
 dependsOn: 
   - name: vaclab-2-fleet-longhorn
   - name: vaclab-2-fleet-storage
-  - name: vaclab-2-fleet-cert-issuers
+  #- name: vaclab-2-fleet-cert-issuers
 
 helm:
   repo: https://victoriametrics.github.io/helm-charts/

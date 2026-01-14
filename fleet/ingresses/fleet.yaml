@@ -1,7 +1,7 @@
 defaultNamespace: kube-system
 dependsOn:
-  - name: vaclab-2-fleet-cert-manager
-  - name: vaclab-2-fleet-cert-issuers
+  #- name: vaclab-2-fleet-cert-manager
+  #- name: vaclab-2-fleet-cert-issuers
   - name: vaclab-2-fleet-traefik-middlewares
-  - name: vaclab-2-fleet-longhorn
+  #- name: vaclab-2-fleet-longhorn
 

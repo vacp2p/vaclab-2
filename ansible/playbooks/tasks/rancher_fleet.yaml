@@ -35,6 +35,11 @@
       kind: ClusterIssuer
       metadata:
         name: letsencrypt-prod
+        labels:
+          app.kubernetes.io/managed-by: Helm
+        annotations:
+          meta.helm.sh/release-name: vaclab-2-fleet-cert-issuers
+          meta.helm.sh/release-namespace: default
       spec:
         acme:
           email: mamoutou@status.im
@@ -55,6 +60,11 @@
       kind: ClusterIssuer
       metadata:
         name: letsencrypt-staging
+        labels:
+          app.kubernetes.io/managed-by: Helm
+        annotations:
+          meta.helm.sh/release-name: vaclab-2-fleet-cert-issuers
+          meta.helm.sh/release-namespace: default
       spec:
         acme:
           email: mamoutou@status.im
@@ -113,7 +123,7 @@
   command: kubectl wait --for=condition=ready pod -l app=rancher -n cattle-system --timeout=600s
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  retries: 5
+  retries: 10
   delay: 30
 
 # Wait for Fleet (installed by Rancher) to be ready
@@ -123,8 +133,8 @@
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   register: fleet_namespace
   until: fleet_namespace.rc == 0
-  retries: 30
-  delay: 10
+  retries: 10
+  delay: 30
 
 - name: Wait for Fleet controller deployment to exist
   command: kubectl get deployment fleet-controller -n cattle-fleet-system
@@ -132,15 +142,15 @@
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   register: fleet_deployment
   until: fleet_deployment.rc == 0
-  retries: 30
-  delay: 10
+  retries: 10
+  delay: 30
 
 - name: Wait for Fleet controller to be ready
   command: kubectl wait --for=condition=available deployment/fleet-controller -n cattle-fleet-system --timeout=300s
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  retries: 3
-  delay: 10
+  retries: 10
+  delay: 30
 
 - name: Set Fleet cluster label to local
   command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=local --overwrite

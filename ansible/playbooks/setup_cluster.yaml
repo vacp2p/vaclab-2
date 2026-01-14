@@ -72,11 +72,11 @@
       debug:
         var: nodes_status.stdout_lines
 
-- name: Install Rancher Fleet
+- name: Install Rancher and Fleet
   hosts: server
   run_once: true
   tasks:
-    - name: Import Rancher Fleet installation tasks
+    - name: Import Rancher and Fleet installation tasks
       ansible.builtin.import_tasks: tasks/rancher_fleet.yaml
 
 - name: Display Rancher Bootstrap Password
