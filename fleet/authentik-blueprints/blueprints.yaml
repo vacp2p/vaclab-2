@@ -64,29 +64,11 @@ data:
     metadata:
       name: k8s-outpost
     entries:
+      # Assign the k8s-forwardauth provider to the embedded outpost
       - model: authentik_outposts.outpost
         identifiers:
-          name: "k8s-outpost"
+          name: "authentik Embedded Outpost"
         attrs:
-          name: "k8s-outpost"
-          type: proxy
-          config:
-            authentik_host: "https://authentik.vaclab.diarra.tech"
-            kubernetes_replicas: 1
-            kubernetes_namespace: "authentik"
-            kubernetes_ingress_annotations:
-              traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-            kubernetes_ingress_secret_name: "authentik-outpost-tls"
-            kubernetes_service_type: "ClusterIP"
-            kubernetes_disabled_components: []
-            kubernetes_json_patches:
-              deployment:
-                - op: add
-                  path: /spec/template/spec/containers/0/env/-
-                  value:
-                    name: AUTHENTIK_HOST_BROWSER
-                    value: "https://authentik.vaclab.diarra.tech"
-            log_level: "info"
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, "k8s-forwardauth"]]
 
