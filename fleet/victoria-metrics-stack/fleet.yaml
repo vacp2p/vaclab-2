@@ -793,6 +793,7 @@ helm:
             auth_url: https://authentik.vaclab.diarra.tech/application/o/authorize/
             token_url: https://authentik.vaclab.diarra.tech/application/o/token/
             api_url: https://authentik.vaclab.diarra.tech/application/o/userinfo/
+            tls_skip_verify_insecure: true
             use_pkce: true
             login_attribute_path: email
             email_attribute_path: email
