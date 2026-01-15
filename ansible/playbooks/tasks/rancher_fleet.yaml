@@ -95,6 +95,7 @@
       hostname: rancher.vaclab.diarra.tech
       bootstrapPassword: ""
       replicas: 1
+      privateCA: true
       extraEnv:
         - name: CATTLE_UI_BRAND
           value: "vaclab"
