@@ -29,6 +29,17 @@ spec:
                 secretKeyRef:
                   name: authentik-outpost-token
                   key: token
+            - name: AUTHENTIK_POSTGRESQL__HOST
+              value: "authentik-postgresql-0.authentik-postgresql-hl.authentik.svc.cluster.local"
+            - name: AUTHENTIK_POSTGRESQL__NAME
+              value: "authentik"
+            - name: AUTHENTIK_POSTGRESQL__USER
+              value: "authentik"
+            - name: AUTHENTIK_POSTGRESQL__PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-postgresql
+                  key: password
           ports:
             - name: http
               containerPort: 9000
