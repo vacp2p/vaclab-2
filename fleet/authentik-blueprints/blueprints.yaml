@@ -79,17 +79,13 @@ data:
             kubernetes_ingress_secret_name: "authentik-outpost-tls"
             kubernetes_service_type: "ClusterIP"
             kubernetes_disabled_components: []
-            kubernetes_json_patches: |
-              [
-                {
-                  "op": "add",
-                  "path": "/spec/template/spec/containers/0/env/-",
-                  "value": {
-                    "name": "AUTHENTIK_HOST_BROWSER",
-                    "value": "https://authentik.vaclab.diarra.tech"
-                  }
-                }
-              ]
+            kubernetes_json_patches:
+              deployment:
+                - op: add
+                  path: /spec/template/spec/containers/0/env/-
+                  value:
+                    name: AUTHENTIK_HOST_BROWSER
+                    value: "https://authentik.vaclab.diarra.tech"
             log_level: "info"
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, "k8s-forwardauth"]]
