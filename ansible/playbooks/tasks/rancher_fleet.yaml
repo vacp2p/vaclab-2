@@ -106,6 +106,10 @@
           value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
         - name: CATTLE_UI_LOGO_DARK
           value: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components/extras/vac-logo-light-no-bg.png"
+        - name: CATTLE_TLS_MIN_VERSION
+          value: "1.0"
+        - name: HTTP_PROXY_TLS_SKIP_VERIFY
+          value: "true"
       ingress:
         enabled: true
         tls:
