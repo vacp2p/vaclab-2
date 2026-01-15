@@ -793,7 +793,13 @@ helm:
             auth_url: https://authentik.vaclab.diarra.tech/application/o/authorize/
             token_url: https://authentik.vaclab.diarra.tech/application/o/token/
             api_url: https://authentik.vaclab.diarra.tech/application/o/userinfo/
-            role_attribute_path: contains(groups, 'admins') && 'Admin' || 'Editor'
+            use_pkce: true
+            login_attribute_path: email
+            email_attribute_path: email
+            name_attribute_path: name
+            groups_attribute_path: groups
+            role_attribute_path: contains(groups, 'authentik Admins') && 'Admin' || 'Editor'
+            sign_out_redirect_url: https://authentik.vaclab.diarra.tech/application/o/grafana/end-session/
         extraSecretMounts:
           - name: authentik-oidc
             secretName: grafana-authentik-oidc

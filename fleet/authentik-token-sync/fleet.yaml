@@ -1,0 +1,5 @@
+defaultNamespace: authentik
+
+dependsOn:
+  - name: vaclab-2-fleet-authentik-blueprints
+  - name: vaclab-2-fleet-authentik

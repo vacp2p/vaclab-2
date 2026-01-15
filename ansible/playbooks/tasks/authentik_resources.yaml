@@ -110,3 +110,43 @@
       stringData:
         client_id: "{{ grafana_oidc_client_id }}"
         client_secret: "{{ grafana_oidc_client_secret }}"
+
+- name: Ensure cattle-system namespace exists
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cattle-system
+
+- name: Create Rancher OIDC secret (authentik namespace)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: rancher-authentik-oidc
+        namespace: authentik
+      type: Opaque
+      stringData:
+        client_id: "{{ rancher_oidc_client_id }}"
+        client_secret: "{{ rancher_oidc_client_secret }}"
+
+- name: Create Rancher OIDC secret (cattle-system namespace)
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: rancher-oidc-credentials
+        namespace: cattle-system
+      type: Opaque
+      stringData:
+        client-id: "{{ rancher_oidc_client_id }}"
+        client-secret: "{{ rancher_oidc_client_secret }}"

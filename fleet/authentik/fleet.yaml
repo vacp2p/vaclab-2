@@ -106,6 +106,17 @@ helm:
               name: grafana-authentik-oidc
               key: client_secret
 
+        - name: RANCHER_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: rancher-authentik-oidc
+              key: client_id
+        - name: RANCHER_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: rancher-authentik-oidc
+              key: client_secret
+
     server:
       replicas: 2
       ingress:

@@ -1,4 +1,5 @@
 dependsOn:
   - name: vaclab-2-fleet-authentik
+  - name: vaclab-2-fleet-authentik-token-sync
 
 defaultNamespace: authentik
