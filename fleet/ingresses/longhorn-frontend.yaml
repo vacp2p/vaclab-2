@@ -5,7 +5,7 @@ metadata:
   namespace: longhorn-system
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-staging
     # Homepage self-discovery annotations
     #gethomepage.dev/enabled: "true"
     #gethomepage.dev/name: "Longhorn"

@@ -228,7 +228,7 @@ helm:
         tag: ""
       ingress:
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
+          cert-manager.io/cluster-issuer: letsencrypt-staging
           kubernetes.io/tls-acme: "true"
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
           # Homepage self-discovery annotations
