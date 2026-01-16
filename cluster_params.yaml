@@ -1,0 +1,67 @@
+# Domain Configuration
+domain_dev: vaclab.diarra.tech
+domain_prod: lab.vac.dev
+
+# Certificate Issuers
+cert_issuer_dev: letsencrypt-staging
+cert_issuer_prod: letsencrypt-prod
+rancher_cert_environment_dev: staging
+rancher_cert_environment_prod: production
+
+# Cluster Configuration
+cluster_name_dev: vaclab
+cluster_name_prod: vaclab
+
+# Victoria Metrics Stack - Storage
+vmselect_storage_dev: 5Gi
+vmselect_storage_prod: 20Gi
+vmstorage_storage_dev: 5Gi
+vmstorage_storage_prod: 300Gi
+grafana_storage_dev: 5Gi
+grafana_storage_prod: 300Gi
+
+# Victoria Metrics Stack - CPU Limits
+vmselect_cpu_limit_dev: "4"
+vmselect_cpu_limit_prod: "8"
+vminsert_cpu_limit_dev: "4"
+vminsert_cpu_limit_prod: "8"
+vmstorage_cpu_limit_dev: "4"
+vmstorage_cpu_limit_prod: "8"
+
+# Victoria Metrics Stack - Retention
+vm_retention_period_dev: "3"
+vm_retention_period_prod: "3"
+
+# Victoria Logs Cluster - Storage
+vlstorage_storage_dev: 1Gi
+vlstorage_storage_prod: 300Gi
+
+# Authentik - Storage
+authentik_postgres_storage_dev: 2Gi
+authentik_postgres_storage_prod: 20Gi
+
+# Authentik - Replicas
+authentik_server_replicas_dev: 2
+authentik_server_replicas_prod: 2
+authentik_outpost_replicas_dev: 1
+authentik_outpost_replicas_prod: 1
+
+# Longhorn Storage Class
+longhorn_replicas_dev: "2"
+longhorn_replicas_prod: "2"
+
+# Homepage
+homepage_replicas_dev: 1
+homepage_replicas_prod: 1
+
+# Kube-OVN (OVS-OVN) - CPU
+ovs_ovn_cpu_limit_dev: "2"
+ovs_ovn_cpu_limit_prod: "8"
+ovs_ovn_cpu_request_dev: "200m"
+ovs_ovn_cpu_request_prod: "2"
+
+# Kube-OVN (OVS-OVN) - Memory
+ovs_ovn_memory_limit_dev: "1000Mi"
+ovs_ovn_memory_limit_prod: "4Gi"
+ovs_ovn_memory_request_dev: "200Mi"
+ovs_ovn_memory_request_prod: "1Gi"
