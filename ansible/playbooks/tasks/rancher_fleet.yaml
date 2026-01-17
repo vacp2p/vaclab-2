@@ -98,6 +98,11 @@
     dest: /tmp/letsencrypt-stg-root-x1.pem
     mode: '0644'
 
+- name: Read CA certificate from remote host
+  slurp:
+    src: /tmp/letsencrypt-stg-root-x1.pem
+  register: ca_cert_content
+
 - name: Create tls-ca-additional secret for OIDC trust
   kubernetes.core.k8s:
     state: present
@@ -109,7 +114,7 @@
         namespace: cattle-system
       type: Opaque
       data:
-        ca-additional.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
+        ca-additional.pem: "{{ ca_cert_content.content }}"
 
 - name: Install Rancher
   kubernetes.core.helm:
