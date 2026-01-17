@@ -98,6 +98,19 @@
     dest: /tmp/letsencrypt-stg-root-x1.pem
     mode: '0644'
 
+- name: Create tls-ca-additional secret for OIDC trust
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-ca-additional
+        namespace: cattle-system
+      type: Opaque
+      data:
+        ca-additional.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
+
 - name: Install Rancher
   kubernetes.core.helm:
     name: rancher
@@ -146,29 +159,6 @@
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   retries: 10
   delay: 30
-
-- name: Create tls-ca-additional secret for OIDC trust
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: tls-ca-additional
-        namespace: cattle-system
-      type: Opaque
-      data:
-        ca-additional.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
-
-- name: Restart Rancher to pick up additional CA
-  command: kubectl rollout restart deployment rancher -n cattle-system
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-
-- name: Wait for Rancher to be ready after CA configuration
-  command: kubectl wait --for=condition=available deployment/rancher -n cattle-system --timeout=300s
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 # Wait for Fleet (installed by Rancher) to be ready
 - name: Wait for Fleet namespace to be created
