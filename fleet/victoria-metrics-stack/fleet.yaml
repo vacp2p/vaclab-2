@@ -645,7 +645,7 @@ helm:
                   target_label: __address__
                   replacement: '$1:8008'
                 - source_labels: [__meta_kubernetes_namespace]
-                  regex: 'kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default'
+                  regex: 'kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics'
                   action: drop
               metric_relabel_configs:
                 - source_labels: [__name__]
@@ -924,10 +924,10 @@ helm:
                 metricRelabelConfigs:
                   - action: labeldrop
                     regex: (uid|container_id|image_id)
-                  # drop metrics from kube-system, default, kube-public, kube-node-lease, vmetrics and victorialogs namespaces
+                  # drop metrics from system namespaces
                   - action: drop
                     source_labels: [namespace]
-                    regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                    regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
             jobLabel: app.kubernetes.io/name
 
       # -- Component scraping the kubelets
@@ -942,7 +942,7 @@ helm:
               metricRelabelConfigs:
                 - action: drop
                   source_labels: [namespace]
-                  regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
           # -- Enable scraping /metrics/probes from kubelet's service
           probes:
             enabled: true
@@ -951,7 +951,7 @@ helm:
               metricRelabelConfigs:
                 - action: drop
                   source_labels: [namespace]
-                  regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
           # -- Enabled scraping /metrics/resource from kubelet's service
           resources:
             enabled: true
@@ -960,7 +960,7 @@ helm:
               metricRelabelConfigs:
                 - action: drop
                   source_labels: [namespace]
-                  regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
           kubelet:
             spec: {}
         # -- Spec for VMNodeScrape CRD is [here](https://docs.victoriametrics.com/operator/api/#vmnodescrapespec)
@@ -986,7 +986,7 @@ helm:
                 regex: (rest_client_request_duration_seconds_bucket|rest_client_request_duration_seconds_sum|rest_client_request_duration_seconds_count)
               - action: drop
                 source_labels: [namespace]
-                regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
               # Add this to bypass image != "" filter in grafana dashboards in case runtime is Docker
               #- action: replace
               #  sourceLabels: [container]
@@ -1000,10 +1000,10 @@ helm:
                 targetLabel: metrics_path
               - targetLabel: job
                 replacement: kubelet
-              # drop metrics from kube-system, default, kube-public, kube-node-lease, vmetrics and victorialogs namespaces
+              # drop metrics from system namespaces
               - action: drop
                 source_labels: [namespace]
-                regex: "kube-system|default|kube-public|kube-node-lease|vmetrics|victorialogs|cattle-system|cattle-fleet-system|longhorn-system|cert-manager|fleet-local|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default"
+                regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|victorialogs|vmetrics"
             # ignore timestamps of cadvisor's metrics by default
             # more info here https://github.com/VictoriaMetrics/VictoriaMetrics/issues/4697#issuecomment-1656540535
             honorTimestamps: false

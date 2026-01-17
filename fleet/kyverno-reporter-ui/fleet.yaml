@@ -1,0 +1,36 @@
+defaultNamespace: policy-reporter
+dependsOn:
+  - name: vaclab-2-fleet-kyverno
+
+helm:
+  repo: https://kyverno.github.io/policy-reporter
+  chart: policy-reporter
+  version: 3.7.1
+  releaseName: policy-reporter
+  takeOwnership: true
+  values:
+    ui:
+      enabled: true
+      ingress:
+        enabled: true
+        className: "traefik"
+        annotations:
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
+          cert-manager.io/cluster-issuer: letsencrypt-staging
+          # Homepage self-discovery annotations
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Policy Reporter"
+          gethomepage.dev/description: "Unified Policy Observability"
+          gethomepage.dev/group: "Observability"
+          gethomepage.dev/icon: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components_part_2/extras/kyverno-icon.png"
+        hosts:
+          - host: kyverno.vaclab.diarra.tech
+            paths:
+              - path: /
+                pathType: ImplementationSpecific
+        tls: 
+          - secretName: kyverno-reporter-tls
+            hosts:
+              - kyverno.vaclab.diarra.tech
+              
+    
