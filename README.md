@@ -176,7 +176,7 @@ kubectl -n cattle-fleet-system get pods
 ```bash
 # Check if provider is assigned to outpost
 kubectl -n authentik exec authentik-postgresql-0 -- \
-  env PGPASSWORD=vaclab psql -U authentik -d authentik \
+  env PGPASSWORD=<POSTGRE_PASSWORD> psql -U authentik -d authentik \
   -c "SELECT o.name, p.name as provider FROM authentik_outposts_outpost o \
       JOIN authentik_outposts_outpost_providers op ON o.uuid = op.outpost_id \
       JOIN authentik_core_provider p ON op.provider_id = p.id;"
