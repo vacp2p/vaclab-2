@@ -16,7 +16,7 @@ helm:
         className: "traefik"
         annotations:
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
-          cert-manager.io/cluster-issuer: letsencrypt-staging
+          cert-manager.io/cluster-issuer: letsencrypt-prod
           # Homepage self-discovery annotations
           gethomepage.dev/enabled: "true"
           gethomepage.dev/name: "Policy Reporter"

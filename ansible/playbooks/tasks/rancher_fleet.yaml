@@ -154,7 +154,7 @@
         email: mamoutou@status.im
         ingress:
           class: traefik
-        environment: staging
+        environment: production #staging
       certmanager:
         install: false
 
