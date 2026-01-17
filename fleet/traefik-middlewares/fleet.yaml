@@ -1,2 +1,3 @@
 
 # This will be deployed by Fleet when the vaclab-2 GitRepo is synced
+defaultNamespace: default

@@ -1,4 +1,4 @@
-name: Switch to Production Certificates
+name: Deploy to Production
 
 on:
   pull_request:
@@ -17,13 +17,44 @@ jobs:
         with:
           ref: main
           
-      - name: Switch certificates to production
+      - name: Install yq
         run: |
-          # Update Rancher to use production Let's Encrypt
-          sed -i 's/environment: staging/environment: production/g' fleet/rancher/install.yaml
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
           
-          # Update Hubble ingress to use production issuer
-          sed -i 's/letsencrypt-staging/letsencrypt-prod/g' fleet/ingresses/hubble.yaml
+      - name: Load cluster parameters
+        id: params
+        run: |
+          # Load domain and certificate parameters using yq
+          echo "domain_dev=$(yq '.domain_dev' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          echo "domain_prod=$(yq '.domain_prod' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          echo "cert_issuer_dev=$(yq '.cert_issuer_dev' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          echo "cert_issuer_prod=$(yq '.cert_issuer_prod' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          echo "rancher_cert_env_dev=$(yq '.rancher_cert_environment_dev' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          echo "rancher_cert_env_prod=$(yq '.rancher_cert_environment_prod' cluster_params.yaml)" >> $GITHUB_OUTPUT
+          
+      - name: Replace domain names
+        run: |
+          # Replace all occurrences of dev domain with prod domain
+          find fleet/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.domain_dev }}/${{ steps.params.outputs.domain_prod }}/g' {} +
+          find ansible/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.domain_dev }}/${{ steps.params.outputs.domain_prod }}/g' {} +
+          
+      - name: Replace certificate issuers
+        run: |
+          # Replace cert-manager issuers
+          find fleet/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.cert_issuer_dev }}/${{ steps.params.outputs.cert_issuer_prod }}/g' {} +
+          
+          # Replace Rancher certificate environment
+          find fleet/rancher/ -type f -name "*.yaml" -exec sed -i 's/environment: ${{ steps.params.outputs.rancher_cert_env_dev }}/environment: ${{ steps.params.outputs.rancher_cert_env_prod }}/g' {} +
+          find ansible/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.rancher_cert_env_dev }}/${{ steps.params.outputs.rancher_cert_env_prod }}/g' {} +
+          
+      - name: Verify changes
+        run: |
+          echo "=== Modified files ==="
+          git diff --name-only
+          echo ""
+          echo "=== Summary of changes ==="
+          git diff --stat
           
       - name: Commit and push changes
         run: |
@@ -35,6 +66,12 @@ jobs:
             exit 0
           fi
           
-          git add fleet/rancher/install.yaml fleet/ingresses/hubble.yaml
-          git commit -m "chore: switch to production Let's Encrypt certificates [skip ci]"
+          git add fleet/ ansible/ || true
+          git commit -m "chore: apply production configuration
+          
+          - Switch domains from ${{ steps.params.outputs.domain_dev }} to ${{ steps.params.outputs.domain_prod }}
+          - Update certificates to production Let's Encrypt
+          
+          [skip ci]" || true
+          
           git push

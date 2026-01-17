@@ -1,0 +1,125 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: authentik-outpost-token-sync
+  namespace: authentik
+spec:
+  schedule: "*/2 * * * *"  # Every 2 minutes
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: authentik-outpost-token-sync
+          restartPolicy: OnFailure
+          initContainers:
+            - name: query-token
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  
+                  # Get PostgreSQL password
+                  PG_PASSWORD=$(cat /run/secrets/postgresql/password)
+                  
+                  # Query for the k8s-outpost token
+                  TOKEN=$(PGPASSWORD="$PG_PASSWORD" psql -h authentik-postgresql -U authentik -d authentik -t -c \
+                    "SELECT key FROM authentik_core_token WHERE identifier LIKE 'ak-outpost-%' AND identifier LIKE '%-api' LIMIT 1;" | tr -d ' \n')
+                  
+                  if [ -z "$TOKEN" ]; then
+                    echo "Error: No token found for k8s-outpost"
+                    exit 1
+                  fi
+                  
+                  echo "Token retrieved successfully"
+                  
+                  # Write token to shared volume
+                  echo -n "$TOKEN" > /tmp/token/token
+              volumeMounts:
+                - name: postgresql-password
+                  mountPath: /run/secrets/postgresql
+                  readOnly: true
+                - name: token-volume
+                  mountPath: /tmp/token
+          containers:
+            - name: update-secret
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -e
+                  
+                  TOKEN=$(cat /tmp/token/token)
+                  
+                  # Get current token from secret if it exists
+                  CURRENT_TOKEN=$(kubectl get secret authentik-outpost-token -n authentik -o jsonpath='{.data.token}' 2>/dev/null | base64 -d || echo "")
+                  
+                  # Check if token changed
+                  if [ "$TOKEN" != "$CURRENT_TOKEN" ]; then
+                    echo "Token changed, updating secret..."
+                    
+                    # Create or update the secret
+                    kubectl create secret generic authentik-outpost-token \
+                      --namespace=authentik \
+                      --from-literal=token="$TOKEN" \
+                      --dry-run=client -o yaml | kubectl apply -f -
+                    
+                    echo "Secret authentik-outpost-token updated successfully"
+                    
+                    # Restart the outpost deployment to pick up the new token
+                    if kubectl get deployment authentik-outpost -n authentik >/dev/null 2>&1; then
+                      kubectl rollout restart deployment/authentik-outpost -n authentik
+                      echo "Outpost deployment restarted to pick up new token"
+                    else
+                      echo "Outpost deployment not found, skipping restart"
+                    fi
+                  else
+                    echo "Token unchanged, no action needed"
+                  fi
+              volumeMounts:
+                - name: token-volume
+                  mountPath: /tmp/token
+                  readOnly: true
+          volumes:
+            - name: postgresql-password
+              secret:
+                secretName: authentik-postgresql
+            - name: token-volume
+              emptyDir: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: authentik-outpost-token-sync
+  namespace: authentik
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: authentik-outpost-token-sync
+  namespace: authentik
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "update", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: authentik-outpost-token-sync
+  namespace: authentik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: authentik-outpost-token-sync
+subjects:
+  - kind: ServiceAccount
+    name: authentik-outpost-token-sync
+    namespace: authentik

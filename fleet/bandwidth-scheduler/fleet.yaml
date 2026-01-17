@@ -1,0 +1,61 @@
+dependsOn:
+  - name: vaclab-2-fleet-bandwidth-operator
+defaultNamespace: kube-system
+
+helm:
+  repo: https://vacp2p.github.io/vaclab-k8s-plugins/charts
+  chart: vaclab-scheduler
+  version: 0.30.7
+  releaseName: vaclab-scheduler
+  takeOwnership: true
+
+  values:
+    scheduler:
+      name: vaclab-scheduler
+      image: katakuri100/vaclab-scheduler:v0.30.6-1
+      command:
+      - /bin/kube-scheduler
+      replicaCount: 1
+      leaderElect: true
+      priorityClassName: ""
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []
+
+    controller:
+      name: vaclab-scheduler-controller
+      image: katakuri100/vaclab-scheduler-controller:v0.30.6-1
+      replicaCount: 1
+      leaderElect: false
+      priorityClassName: ""
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []
+    plugins:
+      enabled: ["VaclabScheduling"]
+      disabled: []
+      scoreWeight: 100
+    pluginConfig:
+    - name: VaclabScheduling
+      args:
+        apiVersion: kubescheduler.config.k8s.io/v1
+        kind: VaclabSchedulingArgs
+        egressBandwidthAnnotation: ovn.kubernetes.io/egress_rate
+        ingressBandwidthAnnotation: ovn.kubernetes.io/ingress_rate
+        defaultEgressMbps: 20
+        defaultIngressMbps: 20
+

@@ -1,0 +1,125 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-default-resources
+  annotations:
+    policies.kyverno.io/title: Add default resource requests and limits
+    policies.kyverno.io/description: >-
+      Sets default bandwidth annotations (20M), CPU and memory requests and limits (0.25, 100M) for workloads using
+      the vaclab-scheduler if not already present.
+spec:
+  # background: true allows mutating existing resources already in the cluster
+  background: true
+  rules:
+    - name: mutate-vaclab-pods-bandwidth-annotations
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      # Exclude specific namespaces
+      exclude:
+        any:
+        - resources:
+            namespaces:
+              - kube-system
+              - kyverno
+              - homepage
+              - authentik
+              - vaclab-system
+              - cert-manager
+              - cattle-capi-system                       
+              - cattle-fleet-clusters-system             
+              - cattle-fleet-local-system                
+              - cattle-fleet-system                      
+              - cattle-global-data                       
+              - cattle-impersonation-system              
+              - cattle-local-user-passwords              
+              - cattle-system                            
+              - cattle-turtles-system                    
+              - cattle-ui-plugin-system                                              
+              - cilium-secrets                                                                                                
+              - fleet-default                            
+              - fleet-local                                                             
+              - kube-node-lease                          
+              - kube-public                                                          
+              - local                                    
+              - longhorn-system                                                      
+              - vaclab-system                            
+              - victorialogs                             
+              - vmetrics
+              - policy-reporter  
+      preconditions:
+        all:
+        - key: "{{ request.object.spec.schedulerName || '' }}"
+          operator: Equals
+          value: vaclab-scheduler
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              # The +(key) syntax means "add if not present"
+              +(ovn.kubernetes.io/ingress_rate): "20"
+              +(ovn.kubernetes.io/egress_rate): "20"
+    
+    - name: mutate-vaclab-pods-cpu-memory-requests
+      match:
+        any:
+        - resources:
+            kinds:
+              - Pod
+      # Exclude specific namespaces
+      exclude:
+        any:
+        - resources:
+            namespaces:
+              - kube-system
+              - kyverno
+              - homepage
+              - authentik
+              - vaclab-system
+              - cert-manager
+              - cattle-capi-system                       
+              - cattle-fleet-clusters-system             
+              - cattle-fleet-local-system                
+              - cattle-fleet-system                      
+              - cattle-global-data                       
+              - cattle-impersonation-system              
+              - cattle-local-user-passwords              
+              - cattle-system                            
+              - cattle-turtles-system                    
+              - cattle-ui-plugin-system                                              
+              - cilium-secrets                                                                                                
+              - fleet-default                            
+              - fleet-local                                                             
+              - kube-node-lease                          
+              - kube-public                                                          
+              - local                                    
+              - longhorn-system                                                      
+              - vaclab-system                            
+              - victorialogs                             
+              - vmetrics
+              - policy-reporter  
+      preconditions:
+        all:
+        - key: "{{ request.object.spec.schedulerName || '' }}"
+          operator: Equals
+          value: vaclab-scheduler
+      mutate:
+        patchStrategicMerge:
+          spec:
+            containers:
+              - name: "*"
+                resources:
+                  requests:
+                    # CPU request
+                    +(cpu): "0.25"
+                    # Memory request
+                    +(memory): "100Mi"
+                  limits:
+                    # CPU limit
+                    +(cpu): "0.25"
+                    # Memory limit
+                    +(memory): "100Mi"
+                    # The +(key) syntax means "add if not present"
+                  
