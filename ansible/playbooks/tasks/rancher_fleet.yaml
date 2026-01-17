@@ -83,6 +83,34 @@
     repo_url: https://releases.rancher.com/server-charts/stable
     state: present
 
+- name: Create cattle-system namespace
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cattle-system
+
+- name: Download Let's Encrypt Staging CA certificate
+  get_url:
+    url: https://letsencrypt.org/certs/staging/letsencrypt-stg-root-x1.pem
+    dest: /tmp/letsencrypt-stg-root-x1.pem
+    mode: '0644'
+
+- name: Create tls-ca secret for Let's Encrypt Staging
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-ca
+        namespace: cattle-system
+      type: Opaque
+      data:
+        cacerts.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
+
 - name: Install Rancher
   kubernetes.core.helm:
     name: rancher
@@ -91,6 +119,7 @@
     release_namespace: cattle-system
     create_namespace: true
     wait: true
+    wait_timeout: 15m
     values:
       hostname: rancher.vaclab.diarra.tech
       bootstrapPassword: ""
