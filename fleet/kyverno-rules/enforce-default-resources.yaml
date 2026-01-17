@@ -47,7 +47,8 @@ spec:
               - longhorn-system                                                      
               - vaclab-system                            
               - victorialogs                             
-              - vmetrics  
+              - vmetrics
+              - policy-reporter  
       preconditions:
         all:
         - key: "{{ request.object.spec.schedulerName || '' }}"
@@ -97,7 +98,8 @@ spec:
               - longhorn-system                                                      
               - vaclab-system                            
               - victorialogs                             
-              - vmetrics  
+              - vmetrics
+              - policy-reporter  
       preconditions:
         all:
         - key: "{{ request.object.spec.schedulerName || '' }}"

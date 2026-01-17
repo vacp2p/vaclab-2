@@ -23,7 +23,7 @@ spec:
             - name: AUTHENTIK_HOST_BROWSER
               value: "https://authentik.vaclab.diarra.tech"
             - name: AUTHENTIK_INSECURE
-              value: "true"  # Set to true for Let's Encrypt staging certificates
+              value: "false"  # Set to false for Let's Encrypt production certificates
             - name: AUTHENTIK_TOKEN
               valueFrom:
                 secretKeyRef:

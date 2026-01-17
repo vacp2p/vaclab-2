@@ -113,7 +113,7 @@ Deploy the complete cluster with a single command:
 
 ```bash
 cd ansible
-ansible-playbook -i inventory.yaml playbooks/setup_cluster.yaml
+ansible-playbook -i inventory.yaml playbooks/setup_cluster.yaml --vault-password-file ../.vault_pass.txt
 ```
 
 This will:
@@ -153,5 +153,53 @@ ansible-playbook -i inventory.yaml playbooks/setup_cluster.yaml --tags fleet
 ```bash
 kubectl -n fleet-local get gitrepo
 kubectl -n cattle-fleet-system get pods
+```
+
+---
+
+## Known Issues
+
+### Authentik Outpost Provider Assignment Failure
+
+**Symptom**: After deploying Authentik, accessing protected services (like Longhorn) returns an error:
+```json
+{
+  "Message": "no app for hostname",
+  "Host": "longhorn.vaclab.diarra.tech",
+  "Detail": "Check the outpost settings..."
+}
+```
+
+**Root Cause**: The `k8s-outpost` blueprint may fail to assign the `k8s-forwardauth` provider to the embedded outpost due to a timing/ordering issue during initial deployment.
+
+**Verification**:
+```bash
+# Check if provider is assigned to outpost
+kubectl -n authentik exec authentik-postgresql-0 -- \
+  env PGPASSWORD=vaclab psql -U authentik -d authentik \
+  -c "SELECT o.name, p.name as provider FROM authentik_outposts_outpost o \
+      JOIN authentik_outposts_outpost_providers op ON o.uuid = op.outpost_id \
+      JOIN authentik_core_provider p ON op.provider_id = p.id;"
+```
+
+If the query returns no results, the provider is not assigned.
+
+**Fix**:
+```bash
+# Manually apply the outpost blueprint
+kubectl exec -n authentik deployment/authentik-worker -- \
+  ak apply_blueprint /blueprints/mounted/cm-authentik-blueprints/20-outpost.yaml
+
+# Restart the outpost to pick up changes
+kubectl -n authentik rollout restart deployment/authentik-outpost
+```
+
+**Verification** (should return `authentik Embedded Outpost | k8s-forwardauth`):
+```bash
+kubectl -n authentik exec authentik-postgresql-0 -- \
+  env PGPASSWORD=vaclab psql -U authentik -d authentik \
+  -c "SELECT o.name, p.name as provider FROM authentik_outposts_outpost o \
+      JOIN authentik_outposts_outpost_providers op ON o.uuid = op.outpost_id \
+      JOIN authentik_core_provider p ON op.provider_id = p.id;"
 ```
 
