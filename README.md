@@ -26,11 +26,13 @@
 | Longhorn | ✅ OK | CSI - Distributed block storage |
 | Rancher UI | ✅ OK | Rancher management UI |
 | GetHomePage | ✅ OK | Home Page UI (App Launcher) for vaclab|
-| Authentik | 🚧 WIP | Identity & Access Management |
+| Authentik | ✅ OK | Identity & Access Management |
 | VictoriaMetrics K8s Stack | ✅ OK | VictoriaMetrics Helm charts, including Grafana |
 | VictoriaLogs Cluster | ✅ OK | VictoriaLogs Helm chart |
-| Kyverno | 🚧 WIP | Admission & mutation webhook manager |
-| Vaclab Bandwidth-Aware Scheduler | 🚧 WIP | Custom bandwidth-aware scheduler |
+| Kyverno | ✅ OK | Admission & mutation webhook manager |
+| Kyverno default resource request enforcement | ✅ OK |Injection of default resource requests when missing |
+| Kyverno Policy Reporter | ✅ OK | Policy Observability UI |
+| Vaclab Bandwidth-Aware Scheduler | ✅ OK | Custom bandwidth-aware scheduler |
 
 ---
 
