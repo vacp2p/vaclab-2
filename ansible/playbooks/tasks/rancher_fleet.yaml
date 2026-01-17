@@ -98,19 +98,6 @@
     dest: /tmp/letsencrypt-stg-root-x1.pem
     mode: '0644'
 
-- name: Create tls-ca secret for Let's Encrypt Staging
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: tls-ca
-        namespace: cattle-system
-      type: Opaque
-      data:
-        cacerts.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
-
 - name: Install Rancher
   kubernetes.core.helm:
     name: rancher
@@ -124,7 +111,7 @@
       hostname: rancher.vaclab.diarra.tech
       bootstrapPassword: ""
       replicas: 1
-      privateCA: true
+      additionalTrustedCAs: true
       extraEnv:
         - name: CATTLE_UI_BRAND
           value: "vaclab"
@@ -159,6 +146,24 @@
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   retries: 10
   delay: 30
+
+- name: Create tls-ca-additional secret for OIDC trust
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tls-ca-additional
+        namespace: cattle-system
+      type: Opaque
+      data:
+        ca-additional.pem: "{{ lookup('file', '/tmp/letsencrypt-stg-root-x1.pem') | b64encode }}"
+
+- name: Restart Rancher to pick up additional CA
+  command: kubectl rollout restart deployment rancher -n cattle-system
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
 # Add Let's Encrypt staging CA certificate for OIDC
 - name: Download Let's Encrypt staging CA certificate
