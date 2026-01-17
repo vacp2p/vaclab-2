@@ -3,7 +3,7 @@ defaultNamespace: vaclab-system
 helm:
   repo: https://vacp2p.github.io/vaclab-k8s-plugins/charts
   chart: vaclab-bandwidth-operator
-  version: 0.2.0
+  version: 0.2.1
   releaseName: vaclab-bandwidth-operator
   takeOwnership: true
 
