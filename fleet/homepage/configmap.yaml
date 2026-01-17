@@ -26,7 +26,7 @@ data:
     color: slate
     providers:
       longhorn:
-        url: https://longhorn.vaclab.diarra.tech
+        url: http://longhorn-frontend.longhorn-system.svc.cluster.local
   
   bookmarks.yaml: |
     - Documentation:
