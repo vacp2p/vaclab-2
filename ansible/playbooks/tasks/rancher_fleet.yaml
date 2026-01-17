@@ -165,31 +165,6 @@
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
 
-# Add Let's Encrypt staging CA certificate for OIDC
-- name: Download Let's Encrypt staging CA certificate
-  get_url:
-    url: https://letsencrypt.org/certs/staging/letsencrypt-stg-root-x1.pem
-    dest: /tmp/letsencrypt-staging-ca.pem
-    mode: '0644'
-
-- name: Create tls-ca secret with staging CA certificate
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      type: Opaque
-      metadata:
-        name: tls-ca
-        namespace: cattle-system
-      data:
-        cacerts.pem: "{{ lookup('file', '/tmp/letsencrypt-staging-ca.pem') | b64encode }}"
-
-- name: Restart Rancher to load CA certificate
-  command: kubectl rollout restart deployment/rancher -n cattle-system
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-
 - name: Wait for Rancher to be ready after CA configuration
   command: kubectl wait --for=condition=available deployment/rancher -n cattle-system --timeout=300s
   environment:
