@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: homepage
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-prod
     # Homepage self-discovery annotations
     #gethomepage.dev/enabled: "true"

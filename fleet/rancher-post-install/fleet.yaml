@@ -1,3 +1,1 @@
 defaultNamespace: fleet-local
-dependsOn:
-  - name: vaclab-2-fleet-rancher

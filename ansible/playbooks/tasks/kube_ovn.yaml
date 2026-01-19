@@ -106,6 +106,15 @@
       image:
         pullPolicy: IfNotPresent
       
+      # Resource limits for OVS-OVN
+      ovs-ovn:
+        requests:
+          cpu: "200m"
+          memory: "200Mi"
+        limits:
+          cpu: "2"
+          memory: "1000Mi"
+      
   when: kubeovn_installed.rc != 0
 
 - name: Wait for Kube-OVN pods to be ready

@@ -1,0 +1,54 @@
+defaultNamespace: vaclab-system
+
+helm:
+  repo: https://vacp2p.github.io/vaclab-k8s-plugins/charts
+  chart: vaclab-bandwidth-operator
+  version: 0.2.1
+  releaseName: vaclab-bandwidth-operator
+  takeOwnership: true
+
+  values:
+    manager:
+      bandwidth:
+        local:
+          uplink: 50000    # 50 Gbps
+          downlink: 50000  # 50 Gbps
+        network:
+          uplink: 40000     # 40 Gbps
+          downlink: 40000   # 40 Gbps
+      annotations:
+        egress: "ovn.kubernetes.io/egress_rate"
+        ingress: "ovn.kubernetes.io/ingress_rate"
+      leaderElection:
+        enabled: false
+      args: []
+      env: []
+      podSecurityContext:
+        runAsNonRoot: true
+        seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+            drop:
+                - ALL
+        readOnlyRootFilesystem: true
+      resources:
+        limits:
+            cpu: 500m
+            memory: 500Mi
+        requests:
+            cpu: 100m
+            memory: 64Mi
+    rbacHelpers:
+      enable: false  
+    crd:
+      enable: true 
+      keep: true    
+    metrics:
+      enable: true
+      port: 8443 
+    certManager:
+      enable: false
+    prometheus:
+      enable: false

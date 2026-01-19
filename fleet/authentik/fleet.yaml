@@ -1,0 +1,137 @@
+dependsOn:
+  - name: vaclab-2-fleet-storage
+  - name: vaclab-2-fleet-authentik-blueprints
+
+defaultNamespace: authentik
+
+helm:
+  repo: https://charts.goauthentik.io
+  chart: authentik
+  version: 2025.10.3
+  releaseName: authentik
+  takeOwnership: true
+
+  values:
+    authentik:
+      error_reporting:
+        enabled: true
+
+      postgresql:
+        name: authentik
+        user: authentik
+      secret_key: ""
+
+    # Built-in PostgreSQL
+    postgresql:
+      enabled: true
+      auth:
+        username: authentik
+        database: authentik
+        existingSecret: authentik-postgresql
+        secretKeys:
+          userPasswordKey: password
+          adminPasswordKey: postgres-password
+
+      primary:
+        persistence:
+          enabled: true
+          storageClass: longhorn-vaclab
+          size: 2Gi #set to 20Gi in production
+
+    redis:
+      enabled: true
+      global:
+        storageClass: longhorn-vaclab
+
+    global:
+      postgresql:
+        auth:
+          existingSecret: authentik-postgresql
+          secretKeys:
+            userPasswordKey: password
+            adminPasswordKey: postgres-password
+      env:
+        - name: AUTHENTIK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: authentik-bootstrap
+              key: secret_key
+
+        - name: AUTHENTIK_BOOTSTRAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-bootstrap
+              key: bootstrap_password
+
+        - name: AUTHENTIK_BOOTSTRAP_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: authentik-bootstrap
+              key: bootstrap_email
+
+        # PostgreSQL credentials
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-postgresql
+              key: password
+
+        # Blueprint env vars:
+        - name: GOOGLE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: google-oauth
+              key: client_id
+
+        - name: GOOGLE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: google-oauth
+              key: client_secret
+
+        - name: OUTPOST_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: authentik-outpost-token
+              key: token
+        
+        - name: GRAFANA_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: grafana-authentik-oidc
+              key: client_id
+        - name: GRAFANA_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: grafana-authentik-oidc
+              key: client_secret
+
+        - name: RANCHER_OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: rancher-authentik-oidc
+              key: client_id
+        - name: RANCHER_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: rancher-authentik-oidc
+              key: client_secret
+
+    server:
+      replicas: 2
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+        hosts:
+          - authentik.vaclab.diarra.tech
+        tls:
+          - hosts:
+              - authentik.vaclab.diarra.tech
+            secretName: authentik-tls-secret
+
+    blueprints:
+      enabled: true
+      configMaps:
+        - authentik-blueprints

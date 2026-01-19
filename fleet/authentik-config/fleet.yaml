@@ -1,0 +1,4 @@
+dependsOn:
+  - name: vaclab-2-fleet-authentik
+
+defaultNamespace: authentik

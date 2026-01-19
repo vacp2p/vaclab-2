@@ -1,0 +1,39 @@
+defaultNamespace: kyverno
+
+helm:
+  repo: https://kyverno.github.io/kyverno/
+  chart: kyverno
+  version: 3.6.2 
+  releaseName: kyverno
+  takeOwnership: true
+  values:
+    admissionController:
+      replicas: 2
+    backgroundController:
+      replicas: 2
+    cleanupController:
+      replicas: 2
+    reportsController:
+      replicas: 2
+    
+
+# Exclude Kyverno report resources from Fleet management
+diff:
+  comparePatches:
+    - apiVersion: kyverno.io/v1alpha2
+      kind: AdmissionReport
+      operations:
+        - {"op": "remove", "path": "/metadata/managedFields"}
+    - apiVersion: kyverno.io/v1alpha2
+      kind: BackgroundScanReport
+      operations:
+        - {"op": "remove", "path": "/metadata/managedFields"}
+    - apiVersion: kyverno.io/v1alpha2
+      kind: ClusterAdmissionReport
+      operations:
+        - {"op": "remove", "path": "/metadata/managedFields"}
+    - apiVersion: kyverno.io/v1alpha2
+      kind: ClusterBackgroundScanReport
+      operations:
+        - {"op": "remove", "path": "/metadata/managedFields"}
+  
