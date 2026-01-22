@@ -9,7 +9,7 @@ k3s_cluster:
         node-02.ih-eu-mda1.misc.vaclab.status.im:
         node-03.ih-eu-mda1.misc.vaclab.status.im:
         node-04.ih-eu-mda1.misc.vaclab.status.im:
-        metal-01.he-eu-hel1.misc.vacdst.status.im:
+        #metal-01.he-eu-hel1.misc.vacdst.status.im:
   # Required Vars
   vars:
     ansible_port: 22
