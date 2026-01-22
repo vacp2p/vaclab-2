@@ -1,0 +1,15 @@
+---
+# This task applies taints to nodes
+- name: Apply node taints
+  kubernetes.core.k8s_taint:
+    state: present
+    name: "{{ item.0.node }}"  # item.0 is the node dict
+    taints:
+      - effect: "{{ item.1.effect }}"  # item.1 is each individual taint
+        key: "{{ item.1.key }}"
+        value: "{{ item.1.value }}"
+  loop: "{{ node_taints | subelements('taints') }}"  # Creates pairs: (node, taint)
+  when: node_taints is defined
+  loop_control:
+    label: "{{ item.0.node }} - {{ item.1.key }}={{ item.1.value }}:{{ item.1.effect }}"
+

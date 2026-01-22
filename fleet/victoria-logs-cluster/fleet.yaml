@@ -159,11 +159,11 @@ helm:
       replicaCount: 2
       resources:
         limits:
-          cpu: "4" # set to 8 in prod
-          memory: 500Mi # set to 4000Mi in prod
+          cpu: "8" # set to 8 in prod
+          memory: 8Gi # set to 8Gi in prod
         requests:
-          cpu: "0.2"  # set to 2 in prod
-          memory: 100Mi
+          cpu: "2"  # set to 2 in prod
+          memory: 2Gi
       securityContext:
         enabled: true
         runAsGroup: 1000
@@ -241,7 +241,7 @@ helm:
         enabled: true
         extraLabels: {}
         hosts:
-        - name: vlselect.vaclab.diarra.tech
+        - name: vlselect.lab.vac.dev
           path:
           - /
           port: http
@@ -249,7 +249,7 @@ helm:
         pathType: Prefix
         tls:
         - hosts:
-          - vlselect.vaclab.diarra.tech
+          - vlselect.lab.vac.dev
           secretName: vlselect-ingress-tls
       initContainers: []
       lifecycle: {}
@@ -361,7 +361,7 @@ helm:
         labels: {}
         mountPath: /storage
         name: vlstorage-volume
-        size: 1Gi # set to 500Gi in prod
+        size: 500Gi # set to 500Gi in prod
         storageClassName: longhorn-vaclab
         subPath: ""
       podAnnotations: {}

@@ -19,9 +19,9 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: AUTHENTIK_HOST
-              value: "https://authentik.vaclab.diarra.tech"
+              value: "https://authentik.lab.vac.dev"
             - name: AUTHENTIK_HOST_BROWSER
-              value: "https://authentik.vaclab.diarra.tech"
+              value: "https://authentik.lab.vac.dev"
             - name: AUTHENTIK_INSECURE
               value: "false"  # Set to false for Let's Encrypt production certificates
             - name: AUTHENTIK_TOKEN

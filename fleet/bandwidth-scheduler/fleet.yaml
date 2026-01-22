@@ -20,11 +20,11 @@ helm:
       priorityClassName: ""
       resources:
         limits:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 4
+          memory: 4Gi
         requests:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 1
+          memory: 500Mi
       nodeSelector: {}
       affinity: {}
       tolerations: []
@@ -37,11 +37,11 @@ helm:
       priorityClassName: ""
       resources:
         limits:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 2
+          memory: 2Gi
         requests:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 1
+          memory: 500Mi
       nodeSelector: {}
       affinity: {}
       tolerations: []

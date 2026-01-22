@@ -103,7 +103,7 @@
           - "=============================================="
           - "Rancher Bootstrap Password"
           - "=============================================="
-          - "URL: https://rancher.vaclab.diarra.tech"
+          - "URL: https://rancher.lab.vac.dev"
           - "Username: admin"
           - "Password: {{ rancher_password }}"
           - "=============================================="
@@ -119,8 +119,14 @@
 - name: Create Authentik resources
   hosts: server
   run_once: true
-  vars_files:
-    - ../vars/vault.yaml
   tasks:
     - name: Import authentik resources tasks
       ansible.builtin.import_tasks: tasks/authentik_resources.yaml
+
+# It is better to apply taints manually later
+#- name: Apply node taints
+#  hosts: server
+#  run_once: true
+#  tasks:
+#    - name: Import node tainting tasks
+#      ansible.builtin.import_tasks: tasks/taint_nodes.yaml

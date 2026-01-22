@@ -126,8 +126,8 @@
     wait: true
     wait_timeout: 15m
     values:
-      hostname: rancher.vaclab.diarra.tech
-      bootstrapPassword: ""
+      hostname: rancher.lab.vac.dev
+      bootstrapPassword: "GTFv3hvPAmeMigJ2txHwtmytVe2RSqGi"
       replicas: 1
       additionalTrustedCAs: true
       extraEnv:
@@ -157,6 +157,13 @@
         environment: production #staging
       certmanager:
         install: false
+      resources:
+        limits:
+          cpu: 4
+          memory: 8Gi
+        requests:
+          cpu: 2
+          memory: 1Gi
 
 - name: Wait for Rancher to be ready
   command: kubectl wait --for=condition=ready pod -l app=rancher -n cattle-system --timeout=600s
@@ -213,8 +220,8 @@
               matchLabels:
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
-        branch: main
-        #branch: feat/add_lab_components_part_2
+        #branch: main
+        branch: feat/production_settings
         paths:
           - fleet
 

@@ -3,16 +3,18 @@ k3s_cluster:
   children:
     server:
       hosts:
-        192.168.200.10:
+        node-01.ih-eu-mda1.misc.vaclab.status.im:
     agent:
       hosts:
-        192.168.200.11:
-        #192.168.200.12:
-
+        node-02.ih-eu-mda1.misc.vaclab.status.im:
+        node-03.ih-eu-mda1.misc.vaclab.status.im:
+        node-04.ih-eu-mda1.misc.vaclab.status.im:
+        metal-01.he-eu-hel1.misc.vacdst.status.im:
   # Required Vars
   vars:
     ansible_port: 22
-    ansible_user: ubuntu
+    ansible_user: mamoutou
+    ansible_become_password: "{{ vault_become_password }}"
     k3s_version: v1.32.4+k3s1
     # The token should be a random string of reasonable length. You can generate
     # one with the following commands:
@@ -50,8 +52,8 @@ k3s_cluster:
     # registries_config_yaml:  |
     
     # Rancher and Authentik configuration
-    rancher_url: "https://rancher.vaclab.diarra.tech"
-    authentik_url: "https://authentik.vaclab.diarra.tech"
+    rancher_url: "https://rancher.lab.vac.dev"
+    authentik_url: "https://authentik.lab.vac.dev"
     authentik_client_id: "rancher"
     # Set AUTHENTIK_CLIENT_SECRET environment variable or use ansible-vault
     authentik_client_secret: "{{ lookup('env', 'AUTHENTIK_CLIENT_SECRET') | default('') }}"
@@ -59,6 +61,11 @@ k3s_cluster:
     google_oauth_client_id: "{{ lookup('env', 'GOOGLE_OAUTH_CLIENT_ID') | default('') }}"
     google_oauth_client_secret: "{{ lookup('env', 'GOOGLE_OAUTH_CLIENT_SECRET') | default('') }}"
     allowed_email_domain: "status.im"
-    #   Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
-    #   YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
-    #   See https://docs.k3s.io/installation/private-registry
+    
+    # Node taints configuration
+    node_taints:
+      - node: "metal-01.he-eu-hel1.misc.vacdst"
+        taints:
+          - key: "dedicated"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
