@@ -8,7 +8,7 @@
 
 ## Quick Links
 
-- **Homepage (Dev)**: [home.vaclab](https://home.vaclab.diarra.tech/)
+- **Homepage (Dev)**: [home.vaclab](https://lab.vac.dev/)
 
 ## Project Status
 
@@ -165,7 +165,7 @@ kubectl -n cattle-fleet-system get pods
 ```json
 {
   "Message": "no app for hostname",
-  "Host": "longhorn.vaclab.diarra.tech",
+  "Host": "longhorn.lab.vac.dev",
   "Detail": "Check the outpost settings..."
 }
 ```
