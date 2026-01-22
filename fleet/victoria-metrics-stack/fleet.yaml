@@ -370,7 +370,7 @@ helm:
                 spec:
                   resources:
                     requests:
-                      storage: 500Gi # set to 500Gi in production
+                      storage: 250Gi # set to 250Gi in production
                   storageClassName: longhorn-vaclab
             storageDataPath: /vm-data
         
