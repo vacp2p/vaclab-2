@@ -16,10 +16,10 @@ spec:
   ingressClassName: traefik
   tls:
   - hosts:
-    - hubble.vaclab.diarra.tech
+    - hubble.lab.vac.dev
     secretName: hubble-tls
   rules:
-  - host: hubble.vaclab.diarra.tech
+  - host: hubble.lab.vac.dev
     http:
       paths:
       - path: /

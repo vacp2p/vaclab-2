@@ -16,9 +16,9 @@ cluster_name_prod: vaclab
 vmselect_storage_dev: 5Gi
 vmselect_storage_prod: 20Gi
 vmstorage_storage_dev: 5Gi
-vmstorage_storage_prod: 300Gi
+vmstorage_storage_prod: 500Gi
 grafana_storage_dev: 5Gi
-grafana_storage_prod: 300Gi
+grafana_storage_prod: 100Gi
 
 # Victoria Metrics Stack - CPU Limits
 vmselect_cpu_limit_dev: "4"
@@ -34,7 +34,7 @@ vm_retention_period_prod: "3"
 
 # Victoria Logs Cluster - Storage
 vlstorage_storage_dev: 1Gi
-vlstorage_storage_prod: 300Gi
+vlstorage_storage_prod: 500Gi
 
 # Authentik - Storage
 authentik_postgres_storage_dev: 2Gi

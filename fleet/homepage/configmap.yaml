@@ -26,7 +26,7 @@ data:
     color: slate
     providers:
       longhorn:
-        url: http://longhorn-frontend.longhorn-system.svc.cluster.local
+        url: http://longhorn-backend.longhorn-system:9500
   
   bookmarks.yaml: |
     - Documentation:
@@ -57,7 +57,7 @@ data:
     - Cluster Management:
         - Rancher:
             icon: rancher
-            href: https://rancher.vaclab.diarra.tech
+            href: https://rancher.lab.vac.dev
             description: Kubernetes Management Platform
             namespace: cattle-system
             podSelector: >-
@@ -66,7 +66,7 @@ data:
     - Storage:
         - Longhorn:
             icon: longhorn
-            href: https://longhorn.vaclab.diarra.tech
+            href: https://longhorn.lab.vac.dev
             description: Distributed Block Storage
             namespace: longhorn-system
             podSelector: >-
@@ -75,14 +75,14 @@ data:
     - Monitoring:
         - Grafana:
             icon: grafana
-            href: https://grafana.vaclab.diarra.tech
+            href: https://grafana.lab.vac.dev
             description: Metrics Visualization
             namespace: vmetrics
             app: grafana
 
         - VictoriaLogs:
             icon: victoriametrics
-            href: https://vlselect.vaclab.diarra.tech
+            href: https://vlselect.lab.vac.dev
             description: Log Aggregation & Search
             namespace: victorialogs
             podSelector: >-

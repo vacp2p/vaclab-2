@@ -21,9 +21,9 @@ kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{
 
 ### Login to Rancher
 
-1. Access Rancher UI at https://rancher.vaclab.diarra.tech
+1. Access Rancher UI at https://rancher.lab.vac.dev
 2. Login with the bootstrap password retrieved above
-3. Set the Rancher Server URL to: `https://rancher.vaclab.diarra.tech`
+3. Set the Rancher Server URL to: `https://rancher.lab.vac.dev`
 4. Reset the admin password when prompted (use a secure password of at least 12 characters)
 
 ## Step 2: Configure OIDC Authentication
@@ -44,10 +44,10 @@ Enter the following configuration:
 | **Client ID** | Retrieved from Ansible vault or database (see below) |
 | **Client Secret** | Retrieved from Ansible vault or Kubernetes secret (see below) |
 | **Endpoints**
-| **Issuer** | `https://authentik.vaclab.diarra.tech/application/o/rancher/` |
-| **Auth Endpoint** | `https://authentik.vaclab.diarra.tech/application/o/authorize/` |
-| **Token Endpoint** | `https://authentik.vaclab.diarra.tech/application/o/token/` |
-| **User Info Endpoint** | `https://authentik.vaclab.diarra.tech/application/o/userinfo/` |
+| **Issuer** | `https://authentik.lab.vac.dev/application/o/rancher/` |
+| **Auth Endpoint** | `https://authentik.lab.vac.dev/application/o/authorize/` |
+| **Token Endpoint** | `https://authentik.lab.vac.dev/application/o/token/` |
+| **User Info Endpoint** | `https://authentik.lab.vac.dev/application/o/userinfo/` |
 | **Scopes** | `openid profile email groups` |
 | **Group Claim Name** | `groups` |
 
@@ -80,7 +80,7 @@ Enter the following configuration:
 
 ### Cannot Access Rancher After Enabling OIDC
 - Use local authentication as fallback: add `?local=true` to the Rancher URL
-  - Example: `https://rancher.vaclab.diarra.tech/dashboard/auth/login?local=true`
+  - Example: `https://rancher.lab.vac.dev/dashboard/auth/login?local=true`
 - Login with the admin username and password set during initial setup
 
 ## Retrieving Credentials
@@ -117,6 +117,6 @@ The Authentik OAuth provider for Rancher is managed via Fleet in `fleet/authenti
 
 Key configuration:
 - **Client Type**: Confidential
-- **Redirect URIs**: `https://rancher.vaclab.diarra.tech/verify-auth`
+- **Redirect URIs**: `https://rancher.lab.vac.dev/verify-auth`
 - **Scopes**: openid, profile, email, Rancher Groups Mapping
 - **Authorization flow**: default-provider-authorization-implicit-consent

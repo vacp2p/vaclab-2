@@ -17,7 +17,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: "home.vaclab.diarra.tech"
+    - host: "lab.vac.dev"
       http:
         paths:
           - path: "/"
@@ -30,4 +30,4 @@ spec:
   tls:
     - secretName: homepage-tls
       hosts:
-        - home.vaclab.diarra.tech
+        - lab.vac.dev

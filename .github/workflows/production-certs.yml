@@ -45,7 +45,7 @@ jobs:
           find fleet/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.cert_issuer_dev }}/${{ steps.params.outputs.cert_issuer_prod }}/g' {} +
           
           # Replace Rancher certificate environment
-          find fleet/rancher/ -type f -name "*.yaml" -exec sed -i 's/environment: ${{ steps.params.outputs.rancher_cert_env_dev }}/environment: ${{ steps.params.outputs.rancher_cert_env_prod }}/g' {} +
+          #find fleet/rancher/ -type f -name "*.yaml" -exec sed -i 's/environment: ${{ steps.params.outputs.rancher_cert_env_dev }}/environment: ${{ steps.params.outputs.rancher_cert_env_prod }}/g' {} +
           find ansible/ -type f -name "*.yaml" -exec sed -i 's/${{ steps.params.outputs.rancher_cert_env_dev }}/${{ steps.params.outputs.rancher_cert_env_prod }}/g' {} +
           
       - name: Verify changes

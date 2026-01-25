@@ -24,13 +24,13 @@ helm:
           gethomepage.dev/group: "Observability"
           gethomepage.dev/icon: "https://raw.githubusercontent.com/vacp2p/vaclab-2/feat/add_lab_components_part_2/extras/kyverno-icon.png"
         hosts:
-          - host: kyverno.vaclab.diarra.tech
+          - host: kyverno.lab.vac.dev
             paths:
               - path: /
                 pathType: ImplementationSpecific
         tls: 
           - secretName: kyverno-reporter-tls
             hosts:
-              - kyverno.vaclab.diarra.tech
+              - kyverno.lab.vac.dev
               
     

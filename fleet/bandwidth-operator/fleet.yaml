@@ -35,11 +35,11 @@ helm:
         readOnlyRootFilesystem: true
       resources:
         limits:
-            cpu: 500m
-            memory: 500Mi
+            cpu: 4
+            memory: 4Gi
         requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: 2
+            memory: 500Mi
     rbacHelpers:
       enable: false  
     crd:
