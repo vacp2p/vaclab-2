@@ -127,7 +127,7 @@
     wait_timeout: 15m
     values:
       hostname: rancher.lab.vac.dev
-      bootstrapPassword: "GTFv3hvPAmeMigJ2txHwtmytVe2RSqGi"
+      bootstrapPassword: "{{ bootstrap_password }}"
       replicas: 1
       additionalTrustedCAs: true
       extraEnv:
@@ -151,7 +151,7 @@
           source: letsEncrypt
         ingressClassName: traefik
       letsEncrypt:
-        email: mamoutou@status.im
+        email: "{{ bootstrap_email }}"
         ingress:
           class: traefik
         environment: production #staging
