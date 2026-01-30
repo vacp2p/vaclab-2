@@ -17,10 +17,10 @@ spec:
   ingressClassName: traefik
   tls:
   - hosts:
-    - longhorn.vaclab.diarra.tech
+    - longhorn.lab.vac.dev
     secretName: longhorn-tls
   rules:
-  - host: longhorn.vaclab.diarra.tech
+  - host: longhorn.lab.vac.dev
     http:
       paths:
       - path: /

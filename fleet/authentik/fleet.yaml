@@ -36,7 +36,14 @@ helm:
         persistence:
           enabled: true
           storageClass: longhorn-vaclab
-          size: 2Gi #set to 20Gi in production
+          size: 50Gi
+        resources:
+          requests:
+            cpu: "0.5"
+            memory: 500Mi
+          limits:
+            cpu: "2"
+            memory: 4Gi
 
     redis:
       enabled: true
@@ -119,17 +126,33 @@ helm:
 
     server:
       replicas: 2
+      resources:
+        requests:
+          cpu: "1"
+          memory: 2Gi
+        limits:
+          cpu: "2"
+          memory: 4Gi
       ingress:
         enabled: true
         ingressClassName: traefik
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
         hosts:
-          - authentik.vaclab.diarra.tech
+          - authentik.lab.vac.dev
         tls:
           - hosts:
-              - authentik.vaclab.diarra.tech
+              - authentik.lab.vac.dev
             secretName: authentik-tls-secret
+
+    worker:
+      resources:
+        requests:
+          cpu: "1"
+          memory: 1Gi
+        limits:
+          cpu: "2"
+          memory: 2Gi
 
     blueprints:
       enabled: true

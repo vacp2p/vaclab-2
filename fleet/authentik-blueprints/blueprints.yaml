@@ -44,8 +44,8 @@ data:
           name: k8s-forwardauth
           mode: forward_single
           internal_host: ""
-          external_host: https://authentik.vaclab.diarra.tech
-          cookie_domain: vaclab.diarra.tech
+          external_host: https://authentik.lab.vac.dev
+          cookie_domain: lab.vac.dev
           authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-implicit-consent"]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, "default-provider-invalidation-flow"]]
 
@@ -57,7 +57,7 @@ data:
           name: "K8s ForwardAuth"
           slug: "k8s-forwardauth"
           provider: !KeyOf k8s-forwardauth-provider
-          meta_launch_url: "https://auth.vaclab.diarra.tech"
+          meta_launch_url: "https://auth.lab.vac.dev"
   
   20-outpost.yaml: |
     version: 1
@@ -121,7 +121,7 @@ data:
           client_secret: !Env GRAFANA_OIDC_CLIENT_SECRET
           redirect_uris:
             - matching_mode: strict
-              url: "https://grafana.vaclab.diarra.tech/login/generic_oauth"
+              url: "https://grafana.lab.vac.dev/login/generic_oauth"
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
           authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-explicit-consent"]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, "default-provider-invalidation-flow"]]
@@ -173,7 +173,7 @@ data:
           client_secret: !Env RANCHER_OIDC_CLIENT_SECRET
           redirect_uris:
             - matching_mode: strict
-              url: "https://rancher.vaclab.diarra.tech/verify-auth"
+              url: "https://rancher.lab.vac.dev/verify-auth"
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
           authorization_flow: !Find [authentik_flows.flow, [slug, "default-provider-authorization-explicit-consent"]]
           invalidation_flow: !Find [authentik_flows.flow, [slug, "default-provider-invalidation-flow"]]

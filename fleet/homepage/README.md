@@ -5,7 +5,7 @@ Official Kubernetes deployment for [Homepage](https://gethomepage.dev/) - a mode
 ## Overview
 
 - **Namespace**: `homepage`
-- **URL**: https://homepage.vaclab.diarra.tech
+- **URL**: https://homepage.lab.vac.dev
 - **Service Discovery**: Automatic via Ingress/IngressRoute annotations
 - **Widgets**: Kubernetes cluster stats, Longhorn storage, service integrations
 
@@ -70,7 +70,7 @@ metadata:
     gethomepage.dev/icon: "myapp.png"  # or mdi-apps or https://...
 spec:
   rules:
-    - host: myapp.vaclab.diarra.tech
+    - host: myapp.lab.vac.dev
       http:
         paths:
           - path: /
@@ -90,7 +90,7 @@ metadata:
   name: myapp
   annotations:
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/href: "https://myapp.vaclab.diarra.tech"  # Required for IngressRoute
+    gethomepage.dev/href: "https://myapp.lab.vac.dev"  # Required for IngressRoute
     gethomepage.dev/name: "My App"
     gethomepage.dev/description: "Application description"
     gethomepage.dev/group: "Applications"
@@ -100,7 +100,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`myapp.vaclab.diarra.tech`)
+      match: Host(`myapp.lab.vac.dev`)
       services:
         - name: myapp
           port: 8080

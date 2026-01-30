@@ -6,7 +6,7 @@ This directory contains Kubernetes Ingress resources for exposing cluster servic
 
 ### Hubble UI
 
-- **Host**: hubble.vaclab.diarra.tech
+- **Host**: hubble.lab.vac.dev
 - **Service**: hubble-ui (kube-system namespace)
 - **Port**: 80
 - **TLS**: Automatic via cert-manager (letsencrypt-prod)
@@ -27,7 +27,7 @@ This directory contains Kubernetes Ingress resources for exposing cluster servic
 
 ```bash
 # Access via browser
-https://hubble.vaclab.diarra.tech
+https://hubble.lab.vac.dev
 ```
 
 ### Via Port Forward (Local development)
@@ -90,10 +90,10 @@ kubectl get ingress hubble-ui -n kube-system
 kubectl get certificate hubble-tls -n kube-system
 
 # Test HTTPS redirect
-curl -I http://hubble.vaclab.diarra.tech
+curl -I http://hubble.lab.vac.dev
 
 # Access Hubble UI
-curl -k https://hubble.vaclab.diarra.tech
+curl -k https://hubble.lab.vac.dev
 ```
 
 ## Troubleshooting
@@ -148,10 +148,10 @@ spec:
   ingressClassName: traefik
   tls:
   - hosts:
-    - example.vaclab.diarra.tech
+    - example.lab.vac.dev
     secretName: example-tls
   rules:
-  - host: example.vaclab.diarra.tech
+  - host: example.lab.vac.dev
     http:
       paths:
       - path: /

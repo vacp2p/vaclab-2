@@ -8,7 +8,7 @@
 
 ## Quick Links
 
-- **Homepage (Dev)**: [home.vaclab](https://home.vaclab.diarra.tech/)
+- **Homepage (Dev)**: [lab.vac.dev](https://lab.vac.dev/)
 
 ## Project Status
 
@@ -119,7 +119,7 @@ ansible-playbook -i inventory.yaml playbooks/setup_cluster.yaml --vault-password
 This will:
 1. Install and configure K3s cluster
 2. Install Helm on the control plane
-3. Deploy Rancher Fleet and create a GitRepo resource in order to watch the fleet/ directory inside this git repo
+3. Deploy Rancher and Fleet and create a GitRepo resource in order to watch the fleet/ directory inside this git repo
 
 ### Step-by-Step Deployment
 
@@ -161,11 +161,11 @@ kubectl -n cattle-fleet-system get pods
 
 ### Authentik Outpost Provider Assignment Failure
 
-**Symptom**: After deploying Authentik, accessing protected services (like Longhorn) returns an error:
+**Symptom**: After deploying Authentik, accessing protected services (like Longhorn) may return an error:
 ```json
 {
   "Message": "no app for hostname",
-  "Host": "longhorn.vaclab.diarra.tech",
+  "Host": "longhorn.lab.vac.dev",
   "Detail": "Check the outpost settings..."
 }
 ```

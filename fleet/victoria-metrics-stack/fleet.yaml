@@ -299,7 +299,7 @@ helm:
             enabled: true
             extraPaths: []
             hosts:
-            - metrics.vaclab.diarra.tech
+            - metrics.lab.vac.dev
             ingressClassName: traefik
             labels: {}
             path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vmselect
@@ -307,7 +307,7 @@ helm:
             pathType: Prefix
             tls:
             - hosts:
-              - metrics.vaclab.diarra.tech
+              - metrics.lab.vac.dev
               secretName: victoriametrics-ingress-tls
           storage:
             annotations: {}
@@ -330,11 +330,11 @@ helm:
             replicaCount: 2
             resources:
               limits:
-                cpu: "4"
-                memory: 4000Mi
+                cpu: "8"
+                memory: 8Gi
               requests:
-                cpu: "0.5"
-                memory: 500Mi
+                cpu: "2"
+                memory: 2Gi
           vmselect:
             cacheMountPath: /select-cache
             enabled: true
@@ -343,34 +343,34 @@ helm:
             replicaCount: 2
             resources:
               limits:
-                cpu: "4" # set to 8 in production
-                memory: 4000Mi
+                cpu: "8" # set to 8 in production
+                memory: 8Gi
               requests:
-                cpu: "0.5"
-                memory: 500Mi
+                cpu: "2"
+                memory: 2Gi
             storage:
               volumeClaimTemplate:
                 spec:
                   resources:
                     requests:
-                      storage: 5Gi # set to 100Gi in production
+                      storage: 20Gi # set to 20Gi in production
                   storageClassName: longhorn-vaclab
           vmstorage:
             enabled: true
             replicaCount: 2
             resources:
               limits:
-                cpu: "4" # set to 8 in production
-                memory: 4000Mi
+                cpu: "8" # set to 8 in production
+                memory: 4Gi
               requests:
-                cpu: "0.5"
-                memory: 500Mi
+                cpu: "1"
+                memory: 1Gi
             storage:
               volumeClaimTemplate:
                 spec:
                   resources:
                     requests:
-                      storage: 5Gi # set to 1Ti in production
+                      storage: 250Gi # set to 250Gi in production
                   storageClassName: longhorn-vaclab
             storageDataPath: /vm-data
         
@@ -775,7 +775,7 @@ helm:
         #  tag: ""
         grafana.ini:
           server:
-            root_url: "https://grafana.vaclab.diarra.tech"
+            root_url: "https://grafana.lab.vac.dev"
           users:
             auto_assign_org: true
             auto_assign_org_role: Editor
@@ -790,9 +790,9 @@ helm:
             client_id: $__file{/etc/secrets/authentik-oidc/client_id}
             client_secret: $__file{/etc/secrets/authentik-oidc/client_secret}
             scopes: "openid profile email"
-            auth_url: https://authentik.vaclab.diarra.tech/application/o/authorize/
-            token_url: https://authentik.vaclab.diarra.tech/application/o/token/
-            api_url: https://authentik.vaclab.diarra.tech/application/o/userinfo/
+            auth_url: https://authentik.lab.vac.dev/application/o/authorize/
+            token_url: https://authentik.lab.vac.dev/application/o/token/
+            api_url: https://authentik.lab.vac.dev/application/o/userinfo/
             tls_skip_verify_insecure: true
             use_pkce: true
             login_attribute_path: email
@@ -800,7 +800,7 @@ helm:
             name_attribute_path: name
             groups_attribute_path: groups
             role_attribute_path: contains(groups, 'authentik Admins') && 'Admin' || 'Editor'
-            sign_out_redirect_url: https://authentik.vaclab.diarra.tech/application/o/grafana/end-session/
+            sign_out_redirect_url: https://authentik.lab.vac.dev/application/o/grafana/end-session/
         extraSecretMounts:
           - name: authentik-oidc
             secretName: grafana-authentik-oidc
@@ -838,7 +838,7 @@ helm:
           pathType: Prefix
 
           hosts:
-            - grafana.vaclab.diarra.tech
+            - grafana.lab.vac.dev
           extraPaths: []
           # - path: /*
           #   pathType: Prefix
@@ -850,16 +850,23 @@ helm:
           tls:
           - secretName: grafana-ingress-tls 
             hosts:
-              - grafana.vaclab.diarra.tech
+              - grafana.lab.vac.dev
         
         persistence:
           accessModes:
           - ReadWriteOnce
           enabled: true
-          size: 5Gi
+          size: 20Gi
           storageClassName: longhorn-vaclab
           type: pvc
         
+        resources:
+          requests:
+            cpu: "4"
+            memory: 2Gi
+          limits:
+            cpu: "8"
+            memory: 8Gi
 
         # -- Grafana VM scrape config
         vmScrape:
