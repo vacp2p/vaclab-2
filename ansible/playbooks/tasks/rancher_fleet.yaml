@@ -59,7 +59,7 @@
       apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
       metadata:
-        name: letsencrypt-staging
+        name: letsencrypt-production
         labels:
           app.kubernetes.io/managed-by: Helm
         annotations:
@@ -68,9 +68,9 @@
       spec:
         acme:
           email: mamoutou@status.im
-          server: https://acme-staging-v02.api.letsencrypt.org/directory
+          server: https://acme-production-v02.api.letsencrypt.org/directory
           privateKeySecretRef:
-            name: letsencrypt-staging
+            name: letsencrypt-production
           solvers:
           - http01:
               ingress:
@@ -94,7 +94,7 @@
 
 - name: Download Let's Encrypt Staging CA certificate
   get_url:
-    url: https://letsencrypt.org/certs/staging/letsencrypt-stg-root-x1.pem
+    url: https://letsencrypt.org/certs/production/letsencrypt-stg-root-x1.pem
     dest: /tmp/letsencrypt-stg-root-x1.pem
     mode: '0644'
 
@@ -154,7 +154,7 @@
         email: "{{ bootstrap_email }}"
         ingress:
           class: traefik
-        environment: production #staging
+        environment: production #production
       certmanager:
         install: false
       resources:
