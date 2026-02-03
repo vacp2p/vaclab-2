@@ -155,6 +155,12 @@ kubectl -n fleet-local get gitrepo
 kubectl -n cattle-fleet-system get pods
 ```
 
+### Taint external nodes
+
+```bash
+kubectl taint nodes metal-01.he-eu-hel1.misc.vacdst \
+  dedicated=monitoring:PreferNoSchedule
+```
 ---
 
 ## Known Issues
