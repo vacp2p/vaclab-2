@@ -82,7 +82,7 @@ data:
 
         - VictoriaLogs:
             icon: victoriametrics
-            href: https://vlselect.lab.vac.dev
+            href: https://vlselect.lab.vac.dev/select/vmui/
             description: Log Aggregation & Search
             namespace: victorialogs
             podSelector: >-
