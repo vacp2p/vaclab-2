@@ -31,6 +31,8 @@ helm:
         secretKeys:
           userPasswordKey: password
           adminPasswordKey: postgres-password
+        password: ""  # Password from existingSecret
+        postgresPassword: ""  # Password from existingSecret
 
       primary:
         persistence:
