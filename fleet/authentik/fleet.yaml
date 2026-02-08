@@ -10,6 +10,11 @@ helm:
   version: 2025.10.3
   releaseName: authentik
   takeOwnership: true
+  valuesFrom:
+    - secretKeyRef:
+        name: authentik-postgresql-helm-values
+        namespace: authentik
+        key: values.yaml
 
   values:
     authentik:
@@ -31,8 +36,6 @@ helm:
         secretKeys:
           userPasswordKey: password
           adminPasswordKey: postgres-password
-      # Set usePasswordFiles to avoid password validation on upgrade
-      usePasswordFiles: true
 
       primary:
         persistence:
@@ -59,8 +62,6 @@ helm:
           secretKeys:
             userPasswordKey: password
             adminPasswordKey: postgres-password
-        # Use password files instead of environment variables
-        usePasswordFiles: true
       env:
         - name: AUTHENTIK_SECRET_KEY
           valueFrom:

@@ -73,6 +73,25 @@
         password: "{{ pg_user_password }}"
         postgres-password: "{{ pg_postgres_password }}"
 
+- name: Create authentik postgresql helm values secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: authentik-postgresql-helm-values
+        namespace: authentik
+      type: Opaque
+      stringData:
+        values.yaml: |
+          global:
+            postgresql:
+              auth:
+                password: "{{ pg_user_password }}"
+                postgresPassword: "{{ pg_postgres_password }}"
+
 - name: Create authentik outpost token secret
   kubernetes.core.k8s:
     state: present
