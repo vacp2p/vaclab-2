@@ -29,7 +29,25 @@ data:
         attrs:
           sources:
             - !KeyOf google
-
+  
+  01-keycloak-source.yaml: |
+    version: 1
+    metadata:
+      name: keycloak-source
+    entries:
+      - model: authentik_sources_oauth.oauthsource
+        id: keycloak
+        identifiers:
+          name: Keycloak
+        attrs:
+          name: Keycloak
+          slug: keycloak
+          provider_type: openidconnect
+          consumer_key: !Env KEYCLOAK_CLIENT_ID
+          consumer_secret: !Env KEYCLOAK_CLIENT_SECRET
+          oidc_well_known_url: !Env KEYCLOAK_WELL_KNOWN_URL
+          authentication_flow: !Find [authentik_flows.flow, [slug, "default-source-authentication"]]
+          enrollment_flow: !Find [authentik_flows.flow, [slug, "default-source-enrollment"]]
   10-proxy-forwardauth-with-outpost.yaml: |
     version: 1
     metadata:
