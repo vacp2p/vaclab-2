@@ -10,6 +10,18 @@ helm:
   version: 2025.10.3
   releaseName: authentik
   takeOwnership: true
+  
+  valuesFrom:
+    - secretKeyRef:
+        name: authentik-postgresql
+        namespace: authentik
+        key: password
+      path: global.postgresql.auth.password
+    - secretKeyRef:
+        name: authentik-postgresql
+        namespace: authentik
+        key: postgres-password
+      path: global.postgresql.auth.postgresPassword
 
   values:
     authentik:
@@ -59,8 +71,6 @@ helm:
           secretKeys:
             userPasswordKey: password
             adminPasswordKey: postgres-password
-          password: ""  # Password from existingSecret
-          postgresPassword: ""  # Password from existingSecret
       env:
         - name: AUTHENTIK_SECRET_KEY
           valueFrom:
