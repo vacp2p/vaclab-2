@@ -38,6 +38,7 @@ data:
           consumer_key: !Env KEYCLOAK_CLIENT_ID
           consumer_secret: !Env KEYCLOAK_CLIENT_SECRET
           oidc_well_known_url: "https://auth.logos.co/realms/logos-co/.well-known/openid-configuration"
+          oidc_jwks_url: "https://auth.logos.co/realms/logos-co/protocol/openid-connect/certs"
           authentication_flow: !Find [authentik_flows.flow, [slug, "default-source-authentication"]]
           enrollment_flow: !Find [authentik_flows.flow, [slug, "default-source-enrollment"]]
   
