@@ -783,6 +783,9 @@ helm:
             disable_login_form: true
             oauth_auto_login: true
             #disable_signout_menu: true
+          log:
+            level: debug
+            filters: "oauth:debug"
           auth.generic_oauth:
             enabled: true
             name: "authentik"
