@@ -795,7 +795,8 @@ helm:
             api_url: https://authentik.lab.vac.dev/application/o/userinfo/
             tls_skip_verify_insecure: true
             use_pkce: true
-            login_attribute_path: email
+            id_token_attribute_name: sub
+            login_attribute_path: sub
             email_attribute_path: email
             name_attribute_path: name
             groups_attribute_path: groups
