@@ -45,9 +45,19 @@ data:
           provider_type: openidconnect
           consumer_key: !Env KEYCLOAK_CLIENT_ID
           consumer_secret: !Env KEYCLOAK_CLIENT_SECRET
-          oidc_well_known_url: !Env KEYCLOAK_WELL_KNOWN_URL
+          # Real value for your Keycloak realm:
+          oidc_well_known_url: "https://auth.logos.co/realms/logos-co/.well-known/openid-configuration"
           authentication_flow: !Find [authentik_flows.flow, [slug, "default-source-authentication"]]
           enrollment_flow: !Find [authentik_flows.flow, [slug, "default-source-enrollment"]]
+
+      # Link BOTH sources to the default authentication flow's identification stage
+      - model: authentik_stages_identification.identificationstage
+        identifiers:
+          name: default-authentication-identification
+        attrs:
+          sources:
+            - !KeyOf google
+            - !KeyOf keycloak
   10-proxy-forwardauth-with-outpost.yaml: |
     version: 1
     metadata:
