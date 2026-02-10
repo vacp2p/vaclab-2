@@ -787,6 +787,7 @@ helm:
             enabled: true
             name: "authentik"
             allow_sign_up: true
+            auto_login: false
             client_id: $__file{/etc/secrets/authentik-oidc/client_id}
             client_secret: $__file{/etc/secrets/authentik-oidc/client_secret}
             scopes: "openid profile email"
@@ -795,8 +796,7 @@ helm:
             api_url: https://authentik.lab.vac.dev/application/o/userinfo/
             tls_skip_verify_insecure: true
             use_pkce: true
-            id_token_attribute_name: sub
-            login_attribute_path: sub
+            login_attribute_path: email
             email_attribute_path: email
             name_attribute_path: name
             groups_attribute_path: groups
