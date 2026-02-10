@@ -782,6 +782,7 @@ helm:
           auth:
             disable_login_form: true
             oauth_auto_login: true
+            oauth_allow_insecure_email_lookup: true
             #disable_signout_menu: true
           log:
             level: debug
@@ -791,6 +792,7 @@ helm:
             name: "authentik"
             allow_sign_up: true
             auto_login: false
+            skip_org_role_sync: false
             client_id: $__file{/etc/secrets/authentik-oidc/client_id}
             client_secret: $__file{/etc/secrets/authentik-oidc/client_secret}
             scopes: "openid profile email"
