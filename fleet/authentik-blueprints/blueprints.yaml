@@ -118,6 +118,8 @@ data:
             # Use email as sub claim for consistent user identity across Google and Keycloak
             return {
               "sub": request.user.email,
+              "email": request.user.email,
+              "email_verified": True,
             }
       
       # Custom scope mapping for Grafana compatibility
