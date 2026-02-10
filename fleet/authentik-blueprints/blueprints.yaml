@@ -54,7 +54,7 @@ data:
           name: default-authentication-identification
         attrs:
           sources:
-            - !Find [authentik_sources_oauth.oauthsource, [slug, "google"]]
+            #- !Find [authentik_sources_oauth.oauthsource, [slug, "google"]]
             - !Find [authentik_sources_oauth.oauthsource, [slug, "keycloak"]]
   
   10-proxy-forwardauth-with-outpost.yaml: |
