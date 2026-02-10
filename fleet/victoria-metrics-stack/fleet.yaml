@@ -825,6 +825,10 @@ helm:
 
         # -- Create datasource configmap even if grafana deployment has been disabled
         forceDeployDatasource: false
+        
+        # Single replica required due to ReadWriteOnce PVC
+        replicas: 1
+        
         plugins:
         - victoriametrics-metrics-datasource
         - victoriametrics-logs-datasource
