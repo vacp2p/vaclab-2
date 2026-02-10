@@ -106,17 +106,18 @@ data:
       name: grafana-oidc
     entries:
       # Fix openid scope to include sub claim (required by OIDC spec)
+      # Use email as sub to maintain consistent user identity across different auth sources
       - model: authentik_providers_oauth2.scopemapping
         identifiers:
           scope_name: openid
         attrs:
           scope_name: openid
           name: "authentik default OAuth Mapping: OpenID 'openid'"
-          description: "OpenID scope with sub claim"
+          description: "OpenID scope with sub claim using email for consistent identity"
           expression: |
-            # The sub claim is required by OIDC spec
+            # Use email as sub claim for consistent user identity across Google and Keycloak
             return {
-              "sub": str(request.user.pk),
+              "sub": request.user.email,
             }
       
       # Custom scope mapping for Grafana compatibility
