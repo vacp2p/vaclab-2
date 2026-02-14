@@ -1259,27 +1259,22 @@ helm:
       # Add extra objects - Cilium/Hubble metrics scraping
       extraObjects:
         - apiVersion: operator.victoriametrics.com/v1beta1
-          kind: VMNodeScrape
+          kind: VMServiceScrape
           metadata:
             name: hubble-metrics
             namespace: vmetrics
           spec:
-            scheme: http
-            path: /metrics
-            port: "9965"
+            endpoints:
+              - port: hubble-metrics
+                path: /metrics
+                scheme: http
+            namespaceSelector:
+              matchNames:
+                - kube-system
             selector:
-              matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: Exists
-            relabelConfigs:
-              # Set the job label
-              - targetLabel: job
-                replacement: hubble
-              # Add the node name where metrics were scraped from
-              - sourceLabels:
-                  - __meta_kubernetes_node_name
-                targetLabel: node
-                action: replace
+              matchLabels:
+                k8s-app: hubble
+            jobLabel: k8s-app
 
 diff:
   comparePatches:
