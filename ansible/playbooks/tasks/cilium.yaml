@@ -103,12 +103,12 @@
         enabled: true
         metrics:
           enabled:
-            - dns
+            - dns:query;ignoreAAAA
             - drop
             - tcp
             - flow
             - icmp
-            - httpV2
+            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,source_app,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,destination_app,traffic_direction"
             - port-distribution
           enableOpenMetrics: true
           port: 9965
