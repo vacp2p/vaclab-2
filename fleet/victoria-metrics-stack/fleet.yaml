@@ -1271,6 +1271,31 @@ helm:
             endpoints:
               - port: prometheus
                 path: /metrics
+                relabelConfigs:
+                  # Add node label from pod metadata (matches ServiceMonitor default)
+                  - sourceLabels:
+                      - __meta_kubernetes_pod_node_name
+                    targetLabel: node
+                    action: replace
+                    replacement: ${1}
+                  # Add namespace label from pod metadata
+                  - sourceLabels:
+                      - __meta_kubernetes_namespace
+                    targetLabel: namespace
+                    action: replace
+                    replacement: ${1}
+                  # Add pod label from pod metadata
+                  - sourceLabels:
+                      - __meta_kubernetes_pod_name
+                    targetLabel: pod
+                    action: replace
+                    replacement: ${1}
+                  # Add container label from pod metadata
+                  - sourceLabels:
+                      - __meta_kubernetes_pod_container_name
+                    targetLabel: container
+                    action: replace
+                    replacement: ${1}
 
 diff:
   comparePatches:
