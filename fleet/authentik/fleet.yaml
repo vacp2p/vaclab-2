@@ -10,6 +10,11 @@ helm:
   version: 2025.10.3
   releaseName: authentik
   takeOwnership: true
+  valuesFrom:
+    - secretKeyRef:
+        name: authentik-postgresql-helm-values
+        namespace: authentik
+        key: values.yaml
 
   values:
     authentik:
@@ -84,6 +89,23 @@ helm:
               key: password
 
         # Blueprint env vars:
+        - name: KEYCLOAK_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-oauth
+              key: client_id
+
+        - name: KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: keycloak-oauth
+              key: client_secret
+
+        # Keycloak OIDC well-known discovery URL
+        # Format: https://KEYCLOAK_SERVER/realms/YOUR_REALM/.well-known/openid-configuration
+        - name: KEYCLOAK_WELL_KNOWN_URL
+          value: "https://auth.logos.co"
+
         - name: GOOGLE_CLIENT_ID
           valueFrom:
             secretKeyRef:

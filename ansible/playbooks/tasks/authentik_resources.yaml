@@ -42,6 +42,22 @@
         client_id: "{{ google_client_id }}"
         client_secret: "{{ google_client_secret }}"
 
+# create authentik keycloak secret
+- name: Create authentik Keycloak oauth secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: keycloak-oauth
+        namespace: authentik
+      type: Opaque
+      stringData:
+        client_id: "{{ keycloak_client_id }}"
+        client_secret: "{{ keycloak_client_secret }}"
+
 - name: Create authentik postgresql secret
   kubernetes.core.k8s:
     state: present
@@ -56,6 +72,25 @@
       stringData:
         password: "{{ pg_user_password }}"
         postgres-password: "{{ pg_postgres_password }}"
+
+- name: Create authentik postgresql helm values secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: authentik-postgresql-helm-values
+        namespace: authentik
+      type: Opaque
+      stringData:
+        values.yaml: |
+          global:
+            postgresql:
+              auth:
+                password: "{{ pg_user_password }}"
+                postgresPassword: "{{ pg_postgres_password }}"
 
 - name: Create authentik outpost token secret
   kubernetes.core.k8s:

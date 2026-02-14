@@ -21,15 +21,42 @@ data:
           consumer_secret: !Env GOOGLE_CLIENT_SECRET
           authentication_flow: !Find [authentik_flows.flow, [slug, "default-source-authentication"]]
           enrollment_flow: !Find [authentik_flows.flow, [slug, "default-source-enrollment"]]
-      
-      # Link Google source to the default authentication flow's identification stage
+  
+  01-keycloak-source.yaml: |
+    version: 1
+    metadata:
+      name: keycloak-source
+    entries:
+      - model: authentik_sources_oauth.oauthsource
+        id: keycloak
+        identifiers:
+          name: Keycloak
+        attrs:
+          name: Keycloak
+          slug: keycloak
+          provider_type: openidconnect
+          consumer_key: !Env KEYCLOAK_CLIENT_ID
+          consumer_secret: !Env KEYCLOAK_CLIENT_SECRET
+          oidc_well_known_url: "https://auth.logos.co/realms/logos-co/.well-known/openid-configuration"
+          oidc_jwks_url: "https://auth.logos.co/realms/logos-co/protocol/openid-connect/certs"
+          pkce: none
+          authentication_flow: !Find [authentik_flows.flow, [slug, "default-source-authentication"]]
+          enrollment_flow: !Find [authentik_flows.flow, [slug, "default-source-enrollment"]]
+  
+  02-link-sources.yaml: |
+    version: 1
+    metadata:
+      name: link-sources-to-identification-stage
+    entries:
+      # Link BOTH sources to the default authentication flow's identification stage
       - model: authentik_stages_identification.identificationstage
         identifiers:
           name: default-authentication-identification
         attrs:
           sources:
-            - !KeyOf google
-
+            #- !Find [authentik_sources_oauth.oauthsource, [slug, "google"]]
+            - !Find [authentik_sources_oauth.oauthsource, [slug, "keycloak"]]
+  
   10-proxy-forwardauth-with-outpost.yaml: |
     version: 1
     metadata:
@@ -79,17 +106,20 @@ data:
       name: grafana-oidc
     entries:
       # Fix openid scope to include sub claim (required by OIDC spec)
+      # Use email as sub to maintain consistent user identity across different auth sources
       - model: authentik_providers_oauth2.scopemapping
         identifiers:
           scope_name: openid
         attrs:
           scope_name: openid
           name: "authentik default OAuth Mapping: OpenID 'openid'"
-          description: "OpenID scope with sub claim"
+          description: "OpenID scope with sub claim using email for consistent identity"
           expression: |
-            # The sub claim is required by OIDC spec
+            # Use email as sub claim for consistent user identity across Google and Keycloak
             return {
-              "sub": str(request.user.pk),
+              "sub": request.user.email,
+              "email": request.user.email,
+              "email_verified": True,
             }
       
       # Custom scope mapping for Grafana compatibility

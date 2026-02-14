@@ -243,7 +243,7 @@ helm:
         hosts:
         - name: vlselect.lab.vac.dev
           path:
-          - /
+          - /select/vmui
           port: http
         ingressClassName: traefik
         pathType: Prefix

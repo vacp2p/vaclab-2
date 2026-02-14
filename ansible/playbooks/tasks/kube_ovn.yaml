@@ -109,11 +109,11 @@
       # Resource limits for OVS-OVN
       ovs-ovn:
         requests:
-          cpu: "2"
-          memory: "1Gi"
+          cpu: "4"
+          memory: "4Gi"
         limits:
-          cpu: "2"
-          memory: "2Gi"
+          cpu: "4"
+          memory: "8Gi"
       
   when: kubeovn_installed.rc != 0
 

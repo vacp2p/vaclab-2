@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vlselect-open
+  namespace: victorialogs
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    # No authentik middleware - this is open access
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - vlselect.lab.vac.dev
+    secretName: vlselect-open-ingress-tls
+  rules:
+  - host: vlselect.lab.vac.dev
+    http:
+      paths:
+      - path: /select
+        pathType: Prefix
+        backend:
+          service:
+            name: vlc-victoria-logs-cluster-vlselect
+            port:
+              number: 9471
