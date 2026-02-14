@@ -1268,8 +1268,9 @@ helm:
             path: /metrics
             port: "9965"
             selector:
-              matchLabels:
-                node-role.kubernetes.io/worker: "true"
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: Exists
             relabelConfigs:
               # Set the job label
               - targetLabel: job

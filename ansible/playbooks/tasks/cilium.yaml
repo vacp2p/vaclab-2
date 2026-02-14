@@ -109,8 +109,10 @@
             - flow
             - icmp
             - http
-            - port-distribution
-            - httpV2
+          enableOpenMetrics: true
+          port: 9965
+          serviceMonitor:
+            enabled: false
         relay:
           enabled: true
           prometheus:
