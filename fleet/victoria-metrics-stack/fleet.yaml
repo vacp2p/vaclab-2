@@ -1268,6 +1268,11 @@ helm:
               - port: hubble-metrics
                 path: /metrics
                 scheme: http
+                relabelConfigs:
+                  # Add observer_node label showing which node's Cilium observed the flow
+                  - sourceLabels: [__meta_kubernetes_pod_node_name]
+                    targetLabel: observer_node
+                    action: replace
             namespaceSelector:
               matchNames:
                 - kube-system
