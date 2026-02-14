@@ -1259,42 +1259,32 @@ helm:
       # Add extra objects - Cilium/Hubble metrics scraping
       extraObjects:
         - apiVersion: operator.victoriametrics.com/v1beta1
-          kind: VMServiceScrape
+          kind: VMNodeScrape
           metadata:
             name: hubble-metrics
             namespace: vmetrics
           spec:
-            jobLabel: k8s-app
+            scheme: http
+            path: /metrics
+            port: "9965"
             selector:
               matchLabels:
-                k8s-app: hubble
-            namespaceSelector:
-              matchNames:
-                - kube-system
-            endpoints:
-              - port: hubble-metrics
-                path: /metrics
-                relabelConfigs:
-                  # Add node label from pod metadata (matches Cilium ServiceMonitor default)
-                  - sourceLabels:
-                      - __meta_kubernetes_pod_node_name
-                    targetLabel: node
-                    action: replace
-                  # Add namespace label from pod metadata
-                  - sourceLabels:
-                      - __meta_kubernetes_namespace
-                    targetLabel: namespace
-                    action: replace
-                  # Add pod label from pod metadata
-                  - sourceLabels:
-                      - __meta_kubernetes_pod_name
-                    targetLabel: pod
-                    action: replace
-                  # Add container label from pod metadata
-                  - sourceLabels:
-                      - __meta_kubernetes_pod_container_name
-                    targetLabel: container
-                    action: replace
+                node-role.kubernetes.io/worker: "true"
+            relabelConfigs:
+              # Set the job label
+              - targetLabel: job
+                replacement: hubble
+              # Add node name as a label
+              - sourceLabels:
+                  - __meta_kubernetes_node_name
+                targetLabel: node
+                action: replace
+              # Add namespace label for consistency
+              - targetLabel: namespace
+                replacement: kube-system
+              # Add k8s-app label for consistency
+              - targetLabel: k8s_app
+                replacement: hubble
 
 diff:
   comparePatches:
