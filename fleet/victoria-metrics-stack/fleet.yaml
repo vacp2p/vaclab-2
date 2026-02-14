@@ -1256,12 +1256,15 @@ helm:
                 tlsConfig:
                   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt 
 
-      # Component scraping Cilium/Hubble metrics
-      cilium:
-        enabled: true
-        vmServiceScrape:
+      # Add extra objects - Cilium/Hubble metrics scraping
+      extraObjects:
+        - apiVersion: operator.victoriametrics.com/v1beta1
+          kind: VMServiceScrape
+          metadata:
+            name: cilium-metrics
+            namespace: vmetrics
           spec:
-            jobLabel: app.kubernetes.io/name
+            jobLabel: k8s-app
             selector:
               matchLabels:
                 k8s-app: cilium
@@ -1272,30 +1275,26 @@ helm:
               - port: prometheus
                 path: /metrics
                 relabelConfigs:
-                  # Add node label from pod metadata (matches ServiceMonitor default)
+                  # Add node label from pod metadata (matches Cilium ServiceMonitor default)
                   - sourceLabels:
                       - __meta_kubernetes_pod_node_name
                     targetLabel: node
                     action: replace
-                    replacement: ${1}
                   # Add namespace label from pod metadata
                   - sourceLabels:
                       - __meta_kubernetes_namespace
                     targetLabel: namespace
                     action: replace
-                    replacement: ${1}
                   # Add pod label from pod metadata
                   - sourceLabels:
                       - __meta_kubernetes_pod_name
                     targetLabel: pod
                     action: replace
-                    replacement: ${1}
                   # Add container label from pod metadata
                   - sourceLabels:
                       - __meta_kubernetes_pod_container_name
                     targetLabel: container
                     action: replace
-                    replacement: ${1}
 
 diff:
   comparePatches:
