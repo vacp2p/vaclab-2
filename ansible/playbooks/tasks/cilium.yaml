@@ -101,8 +101,22 @@
       # Enable Hubble for observability
       hubble:
         enabled: true
+        metrics:
+          enabled:
+            - dns
+            - drop
+            - tcp
+            - flow
+            - icmp
+            - http
+            - port-distribution
+            - httpV2
         relay:
           enabled: true
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
         ui:
           enabled: true
       
