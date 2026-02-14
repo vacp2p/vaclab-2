@@ -108,7 +108,8 @@
             - tcp
             - flow
             - icmp
-            - http
+            - httpV2
+            - port-distribution
           enableOpenMetrics: true
           port: 9965
           serviceMonitor:
