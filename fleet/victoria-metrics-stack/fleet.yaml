@@ -1261,18 +1261,18 @@ helm:
         - apiVersion: operator.victoriametrics.com/v1beta1
           kind: VMServiceScrape
           metadata:
-            name: cilium-metrics
+            name: hubble-metrics
             namespace: vmetrics
           spec:
             jobLabel: k8s-app
             selector:
               matchLabels:
-                k8s-app: cilium
+                k8s-app: hubble
             namespaceSelector:
               matchNames:
                 - kube-system
             endpoints:
-              - port: prometheus
+              - port: hubble-metrics
                 path: /metrics
                 relabelConfigs:
                   # Add node label from pod metadata (matches Cilium ServiceMonitor default)
