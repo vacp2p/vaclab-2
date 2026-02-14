@@ -103,12 +103,12 @@
         enabled: true
         metrics:
           enabled:
-            - "dns:query;ignoreAAAA;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_app,destination_ip,destination_namespace,destination_pod,destination_workload,destination_app"
+            - "dns:query;ignoreAAAA;labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload"
             - "drop:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
             - "tcp:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
-            - "flow:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction;sourceContext=pod;destinationContext=pod"
-            - "icmp:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction;sourceContext=pod;destinationContext=pod"
-            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,source_app,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,destination_app,traffic_direction"
+            - "flow:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "icmp:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
+            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,traffic_direction"
             - "port-distribution:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
           enableOpenMetrics: true
           port: 9965
