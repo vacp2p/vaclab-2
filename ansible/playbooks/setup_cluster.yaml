@@ -149,9 +149,9 @@
       ansible.builtin.import_tasks: tasks/authentik_resources.yaml
 
 # It is better to apply taints manually later
-#- name: Apply node taints
-#  hosts: server
-#  run_once: true
-#  tasks:
-#    - name: Import node tainting tasks
-#      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
+- name: Apply node taints
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import node tainting tasks
+      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
