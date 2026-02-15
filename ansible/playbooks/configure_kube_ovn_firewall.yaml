@@ -1,0 +1,91 @@
+---
+- name: Configure Kube-OVN Firewall Rules
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Install iptables-persistent
+      ansible.builtin.apt:
+        name: iptables-persistent
+        state: present
+        update_cache: yes
+
+    - name: Block outgoing traffic to private IP ranges from public interface
+      ansible.builtin.iptables:
+        chain: OUTPUT
+        protocol: tcp
+        destination: "10.0.0.0/8"
+        out_interface: "enp+"
+        destination_port: "5000:6000"
+        jump: DROP
+        comment: "Block outgoing to private IPs (Hetzner abuse)"
+        state: present
+
+    - name: Allow Kubernetes API server (6443)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "6443"
+        jump: ACCEPT
+        comment: "Kubernetes Supervisor"
+        state: present
+
+    - name: Allow Flannel VXLAN (8472)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "8472"
+        jump: ACCEPT
+        comment: "Kubernetes Flannel VXLAN"
+        state: present
+
+    - name: Allow Prometheus node exporter (9100)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "9100"
+        jump: ACCEPT
+        comment: "Kubernetes Helm Prometheus"
+        state: present
+
+    - name: Allow Kubernetes metrics (10250)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "10250"
+        jump: ACCEPT
+        comment: "Kubernetes Metrics"
+        state: present
+
+    - name: Allow Kube-OVN Geneve (6081)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "6081"
+        jump: ACCEPT
+        comment: "Kube-OVN Geneve"
+        state: present
+
+    - name: Allow Kube-OVN ovn-central (6641-6644)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        match: multiport
+        destination_ports: "6641:6644"
+        jump: ACCEPT
+        comment: "Kube-OVN ovn-central"
+        state: present
+
+    - name: Allow Kube-OVN metrics (10660,10661,10665)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        match: multiport
+        destination_ports: "10660,10661,10665"
+        jump: ACCEPT
+        comment: "Kube-OVN kube-ovn-controller Metrics"
+        state: present
+
+    - name: Save iptables rules
+      ansible.builtin.shell: |
+        iptables-save > /etc/iptables/rules.v4
+      changed_when: true
