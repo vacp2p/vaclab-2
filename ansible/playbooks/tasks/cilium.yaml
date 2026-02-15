@@ -86,7 +86,7 @@
       enableIdentityMark: false
       
       # Device detection for Kube-OVN interfaces
-      devices: eth+ ens+ enp+ ens3 ovn0 genev_sys_6081 vxlan_sys_4789
+      devices: eth+ ens+ enp+ bond+ ens3 bond0 ovn0 genev_sys_6081 vxlan_sys_4789
       
       # Bandwidth manager - disabled as Kube-OVN handles bandwidth
       bandwidthManager:
