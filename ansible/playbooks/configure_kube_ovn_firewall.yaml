@@ -66,24 +66,16 @@
         state: present
 
     - name: Allow Kube-OVN ovn-central (6641-6644)
-      ansible.builtin.iptables:
-        chain: INPUT
-        protocol: tcp
-        match: multiport
-        destination_ports: "6641:6644"
-        jump: ACCEPT
-        comment: "Kube-OVN ovn-central"
-        state: present
+      ansible.builtin.shell: |
+        iptables -C INPUT -p tcp -m multiport --dports 6641:6644 -j ACCEPT -m comment --comment "Kube-OVN ovn-central" 2>/dev/null || \
+        iptables -I INPUT -p tcp -m multiport --dports 6641:6644 -j ACCEPT -m comment --comment "Kube-OVN ovn-central"
+      changed_when: false
 
     - name: Allow Kube-OVN metrics (10660,10661,10665)
-      ansible.builtin.iptables:
-        chain: INPUT
-        protocol: tcp
-        match: multiport
-        destination_ports: "10660,10661,10665"
-        jump: ACCEPT
-        comment: "Kube-OVN kube-ovn-controller Metrics"
-        state: present
+      ansible.builtin.shell: |
+        iptables -C INPUT -p tcp -m multiport --dports 10660,10661,10665 -j ACCEPT -m comment --comment "Kube-OVN Metrics" 2>/dev/null || \
+        iptables -I INPUT -p tcp -m multiport --dports 10660,10661,10665 -j ACCEPT -m comment --comment "Kube-OVN Metrics"
+      changed_when: false
 
     - name: Save iptables rules
       ansible.builtin.shell: |
