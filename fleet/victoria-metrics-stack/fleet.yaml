@@ -370,7 +370,7 @@ helm:
                 spec:
                   resources:
                     requests:
-                      storage: 250Gi # set to 250Gi in production
+                      storage: 500Gi # set to 500Gi in production
                   storageClassName: longhorn-vaclab
             storageDataPath: /vm-data
         
@@ -645,6 +645,12 @@ helm:
                   target_label: __address__
                   replacement: '$1:8008'
                 - source_labels: [__meta_kubernetes_namespace]
+                  target_label: namespace
+                  action: replace
+                - source_labels: [__meta_kubernetes_pod_name]
+                  target_label: pod
+                  action: replace
+                - source_labels: [__meta_kubernetes_namespace]
                   regex: 'kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics'
                   action: drop
               metric_relabel_configs:
@@ -866,17 +872,32 @@ helm:
           accessModes:
           - ReadWriteOnce
           enabled: true
-          size: 20Gi
-          storageClassName: longhorn-vaclab
+          size: 40Gi
+          storageClassName: longhorn-vaclab-master
           type: pvc
+        
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+        
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
         
         resources:
           requests:
-            cpu: "4"
-            memory: 2Gi
-          limits:
             cpu: "8"
             memory: 8Gi
+          limits:
+            cpu: "16"
+            memory: 16Gi
 
         # -- Grafana VM scrape config
         vmScrape:
@@ -907,6 +928,13 @@ helm:
         extraArgs:
           - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
           - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tracefs)$
+        
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
+        
         # -- Node Exporter VM scrape config
         vmScrape:
           # whether we should create a service scrape resource for node-exporter
@@ -927,6 +955,13 @@ helm:
       # -- kube-state-metrics dependency chart configuration. For possible values check [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml)
       kube-state-metrics:
         enabled: true
+        
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
+        
         # -- [Scrape configuration](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec) for Kube State Metrics
         vmScrape:
           enabled: true

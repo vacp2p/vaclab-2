@@ -40,6 +40,19 @@ helm:
         requests:
             cpu: 2
             memory: 500Mi
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
     rbacHelpers:
       enable: false  
     crd:

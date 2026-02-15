@@ -3,13 +3,14 @@ k3s_cluster:
   children:
     server:
       hosts:
-        node-01.ih-eu-mda1.misc.vaclab.status.im:
+        metal-01.he-eu-hel1.misc.vacdst.status.im:
     agent:
       hosts:
+        node-01.ih-eu-mda1.misc.vaclab.status.im:
         node-02.ih-eu-mda1.misc.vaclab.status.im:
         node-03.ih-eu-mda1.misc.vaclab.status.im:
         node-04.ih-eu-mda1.misc.vaclab.status.im:
-        metal-01.he-eu-hel1.misc.vacdst.status.im:
+        node-05.ih-eu-mda1.misc.vaclab.status.im:
   # Required Vars
   vars:
     ansible_port: 22
@@ -26,8 +27,8 @@ k3s_cluster:
     api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 
     # Optional vars
-    extra_server_args: "--flannel-backend=none --disable-network-policy --write-kubeconfig-mode 644"
-    # extra_agent_args: ""
+    extra_server_args: "--flannel-backend=none --disable-network-policy --write-kubeconfig-mode 644 --kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
+    extra_agent_args: "--kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
     # extra_install_envs: { 'INSTALL_K3S_SKIP_SELINUX_RPM': 'true' }
     # cluster_context: vaclab
     # api_port: 6443

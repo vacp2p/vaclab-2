@@ -1,0 +1,72 @@
+---
+- name: Create sysctl configuration directory
+  ansible.builtin.file:
+    path: /etc/sysctl.d
+    state: directory
+    mode: '0755'
+
+- name: Configure sysctl for 40 Gbps networking and high connection count
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-vaclab-bdp.conf
+    mode: '0644'
+    content: |
+      # Core socket buffer sizes for 40 Gbps networking
+      net.core.rmem_default=171798691
+      net.core.rmem_max=171798691
+      net.core.wmem_default=171798691
+      net.core.wmem_max=171798691
+      
+      # TCP memory allocation (min, pressure, max in pages)
+      net.ipv4.tcp_mem=6173601 8231469 12347202
+      
+      # TCP buffer sizes (min, default, max in bytes)
+      net.ipv4.tcp_rmem=8229458 85899345 171798691
+      net.ipv4.tcp_wmem=8229458 85899345 171798691
+      
+      # UDP memory allocation (min, pressure, max in pages)
+      net.ipv4.udp_mem=12347202 16462938 24694404
+      
+      # UDP minimum buffer sizes
+      net.ipv4.udp_rmem_min=8192
+      net.ipv4.udp_wmem_min=8192
+      
+      # TCP performance optimizations
+      net.ipv4.tcp_window_scaling=1
+      net.ipv4.tcp_sack=1
+      net.ipv4.tcp_timestamps=1
+      
+      # File descriptor limits for 50K+ pods with multiple connections each
+      # Each pod might have 10-100 connections, so 50K pods = 500K-5M file descriptors minimum
+      # Setting to near-maximum to avoid any limits
+      fs.file-max=9223372036854775807
+      fs.nr_open=1073741816
+
+- name: Apply sysctl settings
+  ansible.builtin.command: sysctl -p /etc/sysctl.d/99-vaclab-bdp.conf
+  changed_when: true
+
+- name: Create /etc/rancher directory
+  ansible.builtin.file:
+    path: /etc/rancher
+    state: directory
+    mode: '0755'
+
+- name: Configure custom DNS resolv.conf for kubelet
+  ansible.builtin.copy:
+    dest: /etc/rancher/resolv.conf
+    mode: '0644'
+    content: |
+      nameserver 1.1.1.1
+      nameserver 185.12.64.2
+
+- name: Configure user limits for file descriptors
+  ansible.builtin.copy:
+    dest: /etc/security/limits.d/99-vaclab-limits.conf
+    mode: '0644'
+    content: |
+      # File descriptor limits matching fs.nr_open for 50K+ pods
+      *                soft    nofile          1073741816
+      *                hard    nofile          1073741816
+      root             soft    nofile          1073741816
+      root             hard    nofile          1073741816
+

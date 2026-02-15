@@ -135,6 +135,13 @@
         requests:
           cpu: 0.5
           memory: 256Mi
+      
+      # Tolerations for control-plane nodes
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
   when: cilium_installed.rc != 0
 
 - name: Wait for Cilium pods to be ready

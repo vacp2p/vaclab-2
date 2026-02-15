@@ -145,6 +145,19 @@
           value: "1.0"
         - name: HTTP_PROXY_TLS_SKIP_VERIFY
           value: "true"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       ingress:
         enabled: true
         tls:

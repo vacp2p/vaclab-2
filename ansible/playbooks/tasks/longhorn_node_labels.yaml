@@ -1,0 +1,38 @@
+---
+# Label and annotate nodes for Longhorn multi-disk configuration
+
+- name: Label agent nodes for Longhorn default disk creation
+  command: kubectl label node -lnode-role.kubernetes.io/worker node.longhorn.io/create-default-disk=true --overwrite
+  ignore_errors: true
+
+- name: Annotate agent nodes with multiple disk configuration
+  command: >
+    kubectl annotate node -lnode-role.kubernetes.io/worker
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400},{"path":"/data/longhorn","allowScheduling":true,"storageReserved":53687091200}]' 
+    --overwrite
+  ignore_errors: true
+
+- name: Label master node to disable default disk creation
+  command: kubectl label node -lnode-role.kubernetes.io/control-plane node.longhorn.io/create-default-disk=true --overwrite
+  ignore_errors: true
+
+- name: Annotate master node with single disk configuration (scheduling enabled)
+  command: >
+    kubectl annotate node -lnode-role.kubernetes.io/control-plane
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400}]'
+    --overwrite
+  ignore_errors: true
+
+- name: Display Longhorn node labeling summary
+  debug:
+    msg:
+      - "=============================================="
+      - "Longhorn Node Labels Applied"
+      - "=============================================="
+      - "Agent nodes labeled with:"
+      - "  - node.longhorn.io/create-default-disk=true"
+      - "  - Multiple disk annotation with /var/lib/longhorn and /data/longhorn"
+      - "Master node:"
+      - "  - node.longhorn.io/create-default-disk=true"
+      - "  - Scheduling will be disabled by Longhorn"
+      - "=============================================="

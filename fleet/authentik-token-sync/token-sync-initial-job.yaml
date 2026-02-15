@@ -13,6 +13,11 @@ spec:
   ttlSecondsAfterFinished: 3600
   template:
     spec:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       serviceAccountName: authentik-outpost-token-sync
       restartPolicy: OnFailure
       initContainers:
@@ -49,6 +54,7 @@ spec:
       containers:
         - name: update-secret
           image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
           command:
             - /bin/bash
             - -c

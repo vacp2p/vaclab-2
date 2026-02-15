@@ -105,3 +105,24 @@
       - "Tools:"
       - "  - longhornctl: installed at /usr/local/bin/longhornctl"
       - "=============================================="
+
+- name: Create Longhorn storage directories on root partition
+  become: true
+  file:
+    path: /var/lib/longhorn
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create Longhorn storage directories on data partition (agent nodes only)
+  become: true
+  file:
+    path: /data/longhorn
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  when: 
+    - "'agent' in group_names"
+    - ansible_mounts | selectattr('mount', 'equalto', '/data') | list | length > 0

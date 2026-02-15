@@ -115,6 +115,13 @@
           cpu: "4"
           memory: "8Gi"
       
+      # Tolerations for control-plane nodes
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      
   when: kubeovn_installed.rc != 0
 
 - name: Wait for Kube-OVN pods to be ready

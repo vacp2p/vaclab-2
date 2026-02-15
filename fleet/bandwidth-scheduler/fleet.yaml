@@ -44,7 +44,11 @@ helm:
           memory: 500Mi
       nodeSelector: {}
       affinity: {}
-      tolerations: []
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
     plugins:
       enabled: ["VaclabScheduling"]
       disabled: []
