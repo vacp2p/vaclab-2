@@ -1,18 +1,25 @@
 ---
 # Label and annotate nodes for Longhorn multi-disk configuration
 
+- name: Get list of agent nodes (nodes without control-plane role)
+  shell: kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/control-plane"] == null and .metadata.labels["node-role.kubernetes.io/master"] == null) | .metadata.name'
+  register: agent_nodes
+  changed_when: false
+
 - name: Label agent nodes for Longhorn default disk creation
-  command: kubectl label node -lnode-role.kubernetes.io/worker node.longhorn.io/create-default-disk=true --overwrite
-  ignore_errors: true
+  command: kubectl label node {{ item }} node.longhorn.io/create-default-disk=true --overwrite
+  loop: "{{ agent_nodes.stdout_lines }}"
+  when: agent_nodes.stdout_lines | length > 0
 
 - name: Annotate agent nodes with multiple disk configuration
   command: >
-    kubectl annotate node -lnode-role.kubernetes.io/worker
+    kubectl annotate node {{ item }}
     node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400},{"path":"/data/longhorn","allowScheduling":true,"storageReserved":53687091200}]' 
     --overwrite
-  ignore_errors: true
+  loop: "{{ agent_nodes.stdout_lines }}"
+  when: agent_nodes.stdout_lines | length > 0
 
-- name: Label master node to disable default disk creation
+- name: Label master node for Longhorn default disk creation
   command: kubectl label node -lnode-role.kubernetes.io/control-plane node.longhorn.io/create-default-disk=true --overwrite
   ignore_errors: true
 
@@ -29,10 +36,11 @@
       - "=============================================="
       - "Longhorn Node Labels Applied"
       - "=============================================="
-      - "Agent nodes labeled with:"
+      - "Agent nodes ({{ agent_nodes.stdout_lines | length }}):"
+      - "{{ agent_nodes.stdout_lines }}"
       - "  - node.longhorn.io/create-default-disk=true"
       - "  - Multiple disk annotation with /var/lib/longhorn and /data/longhorn"
       - "Master node:"
       - "  - node.longhorn.io/create-default-disk=true"
-      - "  - Scheduling will be disabled by Longhorn"
+      - "  - Single disk with scheduling enabled"
       - "=============================================="

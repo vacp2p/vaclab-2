@@ -9,17 +9,6 @@
         state: present
         update_cache: yes
 
-    - name: Block outgoing traffic to private IP ranges from public interface
-      ansible.builtin.iptables:
-        chain: OUTPUT
-        protocol: tcp
-        destination: "10.0.0.0/8"
-        out_interface: "enp+"
-        destination_port: "5000:6000"
-        jump: DROP
-        comment: "Block outgoing to private IPs (Hetzner abuse)"
-        state: present
-
     - name: Allow Kubernetes API server (6443)
       ansible.builtin.iptables:
         chain: INPUT
