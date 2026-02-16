@@ -11,11 +11,11 @@ spec:
     spec:
       template:
         spec:
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "monitoring"
-              effect: "PreferNoSchedule"
+          #tolerations:
+          #  - key: "dedicated"
+          #    operator: "Equal"
+          #    value: "monitoring"
+          #    effect: "PreferNoSchedule"
           serviceAccountName: authentik-outpost-token-sync
           restartPolicy: OnFailure
           initContainers:
