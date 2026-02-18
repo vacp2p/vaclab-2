@@ -327,8 +327,9 @@ helm:
             enabled: true
             extraArgs:
               # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
-              # Endpoint: http://vmks-vmcluster-vminsert.vmetrics:8480/opentelemetry/v1/metrics
-              # Converts metric names and labels to Prometheus format automatically
+              # OTLP Protobuf: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
+              # Prometheus import: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/prometheus/api/v1/import/prometheus
+              # Note: OTLP requires protobuf encoding (not JSON). Use Prometheus format for simple HTTP push.
               opentelemetry.usePrometheusNaming: "true"
             port: "8480"
             replicaCount: 2

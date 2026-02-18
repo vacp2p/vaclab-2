@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: otel-metrics-test
+  namespace: default
+  labels:
+    app: otel-metrics-test
+spec:
+  containers:
+  - name: otel-generator
+    image: curlimages/curl:latest
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+    command:
+    - /bin/sh
+    - -c
+    - |
+      while true; do
+        # Generate random metric values
+        COUNTER=$((RANDOM % 100))
+        GAUGE=$((RANDOM % 50))
+        DURATION="0.$((RANDOM % 999))"
+        TIMESTAMP_MS=$(($(date +%s) * 1000))
+        
+        # Create Prometheus text format metrics
+        cat > /tmp/metrics.txt << EOF
+      # HELP test_requests_total Total number of test requests
+      # TYPE test_requests_total counter
+      test_requests_total{method="GET",status="200",service_name="otel-test-app"} ${COUNTER} ${TIMESTAMP_MS}
+      # HELP test_active_connections Number of active connections
+      # TYPE test_active_connections gauge
+      test_active_connections{pool="main",service_name="otel-test-app"} ${GAUGE} ${TIMESTAMP_MS}
+      # HELP test_request_duration_seconds Request duration in seconds
+      # TYPE test_request_duration_seconds gauge
+      test_request_duration_seconds{endpoint="/api/test",service_name="otel-test-app"} ${DURATION} ${TIMESTAMP_MS}
+      EOF
+        
+        # Send metrics to vminsert using Prometheus import endpoint
+        echo "Sending metrics: counter=${COUNTER}, gauge=${GAUGE}, duration=${DURATION}"
+        RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST \
+          "http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/prometheus/api/v1/import/prometheus" \
+          -H "Content-Type: text/plain" \
+          --data-binary @/tmp/metrics.txt)
+        
+        HTTP_CODE=$(echo "$RESPONSE" | grep "HTTP_CODE:" | cut -d: -f2)
+        BODY=$(echo "$RESPONSE" | grep -v "HTTP_CODE:")
+        
+        if [ "$HTTP_CODE" = "204" ]; then
+          echo "Success (HTTP 204)"
+        else
+          echo "Response: $BODY (HTTP $HTTP_CODE)"
+        fi
+        
+        sleep 10
+      done
+  restartPolicy: Always
