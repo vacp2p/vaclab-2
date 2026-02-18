@@ -325,7 +325,11 @@ helm:
           retentionPeriod: "3"
           vminsert:
             enabled: true
-            extraArgs: {}
+            extraArgs:
+              # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
+              # Endpoint: http://vmks-vmcluster-vminsert.vmetrics:8480/opentelemetry/v1/metrics
+              # Converts metric names and labels to Prometheus format automatically
+              opentelemetry.usePrometheusNaming: "true"
             port: "8480"
             replicaCount: 2
             resources:
