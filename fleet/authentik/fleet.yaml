@@ -40,7 +40,7 @@ helm:
       primary:
         persistence:
           enabled: true
-          storageClass: longhorn-vaclab
+          storageClass: longhorn-vaclab-master
           size: 50Gi
         resources:
           requests:
@@ -49,11 +49,24 @@ helm:
           limits:
             cpu: "2"
             memory: 4Gi
+        #affinity:
+        #  nodeAffinity:
+        #    preferredDuringSchedulingIgnoredDuringExecution:
+        #      - weight: 100
+        #        preference:
+        #          matchExpressions:
+        #            - key: node-role.kubernetes.io/control-plane
+        #              operator: Exists
+        #tolerations:
+        #  - key: "dedicated"
+        #    operator: "Equal"
+        #    value: "monitoring"
+        #    effect: "PreferNoSchedule"
 
     redis:
       enabled: true
       global:
-        storageClass: longhorn-vaclab
+        storageClass: longhorn-vaclab-master
 
     global:
       postgresql:
@@ -148,6 +161,19 @@ helm:
 
     server:
       replicas: 2
+      #affinity:
+      #  nodeAffinity:
+      #    preferredDuringSchedulingIgnoredDuringExecution:
+      #      - weight: 100
+      #        preference:
+      #          matchExpressions:
+      #            - key: node-role.kubernetes.io/control-plane
+      #              operator: Exists
+      #tolerations:
+      #  - key: "dedicated"
+      #    operator: "Equal"
+      #    value: "monitoring"
+      #    effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"
@@ -168,6 +194,19 @@ helm:
             secretName: authentik-tls-secret
 
     worker:
+      #affinity:
+      #  nodeAffinity:
+      #    preferredDuringSchedulingIgnoredDuringExecution:
+      #      - weight: 100
+      #        preference:
+      #          matchExpressions:
+      #            - key: node-role.kubernetes.io/control-plane
+      #              operator: Exists
+      #tolerations:
+      #  - key: "dedicated"
+      #    operator: "Equal"
+      #    value: "monitoring"
+      #    effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"

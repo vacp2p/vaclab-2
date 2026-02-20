@@ -1,0 +1,111 @@
+---
+- name: Apply system tuning and K3s configuration updates
+  hosts: k3s_cluster
+  become: true
+  handlers:
+    - name: Apply sysctl settings
+      ansible.builtin.command: sysctl -p /etc/sysctl.d/99-vaclab-bdp.conf
+      changed_when: true
+    
+    - name: Restart K3s server
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: "'server' in group_names"
+    
+    - name: Restart K3s agent
+      ansible.builtin.systemd:
+        name: k3s-agent
+        state: restarted
+      when: "'agent' in group_names"
+  
+  tasks:
+    - name: Apply system tuning configuration
+      ansible.builtin.import_tasks: tasks/system_tuning.yaml
+    
+    - name: Update K3s server configuration
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/system/k3s.service
+        regexp: '^ExecStart='
+        line: "ExecStart=/usr/local/bin/k3s server --flannel-backend=none --disable-network-policy --write-kubeconfig-mode 644 --kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
+        backrefs: no
+      when: "'server' in group_names"
+      notify: Restart K3s server
+    
+    - name: Update K3s agent configuration
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/system/k3s-agent.service
+        regexp: '^ExecStart='
+        line: "ExecStart=/usr/local/bin/k3s agent --kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
+        backrefs: no
+      when: "'agent' in group_names"
+      notify: Restart K3s agent
+    
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reexec: yes
+      when: ansible_facts.systemd_version is defined
+
+- name: Verify configuration
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Check sysctl settings
+      ansible.builtin.command: sysctl net.core.wmem_max net.core.rmem_max fs.file-max
+      register: sysctl_check
+      changed_when: false
+    
+    - name: Display sysctl values
+      ansible.builtin.debug:
+        var: sysctl_check.stdout_lines
+    
+    - name: Check kubelet max-pods setting (server)
+      ansible.builtin.shell: |
+        systemctl cat k3s.service | grep max-pods || echo "max-pods not found in service"
+      register: server_max_pods
+      changed_when: false
+      when: "'server' in group_names"
+    
+    - name: Check kubelet max-pods setting (agent)
+      ansible.builtin.shell: |
+        systemctl cat k3s-agent.service | grep max-pods || echo "max-pods not found in service"
+      register: agent_max_pods
+      changed_when: false
+      when: "'agent' in group_names"
+    
+    - name: Display K3s server configuration
+      ansible.builtin.debug:
+        var: server_max_pods.stdout_lines
+      when: "'server' in group_names"
+    
+    - name: Display K3s agent configuration
+      ansible.builtin.debug:
+        var: agent_max_pods.stdout_lines
+      when: "'agent' in group_names"
+
+- name: Verify Kubernetes node configuration
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Wait for nodes to be ready after restart
+      ansible.builtin.command: kubectl wait --for=condition=ready nodes --all --timeout=300s
+      register: nodes_ready
+      retries: 3
+      delay: 10
+      until: nodes_ready.rc == 0
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+    
+    - name: Check node capacity
+      ansible.builtin.command: kubectl get nodes -o json
+      register: nodes_capacity
+      changed_when: false
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+    
+    - name: Parse and display max pods per node
+      ansible.builtin.debug:
+        msg: "Node: {{ item.metadata.name }} - Max Pods: {{ item.status.capacity.pods }}"
+      loop: "{{ (nodes_capacity.stdout | from_json).items }}"
+      loop_control:
+        label: "{{ item.metadata.name }}"

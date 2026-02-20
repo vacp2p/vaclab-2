@@ -86,7 +86,7 @@
       enableIdentityMark: false
       
       # Device detection for Kube-OVN interfaces
-      devices: eth+ ens+ ens3 ovn0 genev_sys_6081 vxlan_sys_4789
+      devices: eth+ ens+ enp+ bond+ ens3 bond0 ovn0 genev_sys_6081 vxlan_sys_4789
       
       # Bandwidth manager - disabled as Kube-OVN handles bandwidth
       bandwidthManager:
@@ -101,8 +101,25 @@
       # Enable Hubble for observability
       hubble:
         enabled: true
+        metrics:
+          enabled:
+            - "dns:query;ignoreAAAA;labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload"
+            - "drop:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "tcp:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "flow:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "icmp:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
+            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,traffic_direction"
+            - "port-distribution:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
+          enableOpenMetrics: true
+          port: 9965
+          serviceMonitor:
+            enabled: false
         relay:
           enabled: true
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: false
         ui:
           enabled: true
       
@@ -118,6 +135,13 @@
         requests:
           cpu: 0.5
           memory: 256Mi
+      
+      # Tolerations for control-plane nodes
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
   when: cilium_installed.rc != 0
 
 - name: Wait for Cilium pods to be ready

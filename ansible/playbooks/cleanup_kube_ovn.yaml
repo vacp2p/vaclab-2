@@ -1,0 +1,69 @@
+---
+- name: Clean up Kube-OVN remnants from all nodes
+  hosts: k3s_cluster
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Stop OVS processes
+      shell: |
+        pkill -9 ovs-vswitchd || true
+        pkill -9 ovsdb-server || true
+        pkill -9 ovn-controller || true
+        pkill -9 ovn-northd || true
+      ignore_errors: true
+
+    - name: Remove OVN/OVS kernel modules
+      shell: |
+        rmmod openvswitch || true
+        rmmod vport_geneve || true
+        rmmod geneve || true
+      ignore_errors: true
+
+    - name: Remove Kube-OVN network interfaces
+      shell: |
+        ip link delete ovn0 2>/dev/null || true
+        ip link delete ovs-system 2>/dev/null || true
+        ip link delete genev_sys_6081 2>/dev/null || true
+      ignore_errors: true
+
+    - name: Remove OVN/OVS data directories
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/run/openvswitch
+        - /var/run/ovn
+        - /etc/openvswitch
+        - /etc/ovn
+        - /var/log/openvswitch
+        - /var/log/ovn
+        - /opt/ovs-config
+
+    - name: Remove Kube-OVN CNI config
+      file:
+        path: /etc/cni/net.d/01-kube-ovn.conflist
+        state: absent
+
+    - name: Remove Kube-OVN binaries
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /opt/cni/bin/kube-ovn
+        - /usr/local/bin/kube-ovn
+
+    - name: Clean iptables rules (Kube-OVN specific)
+      shell: |
+        iptables -t nat -F KUBE-OVN-POSTROUTING 2>/dev/null || true
+        iptables -t nat -X KUBE-OVN-POSTROUTING 2>/dev/null || true
+        iptables -t filter -F KUBE-OVN-FORWARD 2>/dev/null || true
+        iptables -t filter -X KUBE-OVN-FORWARD 2>/dev/null || true
+      ignore_errors: true
+
+    - name: Display remaining network interfaces
+      shell: ip link show
+      register: network_interfaces
+
+    - name: Show network interfaces
+      debug:
+        msg: "{{ network_interfaces.stdout_lines }}"

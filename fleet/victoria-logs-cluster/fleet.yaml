@@ -85,6 +85,11 @@ helm:
       - vector-vl-config
       resources: {}
       role: Agent
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       service:
         enabled: false
     vlinsert:

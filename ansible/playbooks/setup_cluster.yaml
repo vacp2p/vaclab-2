@@ -1,4 +1,15 @@
 ---
+- name: Apply system tuning for high-performance networking
+  hosts: k3s_cluster
+  become: true
+  handlers:
+    - name: Apply sysctl settings
+      ansible.builtin.command: sysctl -p /etc/sysctl.d/99-vaclab-bdp.conf
+      changed_when: true
+  tasks:
+    - name: Import system tuning tasks
+      ansible.builtin.import_tasks: tasks/system_tuning.yaml
+
 - name: Import kube cluster playbook
   ansible.builtin.import_playbook: ../k3s-ansible/playbooks/site.yml
 
@@ -40,6 +51,20 @@
   tasks:
     - name: Import Cilium installation tasks
       ansible.builtin.import_tasks: tasks/cilium.yaml
+
+- name: Apply node taints after CNI installation
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import node tainting tasks
+      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
+
+- name: Label nodes for Longhorn multi-disk configuration
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import Longhorn node labeling tasks
+      ansible.builtin.import_tasks: tasks/longhorn_node_labels.yaml
 
 - name: Install Cilium CLI
   hosts: k3s_cluster
@@ -124,9 +149,9 @@
       ansible.builtin.import_tasks: tasks/authentik_resources.yaml
 
 # It is better to apply taints manually later
-#- name: Apply node taints
-#  hosts: server
-#  run_once: true
-#  tasks:
-#    - name: Import node tainting tasks
-#      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
+- name: Apply node taints
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import node tainting tasks
+      ansible.builtin.import_tasks: tasks/taint_nodes.yaml

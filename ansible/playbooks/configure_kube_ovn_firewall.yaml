@@ -1,0 +1,72 @@
+---
+- name: Configure Kube-OVN Firewall Rules
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Install iptables-persistent
+      ansible.builtin.apt:
+        name: iptables-persistent
+        state: present
+        update_cache: yes
+
+    - name: Allow Kubernetes API server (6443)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "6443"
+        jump: ACCEPT
+        comment: "Kubernetes Supervisor"
+        state: present
+
+    - name: Allow Flannel VXLAN (8472)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "8472"
+        jump: ACCEPT
+        comment: "Kubernetes Flannel VXLAN"
+        state: present
+
+    - name: Allow Prometheus node exporter (9100)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "9100"
+        jump: ACCEPT
+        comment: "Kubernetes Helm Prometheus"
+        state: present
+
+    - name: Allow Kubernetes metrics (10250)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: "10250"
+        jump: ACCEPT
+        comment: "Kubernetes Metrics"
+        state: present
+
+    - name: Allow Kube-OVN Geneve (6081)
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: "6081"
+        jump: ACCEPT
+        comment: "Kube-OVN Geneve"
+        state: present
+
+    - name: Allow Kube-OVN ovn-central (6641-6644)
+      ansible.builtin.shell: |
+        iptables -C INPUT -p tcp -m multiport --dports 6641:6644 -j ACCEPT -m comment --comment "Kube-OVN ovn-central" 2>/dev/null || \
+        iptables -I INPUT -p tcp -m multiport --dports 6641:6644 -j ACCEPT -m comment --comment "Kube-OVN ovn-central"
+      changed_when: false
+
+    - name: Allow Kube-OVN metrics (10660,10661,10665)
+      ansible.builtin.shell: |
+        iptables -C INPUT -p tcp -m multiport --dports 10660,10661,10665 -j ACCEPT -m comment --comment "Kube-OVN Metrics" 2>/dev/null || \
+        iptables -I INPUT -p tcp -m multiport --dports 10660,10661,10665 -j ACCEPT -m comment --comment "Kube-OVN Metrics"
+      changed_when: false
+
+    - name: Save iptables rules
+      ansible.builtin.shell: |
+        iptables-save > /etc/iptables/rules.v4
+      changed_when: true

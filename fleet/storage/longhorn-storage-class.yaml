@@ -7,10 +7,13 @@ allowVolumeExpansion: true
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 parameters:
-  numberOfReplicas: "3"
+  numberOfReplicas: "2"
   staleReplicaTimeout: "2880"
   fromBackup: ""
   fsType: "ext4"
+  # Exclude control-plane/master node - use only worker nodes
+  # TODO: Set node-role.kubernetes.io/worker tag on Longhorn node objects via UI first
+  # nodeSelector: "node-role.kubernetes.io/worker"
 #  mkfsParams: "-I 256 -b 4096 -O ^metadata_csum,^64bit"
 #  backingImage: "bi-test"
 #  backingImageDataSourceType: "download"
@@ -18,7 +21,23 @@ parameters:
 #  backingImageChecksum: "SHA512 checksum of the backing image"
 #  unmapMarkSnapChainRemoved: "ignored"
 #  diskSelector: "ssd,fast"
-#  nodeSelector: "storage,fast"
 #  recurringJobSelector: '[{"name":"snap-group", "isGroup":true},
 #                          {"name":"backup", "isGroup":false}]'
 #  nfsOptions: "soft,timeo=150,retrans=3"
+---
+# StorageClass for components running on master node
+# Allows master node participation with 2 replicas (1 on master, 1 on worker)
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-vaclab-master
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "2880"
+  fromBackup: ""
+  fsType: "ext4"
+  # No nodeSelector - allows all nodes including master

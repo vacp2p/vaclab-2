@@ -13,6 +13,11 @@ spec:
       labels:
         app: authentik-outpost
     spec:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       containers:
         - name: outpost
           image: ghcr.io/goauthentik/proxy:2025.10.3

@@ -145,6 +145,14 @@
           value: "1.0"
         - name: HTTP_PROXY_TLS_SKIP_VERIFY
           value: "true"
+      extraTolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      extraNodeSelectorTerms:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
       ingress:
         enabled: true
         tls:
@@ -221,7 +229,7 @@
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
         #branch: main
-        branch: feat/production_settings
+        branch: cluster_and_cp_updates
         paths:
           - fleet
 

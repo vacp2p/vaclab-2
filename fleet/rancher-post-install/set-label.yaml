@@ -12,6 +12,7 @@ spec:
       containers:
       - name: kubectl
         image: rancher/kubectl:v1.29.0
+        imagePullPolicy: IfNotPresent
         command:
         - kubectl
         - label
