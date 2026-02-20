@@ -12,7 +12,7 @@ parameters:
   fromBackup: ""
   fsType: "ext4"
   # Exclude control-plane/master node - use only worker nodes
-  # TODO: Set node-role.kubernetes.io/worker tag on Longhorn node objects via UI first
+  nodeSelector: "node-role.kubernetes.io/worker"
   # nodeSelector: "node-role.kubernetes.io/worker"
 #  mkfsParams: "-I 256 -b 4096 -O ^metadata_csum,^64bit"
 #  backingImage: "bi-test"
@@ -40,4 +40,5 @@ parameters:
   staleReplicaTimeout: "2880"
   fromBackup: ""
   fsType: "ext4"
+  dataLocality: "best-effort"
   # No nodeSelector - allows all nodes including master

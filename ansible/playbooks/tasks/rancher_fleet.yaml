@@ -229,7 +229,7 @@
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
         #branch: main
-        branch: cluster_and_cp_updates
+        branch: fix/fix_master_and_storage_issues
         paths:
           - fleet
 

@@ -13,6 +13,14 @@ spec:
       labels:
         app: authentik-outpost
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
       tolerations:
         - key: "dedicated"
           operator: "Equal"

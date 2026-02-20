@@ -49,19 +49,19 @@ helm:
           limits:
             cpu: "2"
             memory: 4Gi
-        #affinity:
-        #  nodeAffinity:
-        #    preferredDuringSchedulingIgnoredDuringExecution:
-        #      - weight: 100
-        #        preference:
-        #          matchExpressions:
-        #            - key: node-role.kubernetes.io/control-plane
-        #              operator: Exists
-        #tolerations:
-        #  - key: "dedicated"
-        #    operator: "Equal"
-        #    value: "monitoring"
-        #    effect: "PreferNoSchedule"
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
 
     redis:
       enabled: true
@@ -161,19 +161,19 @@ helm:
 
     server:
       replicas: 2
-      #affinity:
-      #  nodeAffinity:
-      #    preferredDuringSchedulingIgnoredDuringExecution:
-      #      - weight: 100
-      #        preference:
-      #          matchExpressions:
-      #            - key: node-role.kubernetes.io/control-plane
-      #              operator: Exists
-      #tolerations:
-      #  - key: "dedicated"
-      #    operator: "Equal"
-      #    value: "monitoring"
-      #    effect: "PreferNoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"
@@ -194,19 +194,19 @@ helm:
             secretName: authentik-tls-secret
 
     worker:
-      #affinity:
-      #  nodeAffinity:
-      #    preferredDuringSchedulingIgnoredDuringExecution:
-      #      - weight: 100
-      #        preference:
-      #          matchExpressions:
-      #            - key: node-role.kubernetes.io/control-plane
-      #              operator: Exists
-      #tolerations:
-      #  - key: "dedicated"
-      #    operator: "Equal"
-      #    value: "monitoring"
-      #    effect: "PreferNoSchedule"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"
