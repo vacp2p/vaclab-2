@@ -1322,6 +1322,7 @@ helm:
                 k8s-app: hubble
             jobLabel: k8s-app
         # Vaclab custom scheduler metrics scraping (using VMPodScrape since no service exists)
+        # Note: Pod doesn't expose containerPort, so we use relabeling to construct the target address
         - apiVersion: operator.victoriametrics.com/v1beta1
           kind: VMPodScrape
           metadata:
@@ -1329,13 +1330,17 @@ helm:
             namespace: vmetrics
           spec:
             podMetricsEndpoints:
-              - targetPort: 10259
-                path: /metrics
+              - path: /metrics
                 scheme: https
                 tlsConfig:
                   insecureSkipVerify: true
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 relabelConfigs:
+                  # Construct target address as pod_ip:10259 since container port is not defined
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_ip]
+                    targetLabel: __address__
+                    replacement: "$1:10259"
                   - action: replace
                     sourceLabels: [__meta_kubernetes_pod_label_component]
                     targetLabel: scheduler_name
@@ -1359,10 +1364,14 @@ helm:
             namespace: vmetrics
           spec:
             podMetricsEndpoints:
-              - targetPort: 8080
-                path: /metrics
+              - path: /metrics
                 scheme: http
                 relabelConfigs:
+                  # Construct target address as pod_ip:8080 since container port may not be defined
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_ip]
+                    targetLabel: __address__
+                    replacement: "$1:8080"
                   - action: replace
                     replacement: vaclab-scheduler-controller
                     targetLabel: scheduler_name
