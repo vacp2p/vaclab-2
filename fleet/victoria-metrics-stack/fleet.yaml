@@ -1230,7 +1230,7 @@ helm:
       # Component scraping kube scheduler
       kubeScheduler:
         # -- Enable KubeScheduler metrics scraping
-        enabled: false
+        enabled: true
         # -- If your kube scheduler is not deployed as a pod, specify IPs it can be found on
         endpoints: []
         # If using kubeScheduler.endpoints only the port and targetPort are used
@@ -1252,7 +1252,8 @@ helm:
           spec:
             jobLabel: jobLabel
             namespaceSelector:
-              matchNames: []
+              matchNames:
+                - kube-system
             endpoints:
               - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 # bearerTokenSecret:
@@ -1260,6 +1261,7 @@ helm:
                 port: http-metrics
                 scheme: https
                 tlsConfig:
+                  insecureSkipVerify: true
                   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
       # Component scraping kube proxy
@@ -1319,6 +1321,43 @@ helm:
               matchLabels:
                 k8s-app: hubble
             jobLabel: k8s-app
+        # Vaclab custom scheduler metrics scraping (using VMPodScrape since no service exists)
+        - apiVersion: operator.victoriametrics.com/v1beta1
+          kind: VMPodScrape
+          metadata:
+            name: vaclab-scheduler-metrics
+            namespace: vmetrics
+          spec:
+            podMetricsEndpoints:
+              - targetPort: 10259
+                path: /metrics
+                scheme: https
+                tlsConfig:
+                  insecureSkipVerify: true
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            namespaceSelector:
+              matchNames:
+                - kube-system
+            selector:
+              matchLabels:
+                component: scheduler
+        # Vaclab scheduler controller metrics scraping
+        - apiVersion: operator.victoriametrics.com/v1beta1
+          kind: VMPodScrape
+          metadata:
+            name: vaclab-scheduler-controller-metrics
+            namespace: vmetrics
+          spec:
+            podMetricsEndpoints:
+              - targetPort: 8080
+                path: /metrics
+                scheme: http
+            namespaceSelector:
+              matchNames:
+                - kube-system
+            selector:
+              matchLabels:
+                app: scheduler-plugins-controller
 
 diff:
   comparePatches:
