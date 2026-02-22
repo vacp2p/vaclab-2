@@ -1335,6 +1335,11 @@ helm:
                 tlsConfig:
                   insecureSkipVerify: true
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                relabelConfigs:
+                  - sourceLabels: [__meta_kubernetes_pod_label_component]
+                    targetLabel: scheduler_name
+                  - replacement: vaclab-scheduler
+                    targetLabel: scheduler_type
             namespaceSelector:
               matchNames:
                 - kube-system
@@ -1352,6 +1357,11 @@ helm:
               - targetPort: 8080
                 path: /metrics
                 scheme: http
+                relabelConfigs:
+                  - replacement: vaclab-scheduler-controller
+                    targetLabel: scheduler_name
+                  - replacement: vaclab-scheduler-controller
+                    targetLabel: scheduler_type
             namespaceSelector:
               matchNames:
                 - kube-system
