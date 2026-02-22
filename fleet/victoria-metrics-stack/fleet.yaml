@@ -1328,7 +1328,6 @@ helm:
             name: vaclab-scheduler-metrics
             namespace: vmetrics
           spec:
-            jobLabel: component
             podMetricsEndpoints:
               - targetPort: 10259
                 path: /metrics
@@ -1337,11 +1336,14 @@ helm:
                   insecureSkipVerify: true
                 bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 relabelConfigs:
-                  - sourceLabels: [__meta_kubernetes_pod_label_component]
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_label_component]
                     targetLabel: scheduler_name
-                  - replacement: vaclab-scheduler
+                  - action: replace
+                    replacement: vaclab-scheduler
                     targetLabel: scheduler_type
-                  - replacement: vaclab-scheduler
+                  - action: replace
+                    replacement: vaclab-scheduler
                     targetLabel: job
             namespaceSelector:
               matchNames:
@@ -1361,11 +1363,14 @@ helm:
                 path: /metrics
                 scheme: http
                 relabelConfigs:
-                  - replacement: vaclab-scheduler-controller
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
                     targetLabel: scheduler_name
-                  - replacement: vaclab-scheduler-controller
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
                     targetLabel: scheduler_type
-                  - replacement: vaclab-scheduler-controller
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
                     targetLabel: job
             namespaceSelector:
               matchNames:
