@@ -1328,6 +1328,7 @@ helm:
             name: vaclab-scheduler-metrics
             namespace: vmetrics
           spec:
+            jobLabel: component
             podMetricsEndpoints:
               - targetPort: 10259
                 path: /metrics
@@ -1340,6 +1341,8 @@ helm:
                     targetLabel: scheduler_name
                   - replacement: vaclab-scheduler
                     targetLabel: scheduler_type
+                  - replacement: vaclab-scheduler
+                    targetLabel: job
             namespaceSelector:
               matchNames:
                 - kube-system
@@ -1362,6 +1365,8 @@ helm:
                     targetLabel: scheduler_name
                   - replacement: vaclab-scheduler-controller
                     targetLabel: scheduler_type
+                  - replacement: vaclab-scheduler-controller
+                    targetLabel: job
             namespaceSelector:
               matchNames:
                 - kube-system
