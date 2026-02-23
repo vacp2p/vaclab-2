@@ -57,11 +57,11 @@ helm:
                   matchExpressions:
                     - key: node-role.kubernetes.io/worker
                       operator: Exists
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "monitoring"
-            effect: "PreferNoSchedule"
+        # tolerations:
+        #   - key: "dedicated"
+        #     operator: "Equal"
+        #     value: "monitoring"
+        #     effect: "PreferNoSchedule"
 
     redis:
       enabled: true
@@ -169,11 +169,11 @@ helm:
                 matchExpressions:
                   - key: node-role.kubernetes.io/worker
                     operator: Exists
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "monitoring"
-          effect: "PreferNoSchedule"
+      # tolerations:
+      #   - key: "dedicated"
+      #     operator: "Equal"
+      #     value: "monitoring"
+      #     effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"
@@ -202,11 +202,11 @@ helm:
                 matchExpressions:
                   - key: node-role.kubernetes.io/worker
                     operator: Exists
-      tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "monitoring"
-          effect: "PreferNoSchedule"
+      # tolerations:
+      #   - key: "dedicated"
+      #     operator: "Equal"
+      #     value: "monitoring"
+      #     effect: "PreferNoSchedule"
       resources:
         requests:
           cpu: "1"
