@@ -60,7 +60,7 @@
   kubernetes.core.helm:
     name: cilium
     chart_ref: cilium/cilium
-    chart_version: "1.18.5"
+    chart_version: "1.19.1"
     release_namespace: kube-system
     create_namespace: false
     wait: true
@@ -120,6 +120,11 @@
             enabled: true
             serviceMonitor:
               enabled: false
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
         ui:
           enabled: true
       
