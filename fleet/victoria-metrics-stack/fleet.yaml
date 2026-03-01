@@ -881,19 +881,19 @@ helm:
           storageClassName: longhorn-vaclab-master
           type: pvc
         
-        #affinity:
-        #  nodeAffinity:
-        #    preferredDuringSchedulingIgnoredDuringExecution:
-        #      - weight: 100
-        #        preference:
-        #          matchExpressions:
-        #            - key: node-role.kubernetes.io/control-plane
-        #              operator: Exists
-        #tolerations:
-        #  - key: "dedicated"
-        #    operator: "Equal"
-        #    value: "monitoring"
-        #    effect: "PreferNoSchedule"
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
         
         resources:
           requests:
@@ -982,9 +982,9 @@ helm:
                     regex: (uid|container_id|image_id)
                   # to uncomment after traffic estimation 
                   # drop metrics from system namespaces
-                  #- action: drop
-                  #  source_labels: [namespace]
-                  #  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
+                  - action: drop
+                    source_labels: [namespace]
+                    regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
             jobLabel: app.kubernetes.io/name
 
       # -- Component scraping the kubelets
@@ -997,10 +997,10 @@ helm:
             spec:
               path: /metrics/cadvisor
               # to uncomment after traffic estimation 
-              #metricRelabelConfigs:
-              #  - action: drop
-              #    source_labels: [namespace]
-              #    regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
+              metricRelabelConfigs:
+                - action: drop
+                  source_labels: [namespace]
+                  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
           # -- Enable scraping /metrics/probes from kubelet's service
           probes:
             enabled: true
@@ -1043,9 +1043,9 @@ helm:
                 source_labels: [__name__]
                 regex: (rest_client_request_duration_seconds_bucket|rest_client_request_duration_seconds_sum|rest_client_request_duration_seconds_count)
               # to uncomment after traffic estimation
-              #- action: drop
-              #  source_labels: [namespace]
-              #  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
+              - action: drop
+                source_labels: [namespace]
+                regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
               
               # Add this to bypass image != "" filter in grafana dashboards in case runtime is Docker
               #- action: replace
@@ -1062,9 +1062,9 @@ helm:
                 replacement: kubelet
               # drop metrics from system namespaces
               # to uncomment after traffic estimation
-              #- action: drop
-              #  source_labels: [namespace]
-              #  regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
+              - action: drop
+                source_labels: [namespace]
+                regex: "kube-system|kyverno|homepage|authentik|vaclab-system|cert-manager|cattle-capi-system|cattle-fleet-clusters-system|cattle-fleet-local-system|cattle-fleet-system|cattle-global-data|cattle-impersonation-system|cattle-local-user-passwords|cattle-system|cattle-turtles-system|cattle-ui-plugin-system|cilium-secrets|fleet-default|fleet-local|kube-node-lease|kube-public|local|longhorn-system|policy-reporter|victorialogs|vmetrics"
             # ignore timestamps of cadvisor's metrics by default
             # more info here https://github.com/VictoriaMetrics/VictoriaMetrics/issues/4697#issuecomment-1656540535
             honorTimestamps: false
@@ -1230,7 +1230,7 @@ helm:
       # Component scraping kube scheduler
       kubeScheduler:
         # -- Enable KubeScheduler metrics scraping
-        enabled: false
+        enabled: true
         # -- If your kube scheduler is not deployed as a pod, specify IPs it can be found on
         endpoints: []
         # If using kubeScheduler.endpoints only the port and targetPort are used
@@ -1252,7 +1252,8 @@ helm:
           spec:
             jobLabel: jobLabel
             namespaceSelector:
-              matchNames: []
+              matchNames:
+                - kube-system
             endpoints:
               - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
                 # bearerTokenSecret:
@@ -1260,6 +1261,7 @@ helm:
                 port: http-metrics
                 scheme: https
                 tlsConfig:
+                  insecureSkipVerify: true
                   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
       # Component scraping kube proxy
@@ -1319,6 +1321,72 @@ helm:
               matchLabels:
                 k8s-app: hubble
             jobLabel: k8s-app
+        # Vaclab custom scheduler metrics scraping (using VMPodScrape since no service exists)
+        # Note: Pod doesn't expose containerPort, so we use relabeling to construct the target address
+        - apiVersion: operator.victoriametrics.com/v1beta1
+          kind: VMPodScrape
+          metadata:
+            name: vaclab-scheduler-metrics
+            namespace: vmetrics
+          spec:
+            podMetricsEndpoints:
+              - path: /metrics
+                scheme: https
+                tlsConfig:
+                  insecureSkipVerify: true
+                bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                relabelConfigs:
+                  # Construct target address as pod_ip:10259 since container port is not defined
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_ip]
+                    targetLabel: __address__
+                    replacement: "$1:10259"
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_label_component]
+                    targetLabel: scheduler_name
+                  - action: replace
+                    replacement: vaclab-scheduler
+                    targetLabel: scheduler_type
+                  - action: replace
+                    replacement: vaclab-scheduler
+                    targetLabel: job
+            namespaceSelector:
+              matchNames:
+                - kube-system
+            selector:
+              matchLabels:
+                component: scheduler
+        # Vaclab scheduler controller metrics scraping
+        - apiVersion: operator.victoriametrics.com/v1beta1
+          kind: VMPodScrape
+          metadata:
+            name: vaclab-scheduler-controller-metrics
+            namespace: vmetrics
+          spec:
+            podMetricsEndpoints:
+              - path: /metrics
+                scheme: http
+                relabelConfigs:
+                  # Construct target address as pod_ip:8080 since container port may not be defined
+                  - action: replace
+                    sourceLabels: [__meta_kubernetes_pod_ip]
+                    targetLabel: __address__
+                    replacement: "$1:8080"
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
+                    targetLabel: scheduler_name
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
+                    targetLabel: scheduler_type
+                  - action: replace
+                    replacement: vaclab-scheduler-controller
+                    targetLabel: job
+            namespaceSelector:
+              matchNames:
+                - kube-system
+            selector:
+              matchLabels:
+                app: scheduler-plugins-controller
 
 diff:
   comparePatches:

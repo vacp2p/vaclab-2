@@ -7,27 +7,29 @@
   changed_when: false
 
 - name: Label agent nodes for Longhorn default disk creation
-  command: kubectl label node {{ item }} node.longhorn.io/create-default-disk=true --overwrite
+  command: kubectl label node {{ item }} node.longhorn.io/create-default-disk='config' --overwrite
   loop: "{{ agent_nodes.stdout_lines }}"
   when: agent_nodes.stdout_lines | length > 0
 
 - name: Annotate agent nodes with multiple disk configuration
   command: >
     kubectl annotate node {{ item }}
-    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400},{"path":"/data/longhorn","allowScheduling":true,"storageReserved":53687091200}]' 
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400,"tags":["first-disk","home-disk"]},{"name":"data-disk","path":"/data/longhorn","allowScheduling":true,"storageReserved":53687091200, "tags":["data-disk", "second-disk"]}]' 
     --overwrite
+    kubectl annotate node {{ item}} node.longhorn.io/default-node-tags: '["node-role.kubernetes.io/worker","worker"]' --overwrite
   loop: "{{ agent_nodes.stdout_lines }}"
   when: agent_nodes.stdout_lines | length > 0
 
 - name: Label master node for Longhorn default disk creation
-  command: kubectl label node -lnode-role.kubernetes.io/control-plane node.longhorn.io/create-default-disk=true --overwrite
+  command: kubectl label node -lnode-role.kubernetes.io/control-plane node.longhorn.io/create-default-disk='config' --overwrite
   ignore_errors: true
 
 - name: Annotate master node with single disk configuration (scheduling enabled)
   command: >
     kubectl annotate node -lnode-role.kubernetes.io/control-plane
-    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400}]'
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400,"tags":["first-disk","home-disk"]}]'
     --overwrite
+    kubectl annotate node -lnode-role.kubernetes.io/control-plane node.longhorn.io/default-node-tags: '["node-role.kubernetes.io/control-plane","master"]' --overwrite
   ignore_errors: true
 
 - name: Display Longhorn node labeling summary
