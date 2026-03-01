@@ -60,7 +60,7 @@
   kubernetes.core.helm:
     name: cilium
     chart_ref: cilium/cilium
-    chart_version: "1.19.1"
+    chart_version: "1.18.5"
     release_namespace: kube-system
     create_namespace: false
     wait: true
