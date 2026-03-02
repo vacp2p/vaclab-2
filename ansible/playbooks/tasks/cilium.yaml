@@ -120,6 +120,11 @@
             enabled: true
             serviceMonitor:
               enabled: false
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
         ui:
           enabled: true
       
