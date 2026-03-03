@@ -54,6 +54,7 @@
     name: cilium
     repo_url: https://helm.cilium.io/
     state: present
+    force_update: true
   when: cilium_installed.rc != 0
 
 - name: Install Cilium with Kube-OVN chaining mode
