@@ -44,18 +44,18 @@ helm:
           size: 50Gi
         resources:
           requests:
-            cpu: "0.5"
-            memory: 500Mi
+            cpu: "1"
+            memory: "512Mi"
           limits:
             cpu: "2"
-            memory: 4Gi
+            memory: "4Gi"
         affinity:
           nodeAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: node-role.kubernetes.io/worker
+                    - key: node-role.kubernetes.io/control-plane
                       operator: Exists
         # tolerations:
         #   - key: "dedicated"
@@ -167,7 +167,7 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/worker
+                  - key: node-role.kubernetes.io/control-plane
                     operator: Exists
       # tolerations:
       #   - key: "dedicated"
@@ -176,11 +176,11 @@ helm:
       #     effect: "PreferNoSchedule"
       resources:
         requests:
-          cpu: "2"
-          memory: 4Gi
-        limits:
           cpu: "4"
-          memory: 8Gi
+          memory: "4Gi"
+        limits:
+          cpu: "8"
+          memory: "8Gi"
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -200,7 +200,7 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/worker
+                  - key: node-role.kubernetes.io/control-plane
                     operator: Exists
       # tolerations:
       #   - key: "dedicated"
@@ -209,11 +209,11 @@ helm:
       #     effect: "PreferNoSchedule"
       resources:
         requests:
-          cpu: "1"
-          memory: 1Gi
-        limits:
           cpu: "2"
-          memory: 2Gi
+          memory: "2Gi"
+        limits:
+          cpu: "4"
+          memory: "4Gi"
 
     blueprints:
       enabled: true

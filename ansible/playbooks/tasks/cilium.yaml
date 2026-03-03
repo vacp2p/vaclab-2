@@ -60,7 +60,7 @@
   kubernetes.core.helm:
     name: cilium
     chart_ref: cilium/cilium
-    chart_version: "1.18.5"
+    chart_version: "1.19.1"
     release_namespace: kube-system
     create_namespace: false
     wait: true
@@ -116,6 +116,13 @@
             enabled: false
         relay:
           enabled: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
           prometheus:
             enabled: true
             serviceMonitor:
@@ -127,19 +134,46 @@
               effect: "PreferNoSchedule"
         ui:
           enabled: true
+          backend:
+            resources:
+              limits:
+                cpu: "2"
+                memory: "2Gi"
+              requests:
+                cpu: "1"
+                memory: "512Mi"
+          frontend:
+            resources:
+              limits:
+                cpu: "2"
+                memory: "2Gi"
+              requests:
+                cpu: "1"
+                memory: "512Mi"
+      
+      # Disable IPv6 to prevent ICMPv6 Router Solicitation drops
+      ipv6:
+        enabled: false
       
       # Operator configuration
       operator:
         replicas: 1
+        resources:
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+          requests:
+            cpu: "1"
+            memory: "512Mi"
       
-      # Resource limits
+      # Resource limits for cilium-agent
       resources:
         limits:
-          cpu: 2
-          memory: 2Gi
+          cpu: "4"
+          memory: "4Gi"
         requests:
-          cpu: 0.5
-          memory: 256Mi
+          cpu: "1"
+          memory: "512Mi"
       
       # Tolerations for control-plane nodes
       tolerations:

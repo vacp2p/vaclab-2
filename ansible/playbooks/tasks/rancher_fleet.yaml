@@ -120,7 +120,7 @@
   kubernetes.core.helm:
     name: rancher
     chart_ref: rancher-stable/rancher
-    chart_version: "2.13.1"
+    chart_version: "2.13.3"
     release_namespace: cattle-system
     create_namespace: true
     wait: true
@@ -167,11 +167,11 @@
         install: false
       resources:
         limits:
-          cpu: 4
-          memory: 8Gi
+          cpu: "8"
+          memory: "8Gi"
         requests:
-          cpu: 2
-          memory: 1Gi
+          cpu: "2"
+          memory: "2Gi"
 
 - name: Wait for Rancher to be ready
   command: kubectl wait --for=condition=ready pod -l app=rancher -n cattle-system --timeout=600s
@@ -229,7 +229,7 @@
                 management.cattle.io/cluster-name: local
         repo: "https://github.com/vacp2p/vaclab-2"
         #branch: main
-        branch: fix/fix_master_and_storage_issues
+        branch: fix/improving_cluster_performance_part_1
         paths:
           - fleet
 

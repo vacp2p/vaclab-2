@@ -40,6 +40,12 @@
       # Setting to near-maximum to avoid any limits
       fs.file-max=9223372036854775807
       fs.nr_open=1073741816
+      fs.inotify.max_user_instances=2099999999
+      fs.inotify.max_user_watches=2099999999
+      fs.inotify.max_queued_events=2099999999
+      net.ipv4.neigh.default.gc_thresh1=65536
+      net.ipv4.neigh.default.gc_thresh2=114688
+      net.ipv4.neigh.default.gc_thresh3=1048576
 
 - name: Apply sysctl settings
   ansible.builtin.command: sysctl -p /etc/sysctl.d/99-vaclab-bdp.conf
