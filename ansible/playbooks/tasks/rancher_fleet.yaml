@@ -208,6 +208,17 @@
   retries: 10
   delay: 30
 
+- name: Wait for Rancher webhook to be ready
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: cattle-system
+    name: rancher-webhook
+    wait: yes
+    wait_condition:
+      type: Available
+      status: "True"
+    wait_timeout: 300
+
 - name: Set Fleet cluster label to local
   command: kubectl label cluster.fleet.cattle.io local -n fleet-local management.cattle.io/cluster-name=local --overwrite
   environment:
