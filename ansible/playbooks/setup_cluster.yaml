@@ -38,12 +38,12 @@
     - name: Import Longhorn prerequisites tasks
       ansible.builtin.import_tasks: tasks/longhorn_prerequisites.yaml
 
-- name: Install Kube-OVN CNI
-  hosts: server
-  run_once: true
-  tasks:
-    - name: Import Kube-OVN installation tasks
-      ansible.builtin.import_tasks: tasks/kube_ovn.yaml
+#- name: Install Kube-OVN CNI
+#  hosts: server
+#  run_once: true
+#  tasks:
+#    - name: Import Kube-OVN installation tasks
+#      ansible.builtin.import_tasks: tasks/kube_ovn.yaml
 
 - name: Install Cilium for network policy
   hosts: server
