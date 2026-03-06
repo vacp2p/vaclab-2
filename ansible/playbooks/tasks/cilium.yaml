@@ -75,8 +75,11 @@
       cni:
         exclusive: true
       
-      # Tunnel mode (vxlan for cross-node pod communication)
-      tunnel: vxlan
+      # Routing mode: "tunnel" for encapsulation, "native" for direct routing
+      routingMode: tunnel
+      
+      # Tunnel protocol: vxlan (port 8472) or geneve (port 6081)
+      tunnelProtocol: geneve
       
       # Enable BPF masquerading for better performance
       bpf:
