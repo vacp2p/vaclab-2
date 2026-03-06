@@ -352,7 +352,7 @@ helm:
                 memory: "16Gi"
               requests:
                 cpu: "4"
-                memory: "Gi"
+                memory: "8Gi"
             storage:
               volumeClaimTemplate:
                 spec:
