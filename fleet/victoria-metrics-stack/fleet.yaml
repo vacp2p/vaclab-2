@@ -345,14 +345,14 @@ helm:
             enabled: true
             extraArgs: {}
             port: "8481"
-            replicaCount: 4
+            replicaCount: 2
             resources:
               limits:
                 cpu: "8" # set to 8 in production
-                memory: "8Gi"
+                memory: "16Gi"
               requests:
                 cpu: "4"
-                memory: "4Gi"
+                memory: "Gi"
             storage:
               volumeClaimTemplate:
                 spec:
