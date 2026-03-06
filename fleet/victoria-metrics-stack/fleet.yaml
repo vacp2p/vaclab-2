@@ -348,7 +348,7 @@ helm:
             replicaCount: 2
             resources:
               limits:
-                cpu: "8" # set to 8 in production
+                cpu: "8" 
                 memory: "16Gi"
               requests:
                 cpu: "4"
