@@ -67,6 +67,9 @@
     wait: true
     wait_timeout: 10m
     values:
+      ipam:
+        operator:
+          clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
       # CNI chaining configuration for Kube-OVN
       #cni:
       #  chainingMode: generic-veth
