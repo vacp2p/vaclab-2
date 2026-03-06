@@ -70,34 +70,43 @@
       ipam:
         operator:
           clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
-      # CNI chaining configuration for Kube-OVN
-      #cni:
-      #  chainingMode: generic-veth
-      #  customConf: true
-      #  configMap: cni-configuration
       
-      # Routing mode
-      #routingMode: native
+      # CNI configuration - Cilium as primary CNI
+      cni:
+        exclusive: true
       
-      # Disable source IP verification when chaining with Kube-OVN
-      # Required for NAT gateway compatibility - see Kube-OVN docs
-      enableSourceIPVerification: false
+      # Tunnel mode (vxlan for cross-node pod communication)
+      tunnel: vxlan
       
-      # Disable IPv4 masquerade (Kube-OVN handles this)
-      #enableIPv4Masquerade: false
+      # Enable BPF masquerading for better performance
+      bpf:
+        masquerade: true
       
-      # Disable identity mark (required for chaining)
-      #enableIdentityMark: false
+      # Device detection
+      devices: eth+ ens+ enp+ bond+
       
-      # Device detection for Kube-OVN interfaces
-      devices: eth+ ens+ enp+ bond+ ens3 bond0 ovn0 genev_sys_6081 vxlan_sys_4789
-      
-      # Bandwidth manager - disabled as Kube-OVN handles bandwidth
+      # Bandwidth manager for eBPF-based rate limiting
       bandwidthManager:
         enabled: true
       
-      # Keep kube-proxy (K3s uses it) - must be boolean
+      # Keep kube-proxy for compatibility with Traefik
       kubeProxyReplacement: false
+      
+      # Load balancer mode - required for Traefik ingress NodePort/LoadBalancer services
+      loadBalancer:
+        mode: snat
+      
+      # Enable NodePort for Traefik ingress access
+      nodePort:
+        enabled: true
+      
+      # External traffic policy support for extracting real client IPs
+      externalIPs:
+        enabled: true
+      
+      # Host firewall for node-level security
+      hostFirewall:
+        enabled: false
       
       # Network policy enforcement
       policyEnforcementMode: default
@@ -159,9 +168,9 @@
       ipv6:
         enabled: false
       
-      # Operator configuration
+      # Operator configuration - 2 replicas for HA in multi-master setup
       operator:
-        replicas: 1
+        replicas: 2
         resources:
           limits:
             cpu: "2"
@@ -169,6 +178,11 @@
           requests:
             cpu: "1"
             memory: "512Mi"
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
       
       # Resource limits for cilium-agent
       resources:
@@ -179,7 +193,7 @@
           cpu: "1"
           memory: "512Mi"
       
-      # Tolerations for control-plane nodes
+      # Tolerations for custom taints
       tolerations:
         - key: "dedicated"
           operator: "Equal"
