@@ -4,11 +4,11 @@ k3s_cluster:
     server:
       hosts:
         node-01.ih-eu-mda1.misc.vaclab.status.im:
-        node-02.ih-eu-mda1.misc.vaclab.status.im:
-        node-03.ih-eu-mda1.misc.vaclab.status.im:
         #metal-01.he-eu-hel1.misc.vacdst.status.im:
     agent:
       hosts:
+        node-02.ih-eu-mda1.misc.vaclab.status.im:
+        node-03.ih-eu-mda1.misc.vaclab.status.im:
         node-04.ih-eu-mda1.misc.vaclab.status.im:
         node-05.ih-eu-mda1.misc.vaclab.status.im:
   # Required Vars

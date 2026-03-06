@@ -170,7 +170,7 @@
       
       # Operator configuration - 2 replicas for HA in multi-master setup
       operator:
-        replicas: 2
+        replicas: 1
         resources:
           limits:
             cpu: "2"
