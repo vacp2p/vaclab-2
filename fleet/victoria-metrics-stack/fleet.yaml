@@ -341,7 +341,6 @@ helm:
                 cpu: "4"
                 memory: 4Gi
           vmselect:
-            cacheMountPath: /select-cache
             enabled: true
             extraArgs: {}
             port: "8481"
@@ -353,13 +352,6 @@ helm:
               requests:
                 cpu: "4"
                 memory: "8Gi"
-            storage:
-              volumeClaimTemplate:
-                spec:
-                  resources:
-                    requests:
-                      storage: 20Gi # set to 20Gi in production
-                  storageClassName: longhorn-vaclab
           vmstorage:
             enabled: true
             replicaCount: 3

@@ -45,6 +45,13 @@
 #    - name: Import Kube-OVN installation tasks
 #      ansible.builtin.import_tasks: tasks/kube_ovn.yaml
 
+- name: Install Cilium CLI
+  hosts: server
+  become: true
+  tasks:
+    - name: Import Cilium CLI installation tasks
+      ansible.builtin.import_tasks: tasks/cilium_cli.yaml
+
 - name: Install Cilium for network policy
   hosts: server
   run_once: true
@@ -65,13 +72,6 @@
   tasks:
     - name: Import Longhorn node labeling tasks
       ansible.builtin.import_tasks: tasks/longhorn_node_labels.yaml
-
-- name: Install Cilium CLI
-  hosts: k3s_cluster
-  become: true
-  tasks:
-    - name: Import Cilium CLI installation tasks
-      ansible.builtin.import_tasks: tasks/cilium_cli.yaml
 
 - name: Install Hubble CLI
   hosts: k3s_cluster
@@ -135,7 +135,7 @@
           - "=============================================="
           - "Rancher Bootstrap Password"
           - "=============================================="
-          - "URL: https://rancher.lab.vac.dev"
+          - "URL: https://rancher.vac.lab.dev"
           - "Username: admin"
           - "Password: {{ rancher_password }}"
           - "=============================================="

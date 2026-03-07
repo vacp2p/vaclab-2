@@ -1,53 +1,14 @@
 ---
+# Install Cilium using Helm (for K3s with --flannel-backend=none --disable-network-policy)
+
 - name: Check if Cilium is already installed
-  command: kubectl get daemonset cilium -n kube-system
+  ansible.builtin.command: kubectl get daemonset cilium -n kube-system
   register: cilium_installed
   ignore_errors: true
   changed_when: false
   failed_when: false
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-
-#- name: Create Cilium CNI chaining configuration
-#  kubernetes.core.k8s:
-#    state: present
-#    kubeconfig: /etc/rancher/k3s/k3s.yaml
-#    definition:
-#      apiVersion: v1
-#      kind: ConfigMap
-#      metadata:
-#        name: cni-configuration
-#        namespace: kube-system
-#        #labels:
-#        #  app.kubernetes.io/managed-by: Helm
-#        #annotations:
-#        #  meta.helm.sh/release-name: vaclab-2-fleet-cilium
-#        #  meta.helm.sh/release-namespace: default
-#      data:
-#        cni-config: |
-#          {
-#            "name": "generic-veth",
-#            "cniVersion": "0.3.1",
-#            "plugins": [
-#              {
-#                "type": "kube-ovn",
-#                "server_socket": "/run/openvswitch/kube-ovn-daemon.sock",
-#                "ipam": {
-#                    "type": "kube-ovn",
-#                    "server_socket": "/run/openvswitch/kube-ovn-daemon.sock"
-#                }
-#              },
-#              {
-#                "type": "portmap",
-#                "snat": true,
-#                "capabilities": {"portMappings": true}
-#              },
-#              {
-#                "type": "cilium-cni"
-#              }
-#            ]
-#          }
-#  when: cilium_installed.rc != 0
 
 - name: Add Cilium Helm repository
   kubernetes.core.helm_repository:
@@ -57,79 +18,43 @@
     force_update: true
   when: cilium_installed.rc != 0
 
-- name: Install Cilium with Kube-OVN chaining mode
+- name: Install Cilium via Helm
   kubernetes.core.helm:
     name: cilium
     chart_ref: cilium/cilium
-    chart_version: "1.19.1"
+    chart_version: "1.18.5"
     release_namespace: kube-system
     create_namespace: false
     wait: true
     wait_timeout: 10m
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
     values:
+      # IPAM configuration for K3s default pod CIDR
       ipam:
         operator:
           clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
-      
-      # CNI configuration - Cilium as primary CNI
-      cni:
-        exclusive: true
-      
-      # Routing mode: "tunnel" for encapsulation, "native" for direct routing
+
+      # Tunnel mode with Geneve protocol
       routingMode: tunnel
-      
-      # Tunnel protocol: vxlan (port 8472) or geneve (port 6081)
       tunnelProtocol: geneve
-      
-      # Enable BPF masquerading for better performance
-      bpf:
-        masquerade: true
-      
-      # Device detection
-      devices: eth+ ens+ enp+ bond+
-      
+
       # Bandwidth manager for eBPF-based rate limiting
       bandwidthManager:
         enabled: true
-      
-      # Keep kube-proxy for compatibility with Traefik
-      kubeProxyReplacement: false
-      
-      # Load balancer mode - required for Traefik ingress NodePort/LoadBalancer services
-      loadBalancer:
-        mode: snat
-      
-      # Enable NodePort for Traefik ingress access
-      nodePort:
-        enabled: true
-      
-      # External traffic policy support for extracting real client IPs
-      externalIPs:
-        enabled: true
-      
-      # Host firewall for node-level security
-      hostFirewall:
-        enabled: false
-      
+
+      # Keep kube-proxy (K3s uses it)
+      kubeProxyReplacement: "false"
+
       # Network policy enforcement
       policyEnforcementMode: default
-      
-      # Enable Hubble for observability
+
+      # Disable IPv6
+      ipv6:
+        enabled: false
+
+      # Hubble observability
       hubble:
         enabled: true
-        metrics:
-          enabled:
-            - "dns:query;ignoreAAAA;labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload"
-            - "drop:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
-            - "tcp:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
-            - "flow:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
-            - "icmp:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
-            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,traffic_direction"
-            - "port-distribution:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
-          enableOpenMetrics: true
-          port: 9965
-          serviceMonitor:
-            enabled: false
         relay:
           enabled: true
           resources:
@@ -143,11 +68,6 @@
             enabled: true
             serviceMonitor:
               enabled: false
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "monitoring"
-              effect: "PreferNoSchedule"
         ui:
           enabled: true
           backend:
@@ -166,85 +86,54 @@
               requests:
                 cpu: "1"
                 memory: "512Mi"
-      
-      # Disable IPv6 to prevent ICMPv6 Router Solicitation drops
-      ipv6:
-        enabled: false
-      
-      # Operator configuration - 2 replicas for HA in multi-master setup
+        metrics:
+          enabled:
+            - "dns:query;ignoreAAAA;labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload"
+            - "drop:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "tcp:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "flow:labelsContext=source_ip,source_namespace,source_pod,source_workload,destination_ip,destination_namespace,destination_pod,destination_workload,traffic_direction"
+            - "icmp:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
+            - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_pod,source_workload,source_workload_kind,destination_ip,destination_namespace,destination_pod,destination_workload,destination_workload_kind,traffic_direction"
+            - "port-distribution:labelsContext=source_ip,source_namespace,source_pod,destination_ip,destination_namespace,destination_pod,traffic_direction"
+          enableOpenMetrics: true
+          port: 9965
+          serviceMonitor:
+            enabled: false
+
+      # Operator configuration
       operator:
-        replicas: 1
+        replicas: 3
         resources:
           limits:
-            cpu: "2"
-            memory: "2Gi"
+            cpu: "4"
+            memory: "8Gi"
           requests:
-            cpu: "1"
+            cpu: "2"
             memory: "512Mi"
-        tolerations:
-          - operator: "Exists"
-      
-      # Resource limits for cilium-agent
+
+      # Cilium agent resources
       resources:
         limits:
-          cpu: "4"
-          memory: "4Gi"
+          cpu: 8
+          memory: 16Gi
         requests:
-          cpu: "1"
-          memory: "512Mi"
-      
-      # Tolerations - must tolerate all taints for CNI bootstrap on not-ready nodes
-      tolerations:
-        - operator: "Exists"
+          cpu: "2"
+          memory: 256Mi
   when: cilium_installed.rc != 0
 
 - name: Wait for Cilium pods to be ready
-  command: kubectl wait --for=condition=ready pod -l k8s-app=cilium -n kube-system --timeout=600s
+  ansible.builtin.command: kubectl wait --for=condition=ready pod -l k8s-app=cilium -n kube-system --timeout=300s
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   when: cilium_installed.rc != 0
-  retries: 3
-  delay: 10
 
-- name: Wait for Cilium operator to be ready
-  command: kubectl wait --for=condition=ready pod -l name=cilium-operator -n kube-system --timeout=300s
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  when: cilium_installed.rc != 0
-  retries: 2
-  delay: 5
-
-- name: Verify Cilium installation
-  command: kubectl get pods -n kube-system -l k8s-app=cilium
+- name: Verify Cilium status
+  ansible.builtin.command: kubectl get pods -n kube-system -l k8s-app=cilium
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   register: cilium_pods
   changed_when: false
 
 - name: Display Cilium pods status
-  debug:
+  ansible.builtin.debug:
     var: cilium_pods.stdout_lines
-
-- name: Check if Cilium pods exist
-  command: kubectl get pods -n kube-system -l k8s-app=cilium --no-headers
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  register: cilium_pods_check
-  changed_when: false
-  failed_when: false
-
-- name: Check Cilium status
-  shell: |
-    CILIUM_POD=$(kubectl -n kube-system get pod -l k8s-app=cilium -o jsonpath='{.items[0].metadata.name}')
-    kubectl -n kube-system exec ${CILIUM_POD} -- cilium-dbg status --brief
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  register: cilium_status
-  changed_when: false
-  ignore_errors: true
-  when: cilium_pods_check.stdout != ""
-
-- name: Display Cilium status
-  debug:
-    var: cilium_status.stdout_lines
-  when: cilium_status.rc is defined and cilium_status.rc == 0
