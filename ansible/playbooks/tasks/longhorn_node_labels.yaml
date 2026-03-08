@@ -31,10 +31,10 @@
   command: kubectl label node -lnode-role.kubernetes.io/control-plane node.longhorn.io/create-default-disk='config' --overwrite
   ignore_errors: true
 
-- name: Annotate master nodes with single disk configuration (scheduling enabled)
+- name: Annotate master nodes with multiple disk configuration (scheduling enabled)
   command: >
     kubectl annotate node -lnode-role.kubernetes.io/control-plane
-    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400,"tags":["first-disk","home-disk"]}]'
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400,"tags":["first-disk","home-disk"]},{"name":"data-disk","path":"/data/longhorn","allowScheduling":true,"storageReserved":53687091200, "tags":["data-disk", "second-disk"]}]'
     --overwrite
   ignore_errors: true
 
@@ -57,5 +57,5 @@
       - "  - Multiple disk annotation with /var/lib/longhorn and /data/longhorn"
       - "Master node:"
       - "  - node.longhorn.io/create-default-disk=true"
-      - "  - single disk annotation with /var/lib/longhorn"
+      - "  - Multiple disk annotation with /var/lib/longhorn and /data/longhorn"
       - "=============================================="
