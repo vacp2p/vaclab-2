@@ -825,6 +825,7 @@ helm:
               name: default
               orgid: 1
               foldersFromFilesStructure: true
+              allowUiUpdates: true
             folder: /var/lib/grafana/dashboards
             folderAnnotation: grafana_folder
             defaultFolderName: default
