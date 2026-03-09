@@ -46,9 +46,11 @@ helm:
           metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
           tls:
             insecure: true
+        debug:
+          verbosity: detailed
       service:
         pipelines:
           metrics:
             receivers: [otlp]
             processors: [deltatocumulative]
-            exporters: [otlphttp/victoriametrics]
+            exporters: [otlphttp/victoriametrics, debug]
