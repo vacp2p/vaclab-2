@@ -1,45 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: status-backend-bandwidth
+  name: local-nimlibp2p
   labels:
     grafana_dashboard: "1"
   annotations:
-    grafana_folder: "vac"  
+    grafana_folder: "nomos"
 data:
-  status-backend-bandwidth.json: |
+  local-nimlibp2p.json: |
     {
-      "__inputs": [
-        {
-          "name": "DS_VICTORIAMETRICS",
-          "label": "VictoriaMetrics",
-          "description": "",
-          "type": "datasource",
-          "pluginId": "prometheus",
-          "pluginName": "Prometheus"
-        }
-      ],
-      "__elements": {},
-      "__requires": [
-        {
-          "type": "grafana",
-          "id": "grafana",
-          "name": "Grafana",
-          "version": "12.0.1"
-        },
-        {
-          "type": "datasource",
-          "id": "prometheus",
-          "name": "Prometheus",
-          "version": "1.0.0"
-        },
-        {
-          "type": "panel",
-          "id": "timeseries",
-          "name": "Time series",
-          "version": ""
-        }
-      ],
       "annotations": {
         "list": [
           {
@@ -59,13 +28,13 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": null,
+      "id": 0,
       "links": [],
       "panels": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "VictoriaMetrics"
+            "uid": "{DS_VICTORIAMETRICS}"
           },
           "fieldConfig": {
             "defaults": {
@@ -96,6 +65,7 @@ data:
                   "type": "linear"
                 },
                 "showPoints": "auto",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -110,15 +80,15 @@ data:
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": 0
                   },
                   {
                     "color": "red",
                     "value": 80
                   }
                 ]
-              },
-              "unit": "Bps"
+              }
             },
             "overrides": []
           },
@@ -126,107 +96,6 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 0
-          },
-          "id": 1,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.0.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "disableTextWrap": false,
-              "editorMode": "code",
-              "expr": "rate(container_network_receive_bytes_total{namespace=\"status-go-test\", pod=~\"status-backend-.*\"}[$__rate_interval])",
-              "fullMetaSearch": false,
-              "includeNullMetadata": true,
-              "legendFormat": "{{pod}}",
-              "range": true,
-              "refId": "A",
-              "useBackend": false
-            }
-          ],
-          "title": "Bandwidth received (in)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "Bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
             "y": 0
           },
           "id": 2,
@@ -243,58 +112,132 @@ data:
               "sort": "none"
             }
           },
-          "pluginVersion": "12.0.1",
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    rate(\n      container_cpu_usage_seconds_total{\n        namespace=\"nomos-testnet\",\n        container!=\"\",\n        container!=\"POD\"\n      }[5m]\n    )\n  )\n)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "CPU Load (Cores)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "{DS_VICTORIAMETRICS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "decbytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "id": 1,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "VictoriaMetrics"
+                "uid": "{DS_VICTORIAMETRICS}"
               },
-              "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "rate(container_network_transmit_bytes_total{namespace=\"status-go-test\", pod=~\"status-backend-relay-.*\"}[$__rate_interval])",
-              "fullMetaSearch": false,
-              "includeNullMetadata": true,
-              "legendFormat": "{{pod}}",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_working_set_bytes{\n      namespace=\"nomos-testnet\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
+              "legendFormat": "__auto",
               "range": true,
-              "refId": "A",
-              "useBackend": false
+              "refId": "A"
             }
           ],
-          "title": "Bandwidth transmitted (out)",
+          "title": "Memory working set",
           "type": "timeseries"
         }
       ],
-      "schemaVersion": 41,
+      "preload": false,
+      "schemaVersion": 42,
       "tags": [],
       "templating": {
-        "list": [
-          {
-            "current": {},
-            "definition": "query_result(topk(5,   rate(container_network_receive_bytes_total{namespace=\"status-go-testing\"}[${__range_s}s])  * on(pod) group_left()  sum(kube_pod_container_status_running{}) by (pod)))",
-            "description": "",
-            "hide": 2,
-            "name": "container_network_receive_top5",
-            "options": [],
-            "query": {
-              "qryType": 3,
-              "query": "query_result(topk(5,   rate(container_network_receive_bytes_total{namespace=\"status-go-testing\"}[${__range_s}s])  * on(pod) group_left()  sum(kube_pod_container_status_running{}) by (pod)))",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "refresh": 1,
-            "regex": ".*pod=\"(.*?)\".*",
-            "type": "query"
-          }
-        ]
+        "list": []
       },
       "time": {
-        "from": "now-6h",
+        "from": "now-3h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "browser",
-      "title": "Status-Backend Bandwidth",
-      "uid": "fefo94ia0abcwf",
-      "version": 2,
-      "weekStart": ""
+      "title": "Nomos Consumption",
+      "uid": "al8vcc5",
+      "version": 4
     }

@@ -1,0 +1,56 @@
+defaultNamespace: opentelemetry
+dependsOn: 
+  - name: vaclab-2-fleet-victoria-metrics-stack
+
+helm:
+  repo: https://open-telemetry.github.io/opentelemetry-helm-charts/
+  chart: opentelemetry-collector
+  version: 0.146.1
+  releaseName: otel
+  takeOwnership: true
+  values:
+    mode: deployment
+    image:
+      repository: "otel/opentelemetry-collector-contrib"
+    presets:
+      clusterMetrics:
+        enabled: true
+    service:
+      type: NodePort
+    ports:
+      otlp:
+        enabled: true
+        containerPort: 4317
+        servicePort: 4317
+        nodePort: 30317
+        protocol: TCP
+        appProtocol: grpc
+    config:
+      # deltatocumulative processor is needed to convert metrics with delta temporality to cumulative temporality.
+      # VictoriaMetrics doesn't support delta temporality. Skip this processor if you don't use delta temporality.
+      processors:
+        deltatocumulative:
+          max_stale: 5m
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+      exporters:
+        otlphttp/victoriametrics:
+          compression: gzip
+          encoding: proto
+          # Cluster version of VictoriaMetrics URL format - http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/#url-format
+          metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
+          tls:
+            insecure: true
+        debug:
+          verbosity: detailed
+      service:
+        pipelines:
+          metrics:
+            receivers: [otlp]
+            processors: [deltatocumulative]
+            exporters: [otlphttp/victoriametrics, debug]

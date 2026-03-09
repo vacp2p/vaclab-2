@@ -3,10 +3,13 @@ k3s_cluster:
   children:
     server:
       hosts:
-        metal-01.he-eu-hel1.misc.vacdst.status.im:
+        node-01.ih-eu-mda1.misc.vaclab.status.im:
+        #node-02.ih-eu-mda1.misc.vaclab.status.im:
+        #node-03.ih-eu-mda1.misc.vaclab.status.im:
+        #metal-01.he-eu-hel1.misc.vacdst.status.im:
     agent:
       hosts:
-        node-01.ih-eu-mda1.misc.vaclab.status.im:
+        #node-01.ih-eu-mda1.misc.vaclab.status.im:
         node-02.ih-eu-mda1.misc.vaclab.status.im:
         node-03.ih-eu-mda1.misc.vaclab.status.im:
         node-04.ih-eu-mda1.misc.vaclab.status.im:
@@ -64,9 +67,9 @@ k3s_cluster:
     allowed_email_domain: "status.im"
     
     # Node taints configuration
-    node_taints:
-      - node: "metal-01.he-eu-hel1.misc.vacdst"
-        taints:
-          - key: "dedicated"
-            value: "monitoring"
-            effect: "PreferNoSchedule"
+    #node_taints:
+    #  - node: "metal-01.he-eu-hel1.misc.vacdst"
+    #    taints:
+    #      - key: "dedicated"
+    #        value: "monitoring"
+    #        effect: "PreferNoSchedule"

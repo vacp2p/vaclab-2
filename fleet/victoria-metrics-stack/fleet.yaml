@@ -322,7 +322,7 @@ helm:
         labels: {}
         spec:
           replicationFactor: 2
-          retentionPeriod: "3"
+          retentionPeriod: "6"
           vminsert:
             enabled: true
             extraArgs:
@@ -338,38 +338,30 @@ helm:
                 cpu: "8"
                 memory: 8Gi
               requests:
-                cpu: "2"
-                memory: 2Gi
+                cpu: "4"
+                memory: 4Gi
           vmselect:
-            cacheMountPath: /select-cache
             enabled: true
             extraArgs: {}
             port: "8481"
             replicaCount: 2
             resources:
               limits:
-                cpu: "8" # set to 8 in production
-                memory: 8Gi
+                cpu: "8" 
+                memory: "16Gi"
               requests:
-                cpu: "2"
-                memory: 2Gi
-            storage:
-              volumeClaimTemplate:
-                spec:
-                  resources:
-                    requests:
-                      storage: 20Gi # set to 20Gi in production
-                  storageClassName: longhorn-vaclab
+                cpu: "4"
+                memory: "8Gi"
           vmstorage:
             enabled: true
-            replicaCount: 2
+            replicaCount: 3
             resources:
               limits:
                 cpu: "8" # set to 8 in production
-                memory: 4Gi
+                memory: "8Gi"
               requests:
-                cpu: "1"
-                memory: 1Gi
+                cpu: "2"
+                memory: "2Gi"
             storage:
               volumeClaimTemplate:
                 spec:
@@ -833,6 +825,7 @@ helm:
               name: default
               orgid: 1
               foldersFromFilesStructure: true
+              allowUiUpdates: true
             folder: /var/lib/grafana/dashboards
             folderAnnotation: grafana_folder
             defaultFolderName: default

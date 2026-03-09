@@ -65,7 +65,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -151,13 +151,13 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             },
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
               "expr": "libp2p_peers{namespace=\"zerotesting-dst\", instance=~\"$libp2p_peers_bottom5\"}",
@@ -174,7 +174,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -260,13 +260,13 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             },
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
               "expr": "libp2p_open_streams{namespace=\"zerotesting-dst\", instance=~\"$libp2p_open_streams_bottom5\"}",
@@ -283,7 +283,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -371,13 +371,13 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             },
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -398,7 +398,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -486,13 +486,13 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             },
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "disableTextWrap": false,
               "editorMode": "code",
@@ -513,7 +513,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -595,7 +595,7 @@ data:
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
               "expr": "nim_gc_mem_bytes{namespace=\"zerotesting-dst\", instance=~\"$nim_gc_mem_bytes_top5\"}",
@@ -613,7 +613,7 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             }
           ],
@@ -623,7 +623,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -711,13 +711,13 @@ data:
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             },
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
               "expr": "container_memory_usage_bytes{namespace=\"zerotesting-dst\", pod=~\"$container_memory_usage_bytes_bottom5\"}",
@@ -734,7 +734,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -824,7 +824,7 @@ data:
               "useBackend": false,
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             }
           ],
@@ -834,7 +834,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_VICTORIAMETRICS}"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
@@ -924,7 +924,7 @@ data:
               "useBackend": false,
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_VICTORIAMETRICS}"
+                "uid": "VictoriaMetrics"
               }
             }
           ],

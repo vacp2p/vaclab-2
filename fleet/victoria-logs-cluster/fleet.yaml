@@ -161,11 +161,11 @@ helm:
           periodSeconds: 5
           timeoutSeconds: 5
         startup: {}
-      replicaCount: 2
+      replicaCount: 4
       resources:
         limits:
           cpu: "8" # set to 8 in prod
-          memory: 8Gi # set to 8Gi in prod
+          memory: "8Gi" # set to 8Gi in prod
         requests:
           cpu: "2"  # set to 2 in prod
           memory: 2Gi
@@ -366,7 +366,7 @@ helm:
         labels: {}
         mountPath: /storage
         name: vlstorage-volume
-        size: 500Gi # set to 500Gi in prod
+        size: 600Gi # set to 600Gi in prod
         storageClassName: longhorn-vaclab
         subPath: ""
       podAnnotations: {}
@@ -392,9 +392,10 @@ helm:
       replicaCount: 1
       resources:
         requests:
-          cpu: "0.2"
+          cpu: "2"
+          memory: "1Gi"
       retentionDiskSpaceUsage: ""
-      retentionPeriod: 1
+      retentionPeriod: 6
       securityContext:
         enabled: true
         runAsGroup: 1000

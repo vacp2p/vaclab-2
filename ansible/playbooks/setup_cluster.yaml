@@ -38,12 +38,19 @@
     - name: Import Longhorn prerequisites tasks
       ansible.builtin.import_tasks: tasks/longhorn_prerequisites.yaml
 
-- name: Install Kube-OVN CNI
+#- name: Install Kube-OVN CNI
+#  hosts: server
+#  run_once: true
+#  tasks:
+#    - name: Import Kube-OVN installation tasks
+#      ansible.builtin.import_tasks: tasks/kube_ovn.yaml
+
+- name: Install Cilium CLI
   hosts: server
-  run_once: true
+  become: true
   tasks:
-    - name: Import Kube-OVN installation tasks
-      ansible.builtin.import_tasks: tasks/kube_ovn.yaml
+    - name: Import Cilium CLI installation tasks
+      ansible.builtin.import_tasks: tasks/cilium_cli.yaml
 
 - name: Install Cilium for network policy
   hosts: server
@@ -52,12 +59,12 @@
     - name: Import Cilium installation tasks
       ansible.builtin.import_tasks: tasks/cilium.yaml
 
-- name: Apply node taints after CNI installation
-  hosts: server
-  run_once: true
-  tasks:
-    - name: Import node tainting tasks
-      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
+#- name: Apply node taints after CNI installation
+#  hosts: server
+#  run_once: true
+#  tasks:
+#    - name: Import node tainting tasks
+#      ansible.builtin.import_tasks: tasks/taint_nodes.yaml
 
 - name: Label nodes for Longhorn multi-disk configuration
   hosts: server
@@ -65,13 +72,6 @@
   tasks:
     - name: Import Longhorn node labeling tasks
       ansible.builtin.import_tasks: tasks/longhorn_node_labels.yaml
-
-- name: Install Cilium CLI
-  hosts: k3s_cluster
-  become: true
-  tasks:
-    - name: Import Cilium CLI installation tasks
-      ansible.builtin.import_tasks: tasks/cilium_cli.yaml
 
 - name: Install Hubble CLI
   hosts: k3s_cluster
@@ -96,6 +96,13 @@
     - name: Show nodes
       debug:
         var: nodes_status.stdout_lines
+
+- name: Create Authentik resources
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import authentik resources tasks
+      ansible.builtin.import_tasks: tasks/authentik_resources.yaml
 
 - name: Install Rancher and Fleet
   hosts: server
@@ -128,7 +135,7 @@
           - "=============================================="
           - "Rancher Bootstrap Password"
           - "=============================================="
-          - "URL: https://rancher.lab.vac.dev"
+          - "URL: https://rancher.vac.lab.dev"
           - "Username: admin"
           - "Password: {{ rancher_password }}"
           - "=============================================="
@@ -141,12 +148,7 @@
     - name: Import Cluster Name change tasks
       ansible.builtin.import_tasks: tasks/rancher_branding.yaml
 
-- name: Create Authentik resources
-  hosts: server
-  run_once: true
-  tasks:
-    - name: Import authentik resources tasks
-      ansible.builtin.import_tasks: tasks/authentik_resources.yaml
+
 
 # It is better to apply taints manually later
 - name: Apply node taints
