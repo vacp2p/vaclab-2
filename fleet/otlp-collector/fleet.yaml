@@ -15,6 +15,16 @@ helm:
     presets:
       clusterMetrics:
         enabled: true
+    service:
+      type: NodePort
+    ports:
+      otlp:
+        enabled: true
+        containerPort: 4317
+        servicePort: 4317
+        nodePort: 30317
+        protocol: TCP
+        appProtocol: grpc
     config:
       # deltatocumulative processor is needed to convert metrics with delta temporality to cumulative temporality.
       # VictoriaMetrics doesn't support delta temporality. Skip this processor if you don't use delta temporality.
@@ -32,8 +42,8 @@ helm:
         otlphttp/victoriametrics:
           compression: gzip
           encoding: proto
-          # Cluster version of VictoriaMetrics URL format - https://docs.victoriametrics.com/victoriametrics/cluster-victoriametrics/#url-format
-          metrics_endpoint: http://vmks-vminsert.vmetrics.svc.cluster.local:8480/insert/0/opentelemetry/v1/metrics
+          # Cluster version of VictoriaMetrics URL format - http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/#url-format
+          metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
           tls:
             insecure: true
       service:
