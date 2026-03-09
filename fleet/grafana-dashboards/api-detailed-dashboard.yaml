@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: api-detailed-dashboard
+  name: api-detailed
   labels:
     grafana_dashboard: "1"
   annotations:
     grafana_folder: "nomos"
 data:
-  api-detailed-dashboard.json: |
+  api-detailed.json: |
     {
       "annotations": {
         "list": [
