@@ -31,8 +31,11 @@
     values:
       # IPAM configuration for K3s default pod CIDR
       ipam:
+        mode: cluster-pool
         operator:
           clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
+          # /20 = 4096 IPs per node, supports 16 nodes (4 bits for node encoding)
+          clusterPoolIPv4MaskSize: 20
 
       # Tunnel mode with Geneve protocol
       routingMode: tunnel
