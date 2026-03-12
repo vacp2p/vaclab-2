@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: iperf-tester-host
+spec:
+  schedule: "0 19 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: node-role.kubernetes.io/control-plane
+                        operator: Exists
+          hostNetwork: true
+          dnsPolicy: ClusterFirstWithHostNet
+          serviceAccountName: iperf-benchmark-sa
+          containers:
+          - name: iperf-client-host
+            image: katakuri100/kube-iperf3-client:v0.2
+            env:
+              - name: BENCHMARK_MODE
+                value: "host_network"
+              - name: TARGET_SVC
+                value: "iperf-hostnetwork"
+              - name: TARGET_PORT
+                value: "5201"
+              - name: IPERF_PARALLEL
+                value: "8" 
+              - name: IPERF_DURATION
+                value: "15"
+              - name: MY_NODE_NAME
+                valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+              - name: VL_FULL_PATH
+                value: "http://vlc-victoria-logs-cluster-vlinsert.victorialogs.svc.cluster.local:9481/insert/jsonline" 
+              - name: VM_FULL_PATH
+                value: "http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics.svc.cluster.local:8480/insert/0/prometheus/api/v1/import/prometheus"
+            command: ["/bin/bash", "/scripts/benchmark.sh"]
+            volumeMounts:
+              - name: script-vol
+                mountPath: /scripts
+          volumes:
+            - name: script-vol
+              configMap:
+                name: iperf-benchmark-script
+                defaultMode: 0755
