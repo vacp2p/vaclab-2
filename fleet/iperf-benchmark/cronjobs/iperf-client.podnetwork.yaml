@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: iperf-tester-pod
 spec:
-  schedule: "10 19 * * *"
+  schedule: "22 19 * * *"
   jobTemplate:
     spec:
       template:
@@ -46,4 +46,4 @@ spec:
               configMap:
                 name: iperf-benchmark-script
                 defaultMode: 0755
-          restartPolicy: OnFailure
+          restartPolicy: Never

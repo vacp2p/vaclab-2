@@ -86,12 +86,14 @@ data:
               THROUGHPUT=$(jq '.end.sum_received.bits_per_second // 0' <<< "$RESULT")
               RETRANSMITS=$(jq '.end.sum_sent.retransmits // 0' <<< "$RESULT")
               
-              RTT_MIN=$(jq '(.end.streams[0].sender.min_rtt // 0) / 1000' <<< "$RESULT")
-              RTT_AVG=$(jq '(.end.streams[0].sender.mean_rtt // 0) / 1000' <<< "$RESULT")
-              RTT_MAX=$(jq '(.end.streams[0].sender.max_rtt // 0) / 1000' <<< "$RESULT")
+              # Use optional chaining and filters to avoid null division
+              RTT_MIN=$(jq '(.end.streams[0].sender.min_rtt // .end.streams[0].receiver.min_rtt // 0) / 1000' <<< "$RESULT")
+              RTT_AVG=$(jq '(.end.streams[0].sender.mean_rtt // .end.streams[0].receiver.mean_rtt // 0) / 1000' <<< "$RESULT")
+              RTT_MAX=$(jq '(.end.streams[0].sender.max_rtt // .end.streams[0].receiver.max_rtt // 0) / 1000' <<< "$RESULT")
               
-              AVG_CWND=$(jq '[.intervals[].streams[0].snd_cwnd] | add / length // 0' <<< "$RESULT")
-              CONGESTION=$(jq -r '.end.sender_tcp_congestion // "unknown"' <<< "$RESULT")
+              # CWND can be missing in Reverse mode; check if it exists before averaging
+              AVG_CWND=$(jq '[.intervals[].streams[0].snd_cwnd | select(. != null)] | if length > 0 then add / length else 0 end' <<< "$RESULT")
+              CONGESTION=$(jq -r '.end.sender_tcp_congestion // .end.receiver_tcp_congestion // "unknown"' <<< "$RESULT")
 
               cat <<EOF | curl -s -X POST "$VM_FULL_PATH" --data-binary @- 2>&1
     iperf_throughput_bps{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",cc="$CONGESTION"} $THROUGHPUT
