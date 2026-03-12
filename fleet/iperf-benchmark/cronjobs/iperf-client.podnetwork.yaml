@@ -46,3 +46,4 @@ spec:
               configMap:
                 name: iperf-benchmark-script
                 defaultMode: 0755
+          restartPolicy: OnFailure
