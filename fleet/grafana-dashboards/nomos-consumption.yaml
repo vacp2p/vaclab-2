@@ -28,7 +28,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 0,
+      "id": 136,
       "links": [],
       "panels": [
         {
@@ -309,13 +309,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "max(consensus_forks_count)",
+              "expr": "consensus_forks_count",
               "legendFormat": "{{service_name}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Consensus forks total",
+          "title": "Consensus forks",
           "type": "timeseries"
         }
       ],
@@ -333,5 +333,5 @@ data:
       "timezone": "browser",
       "title": "Nomos Consumption",
       "uid": "al8vcc5",
-      "version": 4
+      "version": 1
     }
