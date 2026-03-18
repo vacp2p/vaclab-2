@@ -40,11 +40,11 @@ helm:
           disable_prometheus_converter: false
         resources:
           requests:
-            cpu: "100m"
-            memory: 256Mi
-          limits:
-            cpu: "500m"
+            cpu: "1"
             memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 2Gi
 
       defaultDashboards:
         # -- Enable custom dashboards installation
