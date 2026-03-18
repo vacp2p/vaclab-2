@@ -492,7 +492,7 @@ helm:
         spec:
           port: "8080"
           selectAllByDefault: true
-          evaluationInterval: 20s
+          evaluationInterval: 30s
           extraArgs:
             http.pathPrefix: "/"
           resources:
@@ -678,7 +678,7 @@ helm:
                 
           port: "8429"
           selectAllByDefault: true
-          scrapeInterval: 10s
+          scrapeInterval: 30s
           externalLabels:
             cluster: "vaclab"
             # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
@@ -1064,8 +1064,8 @@ helm:
           spec:
             scheme: "https"
             honorLabels: true
-            interval: "10s"
-            scrapeTimeout: "5s"
+            interval: "30s"
+            scrapeTimeout: "10s"
             tlsConfig:
               insecureSkipVerify: true
               caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
