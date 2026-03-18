@@ -38,6 +38,13 @@ helm:
           enabled: true
         operator:
           disable_prometheus_converter: false
+        resources:
+          requests:
+            cpu: "100m"
+            memory: 256Mi
+          limits:
+            cpu: "500m"
+            memory: 512Mi
 
       defaultDashboards:
         # -- Enable custom dashboards installation
@@ -388,6 +395,13 @@ helm:
             tag: v0.28.1
           externalURL: ""
           routePrefix: /
+          resources:
+            requests:
+              cpu: "250m"
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
 
           # -- (string) If this one defined, it will be used for alertmanager configuration and config parameter will be ignored
           configSecret: ""
@@ -481,6 +495,13 @@ helm:
           evaluationInterval: 20s
           extraArgs:
             http.pathPrefix: "/"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
 
           # External labels to add to all generated recording rules and alerts
           externalLabels: {}
@@ -668,6 +689,13 @@ helm:
             # Do not store original labels in vmagent's memory by default. This reduces the amount of memory used by vmagent
             # but makes vmagent debugging UI less informative. See: https://docs.victoriametrics.com/victoriametrics/relabeling/#relabel-debugging
             promscrape.dropOriginalLabels: "true"
+          resources:
+            requests:
+              cpu: "4"
+              memory: 4Gi
+            limits:
+              cpu: "16"
+              memory: 16Gi
         # -- (object) VMAgent ingress configuration
         ingress:
           enabled: false
@@ -926,6 +954,14 @@ helm:
           - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
           - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|erofs|sysfs|tracefs)$
         
+        resources:
+          requests:
+            cpu: "100m"
+            memory: 128Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        
         tolerations:
           - key: "dedicated"
             operator: "Equal"
@@ -952,6 +988,14 @@ helm:
       # -- kube-state-metrics dependency chart configuration. For possible values check [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/values.yaml)
       kube-state-metrics:
         enabled: true
+        
+        resources:
+          requests:
+            cpu: "512m"
+            memory: 512Mi
+          limits:
+            cpu: "1"
+            memory: 2Gi
         
         tolerations:
           - key: "dedicated"
