@@ -1,6 +1,0 @@
-defaultNamespace: daily-benchmark
-dependsOn:
-  - name: vaclab-2-fleet-iperf-benchmark-daemonsets
-  - name: vaclab-2-fleet-iperf-benchmark-configmaps
-  - name: vaclab-2-fleet-iperf-benchmark-rbac
-  - name: vaclab-2-fleet-iperf-benchmark-services
