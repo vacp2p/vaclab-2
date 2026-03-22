@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: iperf-servers-pod
+  labels: { network: pod }
+spec:
+  selector:
+    matchLabels: { app: iperf-podnetwork }
+  template:
+    metadata:
+      labels: { app: iperf-podnetwork }
+    spec:
+      containers:
+      - name: iperf
+        image: networkstatic/iperf3:latest
+        args: ['-s', '-p', '5201']

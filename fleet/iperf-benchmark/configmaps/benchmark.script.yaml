@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: iperf-benchmark-script
+data:
+  benchmark.sh: |
+    #!/bin/bash
+    set -e
+
+    # Defaults if ENV variables are not provided
+    PARALLEL=${IPERF_PARALLEL:-5}
+    DURATION=${IPERF_DURATION:-10}
+    DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    echo "--- STARTING BENCHMARK RUN: $DATE ---"
+    echo "Target Service: $TARGET_SVC"
+    echo "My Node: $MY_NODE_NAME"
+    echo "Config: Parallel=$PARALLEL, Duration=${DURATION}s"
+
+    run_benchmark() {
+      local svc_label=$1; local port=$2; local mode=$3
+
+      # Find targets
+      echo ">>> Discovering pods for label: app=$svc_label"
+      TARGETS=$(kubectl get pods -l app=$svc_label -o json | jq -c '.items[] | {ip: .status.podIP, node: .spec.nodeName}')
+      
+      if [ -z "$TARGETS" ]; then
+        echo "ERROR: No target pods found for label app=$svc_label"
+        exit 1
+      fi
+
+      echo "$TARGETS" | while read -r target; do
+        DEST_IP=$(echo $target | jq -r .ip)
+        DEST_NODE=$(echo $target | jq -r .node)
+
+        if [ "$DEST_NODE" == "$MY_NODE_NAME" ]; then 
+          echo "Skipping self ($MY_NODE_NAME)"
+          continue
+        fi
+
+        for DIRECTION in "UL" "DL"; do
+          for PROTO in "tcp" "udp"; do
+            echo "----------------------------------------------------------"
+            echo "TESTING: $PROTO | $DIRECTION | $MY_NODE_NAME -> $DEST_NODE ($DEST_IP)"
+            
+            # Directional Flag: -R is Reverse (Download for the client)
+            DIR_FLAG=""
+            [ "$DIRECTION" == "DL" ] && DIR_FLAG="-R"
+            
+            # Protocol specific flags
+            EXTRA_FLAGS=""
+            [ "$PROTO" == "udp" ] && EXTRA_FLAGS="-u -b 0"
+            
+            # Run iperf3: Using ENV-driven Duration and Parallelism
+            RESULT=$(iperf3 -c $DEST_IP -p $port -t $DURATION -P $PARALLEL $DIR_FLAG $EXTRA_FLAGS -J)
+            
+            # Log summary to stdout
+            echo "iperf3 summary for $PROTO $DIRECTION:"
+            echo "$RESULT" | jq .end.sum_received
+
+            # --- Push to VictoriaLogs ---
+            LOG_PAYLOAD=$(jq -c \
+              --arg src "$MY_NODE_NAME" \
+              --arg dest "$DEST_NODE" \
+              --arg mode "$mode" \
+              --arg proto "$PROTO" \
+              --arg dir "$DIRECTION" \
+              '{
+                "_time": "'$DATE'",
+                "_msg": ("iperf3 " + $proto + " " + $dir + ": " + $src + " -> " + $dest),
+                "app": "iperf-health",
+                "src": $src,
+                "dest": $dest,
+                "protocol": $proto,
+                "mode": $mode,
+                "direction": $dir,
+                "iperf_stats": .
+              }' <<< "$RESULT")
+            
+            curl -s -L -X POST "$VL_FULL_PATH" \
+              -H "Content-Type: application/json" \
+              --data-binary "$LOG_PAYLOAD"
+
+            # --- Push to VictoriaMetrics ---
+            if [ "$PROTO" == "tcp" ]; then
+              THROUGHPUT=$(jq '.end.sum_received.bits_per_second // 0' <<< "$RESULT")
+              RETRANSMITS=$(jq '.end.sum_sent.retransmits // 0' <<< "$RESULT")
+              
+              # Use optional chaining and filters to avoid null division
+              RTT_MIN=$(jq '(.end.streams[0].sender.min_rtt // .end.streams[0].receiver.min_rtt // 0) / 1000' <<< "$RESULT")
+              RTT_AVG=$(jq '(.end.streams[0].sender.mean_rtt // .end.streams[0].receiver.mean_rtt // 0) / 1000' <<< "$RESULT")
+              RTT_MAX=$(jq '(.end.streams[0].sender.max_rtt // .end.streams[0].receiver.max_rtt // 0) / 1000' <<< "$RESULT")
+              
+              # CWND can be missing in Reverse mode; check if it exists before averaging
+              AVG_CWND=$(jq '[.intervals[].streams[0].snd_cwnd | select(. != null)] | if length > 0 then add / length else 0 end' <<< "$RESULT")
+              CONGESTION=$(jq -r '.end.sender_tcp_congestion // .end.receiver_tcp_congestion // "unknown"' <<< "$RESULT")
+
+              cat <<EOF | curl -s -X POST "$VM_FULL_PATH" --data-binary @- 2>&1
+    iperf_throughput_bps{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",cc="$CONGESTION"} $THROUGHPUT
+    iperf_retransmits_total{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",cc="$CONGESTION"} $RETRANSMITS
+    iperf_rtt_ms{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",stat="min"} $RTT_MIN
+    iperf_rtt_ms{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",stat="avg"} $RTT_AVG
+    iperf_rtt_ms{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",stat="max"} $RTT_MAX
+    iperf_tcp_avg_cwnd_bytes{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="tcp",direction="$DIRECTION",cc="$CONGESTION"} $AVG_CWND
+    EOF
+            else
+              THROUGHPUT=$(jq '.end.sum_received.bits_per_second // 0' <<< "$RESULT")
+              JITTER=$(jq '.end.sum_received.jitter_ms // 0' <<< "$RESULT")
+              LOST_PCT=$(jq '.end.sum_received.lost_percent // 0' <<< "$RESULT")
+              
+              cat <<EOF | curl -s -X POST "$VM_FULL_PATH" --data-binary @- 2>&1
+    iperf_throughput_bps{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="udp",direction="$DIRECTION"} $THROUGHPUT
+    iperf_jitter_ms{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="udp",direction="$DIRECTION"} $JITTER
+    iperf_packet_loss_percent{src="$MY_NODE_NAME",dest="$DEST_NODE",mode="$mode",protocol="udp",direction="$DIRECTION"} $LOST_PCT
+    EOF
+            fi
+            echo "Done with $PROTO $DIRECTION"
+          done
+        done
+      done
+    }
+
+    run_benchmark "$TARGET_SVC" "$TARGET_PORT" "$BENCHMARK_MODE"
+    echo "--- ALL JOBS FINISHED ---"
