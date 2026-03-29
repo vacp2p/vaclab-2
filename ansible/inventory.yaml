@@ -14,6 +14,7 @@ k3s_cluster:
         node-03.ih-eu-mda1.misc.vaclab.status.im:
         node-04.ih-eu-mda1.misc.vaclab.status.im:
         node-05.ih-eu-mda1.misc.vaclab.status.im:
+        metal-01.he-eu-hel1.misc.vacdst.status.im:
   # Required Vars
   vars:
     ansible_port: 22
@@ -66,10 +67,10 @@ k3s_cluster:
     google_oauth_client_secret: "{{ lookup('env', 'GOOGLE_OAUTH_CLIENT_SECRET') | default('') }}"
     allowed_email_domain: "status.im"
     
-    # Node taints configuration
-    #node_taints:
-    #  - node: "metal-01.he-eu-hel1.misc.vacdst"
-    #    taints:
-    #      - key: "dedicated"
-    #        value: "monitoring"
-    #        effect: "PreferNoSchedule"
+    #Node taints configuration
+    node_taints:
+      - node: "metal-01.he-eu-hel1.misc.vacdst"
+        taints:
+          - key: "dedicated"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
