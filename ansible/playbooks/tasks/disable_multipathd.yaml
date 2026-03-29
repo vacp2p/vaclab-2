@@ -1,5 +1,19 @@
 ---
-# Disable multipathd on all nodes to prevent conflicts with Longhorn
+# Disable multipathd completely on all nodes to prevent conflicts with Longhorn
+# Reference: https://longhorn.io/kb/troubleshooting-volume-with-multipath/
+
+- name: Stop multipathd.socket
+  ansible.builtin.systemd:
+    name: multipathd.socket
+    state: stopped
+  ignore_errors: true
+
+- name: Disable and mask multipathd.socket
+  ansible.builtin.systemd:
+    name: multipathd.socket
+    enabled: false
+    masked: true
+  ignore_errors: true
 
 - name: Stop multipathd service
   ansible.builtin.systemd:
@@ -7,10 +21,11 @@
     state: stopped
   ignore_errors: true
 
-- name: Disable multipathd service
+- name: Disable and mask multipathd service
   ansible.builtin.systemd:
     name: multipathd
     enabled: false
+    masked: true
   ignore_errors: true
 
 - name: Flush existing multipath maps
@@ -18,6 +33,33 @@
   register: multipath_flush
   changed_when: multipath_flush.rc == 0
   ignore_errors: true
+
+- name: Create multipath.conf to blacklist all devices
+  ansible.builtin.copy:
+    dest: /etc/multipath.conf
+    content: |
+      # Blacklist all devices to prevent multipathd from managing any device
+      # This is required for Longhorn compatibility
+      blacklist {
+          devnode "^sd[a-z0-9]+"
+          devnode "^(ram|raw|loop|fd|md|dm-|sr|scd|st|dcssblk)[0-9]*"
+          devnode "^(td|hd|vd)[a-z]"
+          devnode "^nvme.*"
+      }
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Blacklist dm-multipath kernel module
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/blacklist-multipath.conf
+    content: |
+      # Prevent dm-multipath kernel module from loading
+      blacklist dm-multipath
+      blacklist dm_multipath
+    mode: '0644'
+    owner: root
+    group: root
 
 - name: Verify no multipath devices are listed
   ansible.builtin.command: multipath -l
@@ -29,8 +71,13 @@
   ansible.builtin.debug:
     msg:
       - "=============================================="
-      - "Multipathd Disabled"
+      - "Multipathd Completely Disabled"
       - "=============================================="
+      - "Actions taken:"
+      - "  - multipathd.socket: stopped, disabled, masked"
+      - "  - multipathd.service: stopped, disabled, masked"
+      - "  - /etc/multipath.conf: blacklist all devices"
+      - "  - /etc/modprobe.d/blacklist-multipath.conf: blacklist kernel module"
       - "Multipath devices (should be empty):"
       - "{{ multipath_verify.stdout_lines | default(['None']) }}"
       - "=============================================="
