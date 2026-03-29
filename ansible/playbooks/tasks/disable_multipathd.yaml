@@ -1,0 +1,36 @@
+---
+# Disable multipathd on all nodes to prevent conflicts with Longhorn
+
+- name: Stop multipathd service
+  ansible.builtin.systemd:
+    name: multipathd
+    state: stopped
+  ignore_errors: true
+
+- name: Disable multipathd service
+  ansible.builtin.systemd:
+    name: multipathd
+    enabled: false
+  ignore_errors: true
+
+- name: Flush existing multipath maps
+  ansible.builtin.command: multipath -F
+  register: multipath_flush
+  changed_when: multipath_flush.rc == 0
+  ignore_errors: true
+
+- name: Verify no multipath devices are listed
+  ansible.builtin.command: multipath -l
+  register: multipath_verify
+  changed_when: false
+  ignore_errors: true
+
+- name: Display multipath status
+  ansible.builtin.debug:
+    msg:
+      - "=============================================="
+      - "Multipathd Disabled"
+      - "=============================================="
+      - "Multipath devices (should be empty):"
+      - "{{ multipath_verify.stdout_lines | default(['None']) }}"
+      - "=============================================="
