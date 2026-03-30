@@ -48,7 +48,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P4169E866C3094E38"
+            "uid": "VictoriaMetrics"
           },
           "description": "All CPU cores Temperature",
           "fieldConfig": {
@@ -198,7 +198,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P4169E866C3094E38"
+            "uid": "VictoriaMetrics"
           },
           "description": "Network Interface Card Temperature",
           "fieldConfig": {
@@ -318,7 +318,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P4169E866C3094E38"
+            "uid": "VictoriaMetrics"
           },
           "description": "Disk Temperature",
           "fieldConfig": {
