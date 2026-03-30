@@ -9,473 +9,451 @@ metadata:
 data:
   hardware-health.json: |
     {
-      "apiVersion": "dashboard.grafana.app/v1beta1",
-      "kind": "Dashboard",
-      "metadata": {
-        "name": "ds5hszf",
-        "namespace": "default",
-        "uid": "v0AmjK8CTtXsUA7VGUWtFSWWFdFJPJAKT4aSErfPzaUX",
-        "resourceVersion": "3",
-        "generation": 3,
-        "creationTimestamp": "2026-03-29T22:03:05Z",
-        "labels": {
-          "grafana.app/deprecatedInternalID": "192"
-        },
-        "annotations": {
-          "grafana.app/createdBy": "user:dfffcyfz0b30ga",
-          "grafana.app/folder": "ffhiw1ds81vy8a",
-          "grafana.app/updatedBy": "user:dfffcyfz0b30ga",
-          "grafana.app/updatedTimestamp": "2026-03-29T23:33:26Z"
-        }
-      },
-      "spec": {
-        "annotations": {
-          "list": [
-            {
-              "builtIn": 1,
-              "datasource": {
-                "type": "grafana",
-                "uid": "-- Grafana --"
-              },
-              "enable": true,
-              "hide": true,
-              "iconColor": "rgba(0, 211, 255, 1)",
-              "name": "Annotations & Alerts",
-              "type": "dashboard"
-            }
-          ]
-        },
-        "description": "Node Hardware Health",
-        "editable": true,
-        "fiscalYearStartMonth": 0,
-        "graphTooltip": 0,
-        "id": 192,
-        "links": [],
-        "panels": [
+      "annotations": {
+        "list": [
           {
-            "collapsed": false,
-            "gridPos": {
-              "h": 1,
-              "w": 24,
-              "x": 0,
-              "y": 0
-            },
-            "id": 36,
-            "panels": [],
-            "title": "TEMPERATURE",
-            "type": "row"
-          },
-          {
+            "builtIn": 1,
             "datasource": {
-              "type": "prometheus",
-              "uid": "VictoriaMetrics"
+              "type": "grafana",
+              "uid": "-- Grafana --"
             },
-            "description": "All CPU cores Temperature",
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 2,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 1,
-                  "pointSize": 2,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "auto",
-                  "showValues": false,
-                  "spanNulls": true,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "fieldMinMax": false,
-                "links": [],
-                "mappings": [],
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "#EAB839",
-                      "value": 50
-                    },
-                    {
-                      "color": "red",
-                      "value": 65
-                    }
-                  ]
-                },
-                "unit": "celsius"
-              },
-              "overrides": [
-                {
-                  "matcher": {
-                    "id": "byRegexp",
-                    "options": "/.*Critical*./"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#E24D42",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "matcher": {
-                    "id": "byRegexp",
-                    "options": "/.*Max*./"
-                  },
-                  "properties": [
-                    {
-                      "id": "color",
-                      "value": {
-                        "fixedColor": "#EF843C",
-                        "mode": "fixed"
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            "gridPos": {
-              "h": 9,
-              "w": 24,
-              "x": 0,
-              "y": 1
-            },
-            "id": 18,
-            "maxPerRow": 12,
-            "options": {
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "table",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "single",
-                "sort": "none"
-              }
-            },
-            "pluginVersion": "12.3.0",
-            "repeat": "device_id",
-            "repeatDirection": "h",
-            "targets": [
-              {
-                "datasource": {
-                  "type": "prometheus",
-                  "uid": "${datasource}"
-                },
-                "editorMode": "code",
-                "exemplar": false,
-                "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\".*(coretemp|k10temp|zenpower).*\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
-                "format": "time_series",
-                "instant": false,
-                "interval": "",
-                "intervalFactor": 1,
-                "legendFormat": "{{nodename}}",
-                "range": true,
-                "refId": "A",
-                "step": 240
-              }
-            ],
-            "title": "CPU Temperature",
-            "type": "timeseries"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "VictoriaMetrics"
-            },
-            "description": "Network Interface Card Temperature",
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "palette-classic"
-                },
-                "custom": {
-                  "axisBorderShow": false,
-                  "axisCenteredZero": false,
-                  "axisColorMode": "text",
-                  "axisLabel": "",
-                  "axisPlacement": "auto",
-                  "barAlignment": 0,
-                  "barWidthFactor": 0.6,
-                  "drawStyle": "line",
-                  "fillOpacity": 2,
-                  "gradientMode": "none",
-                  "hideFrom": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": false
-                  },
-                  "insertNulls": false,
-                  "lineInterpolation": "linear",
-                  "lineWidth": 2,
-                  "pointSize": 5,
-                  "scaleDistribution": {
-                    "type": "linear"
-                  },
-                  "showPoints": "auto",
-                  "showValues": false,
-                  "spanNulls": false,
-                  "stacking": {
-                    "group": "A",
-                    "mode": "none"
-                  },
-                  "thresholdsStyle": {
-                    "mode": "off"
-                  }
-                },
-                "decimals": 1,
-                "mappings": [
-                  {
-                    "options": {
-                      "match": "null",
-                      "result": {
-                        "text": "N/A"
-                      }
-                    },
-                    "type": "special"
-                  }
-                ],
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "celsius"
-              },
-              "overrides": []
-            },
-            "gridPos": {
-              "h": 10,
-              "w": 15,
-              "x": 0,
-              "y": 10
-            },
-            "id": 48,
-            "maxDataPoints": 100,
-            "maxPerRow": 8,
-            "options": {
-              "legend": {
-                "calcs": [
-                  "lastNotNull",
-                  "max"
-                ],
-                "displayMode": "table",
-                "placement": "bottom",
-                "showLegend": true
-              },
-              "tooltip": {
-                "hideZeros": false,
-                "mode": "single",
-                "sort": "none"
-              }
-            },
-            "pluginVersion": "12.3.0",
-            "targets": [
-              {
-                "datasource": {
-                  "type": "prometheus",
-                  "uid": "${datasource}"
-                },
-                "editorMode": "code",
-                "exemplar": false,
-                "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\"i350bb|mlx5\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
-                "instant": false,
-                "intervalFactor": 1,
-                "legendFormat": "{{nodename}}-{{chip_name}}",
-                "range": true,
-                "refId": "A",
-                "step": 240
-              }
-            ],
-            "title": "NIC TEMPERATURE",
-            "type": "timeseries"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "VictoriaMetrics"
-            },
-            "description": "Disk Temperature",
-            "fieldConfig": {
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "decimals": 1,
-                "mappings": [
-                  {
-                    "options": {
-                      "match": "null",
-                      "result": {
-                        "text": "N/A"
-                      }
-                    },
-                    "type": "special"
-                  }
-                ],
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "value": 0
-                    },
-                    {
-                      "color": "red",
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "celsius"
-              },
-              "overrides": []
-            },
-            "gridPos": {
-              "h": 10,
-              "w": 9,
-              "x": 15,
-              "y": 10
-            },
-            "id": 45,
-            "maxDataPoints": 100,
-            "maxPerRow": 8,
-            "options": {
-              "colorMode": "value",
-              "graphMode": "area",
-              "justifyMode": "auto",
-              "orientation": "auto",
-              "percentChangeColorMode": "inverted",
-              "reduceOptions": {
-                "calcs": [
-                  "lastNotNull"
-                ],
-                "fields": "",
-                "values": false
-              },
-              "showPercentChange": true,
-              "textMode": "auto",
-              "wideLayout": true
-            },
-            "pluginVersion": "12.3.0",
-            "targets": [
-              {
-                "datasource": {
-                  "type": "prometheus",
-                  "uid": "${datasource}"
-                },
-                "editorMode": "code",
-                "exemplar": false,
-                "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\".*nvme.*\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
-                "instant": false,
-                "intervalFactor": 1,
-                "legendFormat": "{{nodename}}",
-                "range": true,
-                "refId": "A",
-                "step": 240
-              }
-            ],
-            "title": "NVME TEMPERATURE",
-            "type": "stat"
-          },
-          {
-            "collapsed": false,
-            "gridPos": {
-              "h": 1,
-              "w": 24,
-              "x": 0,
-              "y": 20
-            },
-            "id": 30,
-            "panels": [],
-            "title": "CPU/RAM",
-            "type": "row"
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
           }
-        ],
-        "preload": false,
-        "refresh": "5m",
-        "schemaVersion": 42,
-        "tags": [],
-        "templating": {
-          "list": [
-            {
-              "allValue": ".*",
-              "allowCustomValue": false,
-              "current": {
-                "text": "All",
-                "value": "$__all"
-              },
-              "definition": "label_values({job=\"node-exporter\"},nodename)",
-              "description": "hostname of the server",
-              "includeAll": true,
-              "label": "hostname",
-              "name": "host",
-              "options": [],
-              "query": {
-                "qryType": 1,
-                "query": "label_values({job=\"node-exporter\"},nodename)",
-                "refId": "PrometheusVariableQueryEditor-VariableQuery"
-              },
-              "refresh": 1,
-              "regex": "",
-              "sort": 2,
-              "type": "query"
-            }
-          ]
-        },
-        "time": {
-          "from": "now-24h",
-          "to": "now"
-        },
-        "timepicker": {},
-        "timezone": "browser",
-        "title": "Node Hardware",
-        "uid": "ds5hszf",
-        "version": 3
+        ]
       },
-      "status": {}
+      "description": "Node Hardware Health",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 192,
+      "links": [],
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 36,
+          "panels": [],
+          "title": "TEMPERATURE",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "description": "All CPU cores Temperature",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 2,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 2,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "fieldMinMax": false,
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 50
+                  },
+                  {
+                    "color": "red",
+                    "value": 65
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Critical*./"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#E24D42",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "/.*Max*./"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#EF843C",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 18,
+          "maxPerRow": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "repeat": "device_id",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\".*(coretemp|k10temp|zenpower).*\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{nodename}}",
+              "range": true,
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "title": "CPU Temperature",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "description": "Network Interface Card Temperature",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 2,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 1,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 15,
+            "x": 0,
+            "y": 10
+          },
+          "id": 48,
+          "maxDataPoints": 100,
+          "maxPerRow": 8,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\"i350bb|mlx5\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
+              "instant": false,
+              "intervalFactor": 1,
+              "legendFormat": "{{nodename}}-{{chip_name}}",
+              "range": true,
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "title": "NIC TEMPERATURE",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "description": "Disk Temperature",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 1,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 9,
+            "x": 15,
+            "y": 10
+          },
+          "id": 45,
+          "maxDataPoints": 100,
+          "maxPerRow": 8,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "inverted",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": true,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (nodename, chip_name) (\n  (\n    node_hwmon_temp_celsius{job=\"node-exporter\"}\n    * on(instance, chip) group_left(chip_name)\n      node_hwmon_chip_names{\n        job=\"node-exporter\",\n        chip_name=~\".*nvme.*\"\n      }\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{nodename=~\"$host\", job=\"node-exporter\"}\n)",
+              "instant": false,
+              "intervalFactor": 1,
+              "legendFormat": "{{nodename}}",
+              "range": true,
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "title": "NVME TEMPERATURE",
+          "type": "stat"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 30,
+          "panels": [],
+          "title": "CPU/RAM",
+          "type": "row"
+        }
+      ],
+      "preload": false,
+      "refresh": "5m",
+      "schemaVersion": 42,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "allValue": ".*",
+            "allowCustomValue": false,
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "definition": "label_values({job=\"node-exporter\"},nodename)",
+            "description": "hostname of the server",
+            "includeAll": true,
+            "label": "hostname",
+            "name": "host",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values({job=\"node-exporter\"},nodename)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "sort": 2,
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-24h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "Node Hardware",
+      "uid": "ds5hszf",
+      "version": 3
     }
