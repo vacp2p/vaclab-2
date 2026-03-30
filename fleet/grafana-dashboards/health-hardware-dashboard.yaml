@@ -12,20 +12,20 @@ data:
       "apiVersion": "dashboard.grafana.app/v1beta1",
       "kind": "Dashboard",
       "metadata": {
-        "name": "ds5hszf30",
+        "name": "ds5hszf",
         "namespace": "default",
         "uid": "v0AmjK8CTtXsUA7VGUWtFSWWFdFJPJAKT4aSErfPzaUX",
-        "resourceVersion": "1",
-        "generation": 2,
+        "resourceVersion": "3",
+        "generation": 3,
         "creationTimestamp": "2026-03-29T22:03:05Z",
         "labels": {
           "grafana.app/deprecatedInternalID": "192"
         },
         "annotations": {
           "grafana.app/createdBy": "user:dfffcyfz0b30ga",
-          "grafana.app/folder": "afg4uu54wl5ogf",
+          "grafana.app/folder": "ffhiw1ds81vy8a",
           "grafana.app/updatedBy": "user:dfffcyfz0b30ga",
-          "grafana.app/updatedTimestamp": "2026-03-29T22:03:05Z"
+          "grafana.app/updatedTimestamp": "2026-03-29T23:33:26Z"
         }
       },
       "spec": {
@@ -49,7 +49,7 @@ data:
         "editable": true,
         "fiscalYearStartMonth": 0,
         "graphTooltip": 0,
-        "id": 0,
+        "id": 192,
         "links": [],
         "panels": [
           {
@@ -197,7 +197,7 @@ data:
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "VictoriaMetrics"
+                  "uid": "${datasource}"
                 },
                 "editorMode": "code",
                 "exemplar": false,
@@ -319,7 +319,7 @@ data:
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "VictoriaMetrics"
+                  "uid": "${datasource}"
                 },
                 "editorMode": "code",
                 "exemplar": false,
@@ -338,7 +338,7 @@ data:
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "P4169E866C3094E38"
+              "uid": "VictoriaMetrics"
             },
             "description": "Disk Temperature",
             "fieldConfig": {
@@ -406,7 +406,7 @@ data:
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "VictoriaMetrics"
+                  "uid": "${datasource}"
                 },
                 "editorMode": "code",
                 "exemplar": false,
@@ -474,8 +474,8 @@ data:
         "timepicker": {},
         "timezone": "browser",
         "title": "Node Hardware",
-        "uid": "ds5hszf30",
-        "version": 2
+        "uid": "ds5hszf",
+        "version": 3
       },
       "status": {}
     }
