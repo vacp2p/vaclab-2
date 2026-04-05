@@ -45,6 +45,21 @@
     --overwrite
   ignore_errors: true
 
+- name: Annotate metal-01 node with single disk configuration
+  command: >
+    kubectl annotate node metal-01.he-eu-hel1.misc.vacdst
+    node.longhorn.io/default-disks-config='[{"path":"/var/lib/longhorn","allowScheduling":true,"storageReserved":107374182400,"tags":["first-disk","home-disk"]}]' 
+    --overwrite
+  ignore_errors: true
+
+- name: Annotate metal-01 node with default node tags
+  command: >
+    kubectl annotate node metal-01.he-eu-hel1.misc.vacdst
+    node.longhorn.io/default-node-tags='["node-role.kubernetes.io/worker","worker","monitoring","limited-scheduling"]'
+    --overwrite
+  ignore_errors: true
+
+
 - name: Display Longhorn node labeling summary
   debug:
     msg:
