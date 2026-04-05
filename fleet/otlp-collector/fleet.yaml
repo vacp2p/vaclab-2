@@ -12,6 +12,24 @@ helm:
     mode: deployment
     image:
       repository: "otel/opentelemetry-collector-contrib"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - metal-01.he-eu-hel1.misc.vacdst
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "PreferNoSchedule"
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
     presets:
       clusterMetrics:
         enabled: true

@@ -55,13 +55,18 @@ helm:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
-        # tolerations:
-        #   - key: "dedicated"
-        #     operator: "Equal"
-        #     value: "monitoring"
-        #     effect: "PreferNoSchedule"
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - metal-01.he-eu-hel1.misc.vacdst
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
 
     redis:
       enabled: true
@@ -167,13 +172,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
-      # tolerations:
-      #   - key: "dedicated"
-      #     operator: "Equal"
-      #     value: "monitoring"
-      #     effect: "PreferNoSchedule"
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       resources:
         requests:
           cpu: "4"
@@ -200,13 +210,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
-      # tolerations:
-      #   - key: "dedicated"
-      #     operator: "Equal"
-      #     value: "monitoring"
-      #     effect: "PreferNoSchedule"
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       resources:
         requests:
           cpu: "2"

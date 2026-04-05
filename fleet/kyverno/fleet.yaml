@@ -15,13 +15,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"
           value: "monitoring"
           effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
     backgroundController:
       replicas: 2
       affinity:
@@ -30,13 +35,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"
           value: "monitoring"
           effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
     cleanupController:
       replicas: 2
       affinity:
@@ -45,13 +55,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"
           value: "monitoring"
           effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
     reportsController:
       replicas: 2
       affinity:
@@ -60,13 +75,18 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"
           value: "monitoring"
           effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
     
 
 # Exclude Kyverno report resources from Fleet management
