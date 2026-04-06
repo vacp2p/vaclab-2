@@ -28,10 +28,8 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - metal-01.he-eu-hel1.misc.vacdst
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
       tolerations:
         - key: "dedicated"
           operator: "Equal"
