@@ -57,11 +57,14 @@ helm:
                   matchExpressions:
                     - key: node-role.kubernetes.io/control-plane
                       operator: Exists
-        # tolerations:
-        #   - key: "dedicated"
-        #     operator: "Equal"
-        #     value: "monitoring"
-        #     effect: "PreferNoSchedule"
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: "Exists"
+            effect: "NoSchedule"
 
     redis:
       enabled: true
@@ -169,11 +172,14 @@ helm:
                 matchExpressions:
                   - key: node-role.kubernetes.io/control-plane
                     operator: Exists
-      # tolerations:
-      #   - key: "dedicated"
-      #     operator: "Equal"
-      #     value: "monitoring"
-      #     effect: "PreferNoSchedule"
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       resources:
         requests:
           cpu: "4"
@@ -202,11 +208,14 @@ helm:
                 matchExpressions:
                   - key: node-role.kubernetes.io/control-plane
                     operator: Exists
-      # tolerations:
-      #   - key: "dedicated"
-      #     operator: "Equal"
-      #     value: "monitoring"
-      #     effect: "PreferNoSchedule"
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
       resources:
         requests:
           cpu: "2"

@@ -29,7 +29,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 192,
+      "id": 195,
       "links": [],
       "panels": [
         {
@@ -414,6 +414,197 @@ data:
           "panels": [],
           "title": "CPU/RAM",
           "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "description": "Overall CPU busy percentage (averaged across all cores)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 1,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgba(237, 129, 40, 0.89)",
+                    "value": 85
+                  },
+                  {
+                    "color": "rgba(245, 54, 54, 0.9)",
+                    "value": 95
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 21
+          },
+          "id": 51,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (nodename, cluster) (\n  (\n    100 * (\n      1 - avg by (instance, cluster) (\n        rate(\n          node_cpu_seconds_total{\n            mode=\"idle\",\n            job=\"node-exporter\"\n          }[$__rate_interval]\n        )\n      )\n    )\n  )\n  * on(instance) group_left(nodename)\n    node_uname_info{\n      nodename=~\"$host\",\n      job=\"node-exporter\"\n    }\n)",
+              "instant": true,
+              "legendFormat": "{{nodename}}",
+              "range": false,
+              "refId": "A",
+              "step": 240
+            }
+          ],
+          "title": "CPU Busy",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(node-[0-9]*)(.*)",
+                "renamePattern": "$1"
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(metal-[0-9]*)(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "description": "Real RAM usage excluding cache and reclaimable memory",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 1,
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "rgba(50, 172, 45, 0.97)",
+                    "value": 0
+                  },
+                  {
+                    "color": "rgba(237, 129, 40, 0.89)",
+                    "value": 80
+                  },
+                  {
+                    "color": "rgba(245, 54, 54, 0.9)",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          },
+          "id": 50,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "clamp_min(\n  (\n    1 -\n    (\n      node_memory_MemAvailable_bytes{\n        job=\"node-exporter\"\n      }\n      /\n      node_memory_MemTotal_bytes{\n        job=\"node-exporter\"\n      }\n    )\n  ) * 100,\n  0\n)\n* on(instance) group_left(nodename)\n  node_uname_info{\n    nodename=~\"$host\",\n    job=\"node-exporter\"\n  }",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "{{nodename}}",
+              "range": false,
+              "refId": "B",
+              "step": 240
+            }
+          ],
+          "title": "RAM Used",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(node-[0-9]*)(.*)",
+                "renamePattern": "$1"
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(metal-[0-9]*)(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "gauge"
         }
       ],
       "preload": false,
@@ -455,5 +646,5 @@ data:
       "timezone": "browser",
       "title": "Node Hardware",
       "uid": "ds5hszf",
-      "version": 3
+      "version": 2
     }
