@@ -28,7 +28,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 136,
+      "id": 170,
       "links": [],
       "panels": [
         {
@@ -116,7 +116,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "sum by (pod) (\n  max by (pod, container) (\n    rate(\n      container_cpu_usage_seconds_total{\n        namespace=\"nomos-testnet\",\n        container!=\"\",\n        container!=\"POD\"\n      }[5m]\n    )\n  )\n)",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    rate(\n      container_cpu_usage_seconds_total{\n        namespace=~\"$namespace\",\n        container!=\"\",\n        container!=\"POD\"\n      }[5m]\n    )\n  )\n)",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -215,7 +215,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_working_set_bytes{\n      namespace=\"nomos-testnet\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_working_set_bytes{\n      namespace=~\"$namespace\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -404,7 +404,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_rss{\n      namespace=\"nomos-testnet\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_rss{\n      namespace=~\"$namespace\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -499,7 +499,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_cache{\n      namespace=\"nomos-testnet\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
+              "expr": "sum by (pod) (\n  max by (pod, container) (\n    container_memory_cache{\n      namespace=~\"$namespace\",\n      container!=\"\",\n      container!=\"POD\"\n    }\n  )\n)",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -507,13 +507,170 @@ data:
           ],
           "title": "Memory cache",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P4169E866C3094E38"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "node-genesis-0",
+                      "node-genesis-1",
+                      "node-genesis-2",
+                      "node-genesis-3",
+                      "node-genesis-4",
+                      "node-genesis-5",
+                      "node-genesis-6",
+                      "node-genesis-7",
+                      "node-genesis-8",
+                      "node-genesis-9"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 16
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "blend_peers_connected",
+              "hide": false,
+              "legendFormat": "{{service_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Blend connections",
+          "type": "timeseries"
         }
       ],
       "preload": false,
       "schemaVersion": 42,
       "tags": [],
       "templating": {
-        "list": []
+        "list": [
+          {
+            "allowCustomValue": false,
+            "current": {
+              "text": [
+                "nomos-genesis",
+                "test"
+              ],
+              "value": [
+                "nomos-genesis",
+                "test"
+              ]
+            },
+            "definition": "label_values(kube_pod_info{cluster=\"vaclab\"},namespace)",
+            "includeAll": true,
+            "label": "namespace",
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values(kube_pod_info{cluster=\"vaclab\"},namespace)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "type": "query"
+          }
+        ]
       },
       "time": {
         "from": "now-3h",
@@ -523,5 +680,5 @@ data:
       "timezone": "browser",
       "title": "Nomos Consumption",
       "uid": "al8vcc5",
-      "version": 2
+      "version": 1
     }
