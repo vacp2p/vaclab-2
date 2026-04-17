@@ -511,7 +511,7 @@ data:
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "P4169E866C3094E38"
+            "uid": "VictoriaMetrics"
           },
           "fieldConfig": {
             "defaults": {
