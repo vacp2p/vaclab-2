@@ -113,6 +113,13 @@
     - name: Import authentik resources tasks
       ansible.builtin.import_tasks: tasks/authentik_resources.yaml
 
+- name: Create opentelemetry resources
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import opentelemetry resources tasks
+      ansible.builtin.import_tasks: tasks/opentelemetry_resources.yaml
+
 - name: Install Rancher and Fleet
   hosts: server
   run_once: true

@@ -12,24 +12,24 @@ helm:
     mode: deployment
     image:
       repository: "otel/opentelemetry-collector-contrib"
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-                - key: kubernetes.io/hostname
-                  operator: In
-                  values:
-                    - metal-01.he-eu-hel1.misc.vacdst
-    tolerations:
-      - key: "dedicated"
-        operator: "Equal"
-        value: "monitoring"
-        effect: "PreferNoSchedule"
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
+    #affinity:
+    #  nodeAffinity:
+    #    preferredDuringSchedulingIgnoredDuringExecution:
+    #      - weight: 100
+    #        preference:
+    #          matchExpressions:
+    #            - key: kubernetes.io/hostname
+    #              operator: In
+    #              values:
+    #                - metal-01.he-eu-hel1.misc.vacdst
+    #tolerations:
+    #  - key: "dedicated"
+    #    operator: "Equal"
+    #    value: "monitoring"
+    #    effect: "PreferNoSchedule"
+    #  - key: "node-role.kubernetes.io/control-plane"
+    #    operator: "Exists"
+    #    effect: "NoSchedule"
     presets:
       clusterMetrics:
         enabled: true
@@ -41,9 +41,18 @@ helm:
         containerPort: 4317
         servicePort: 4317
         protocol: TCP
+    extraEnvs:
+      - name: OTEL_CLIENT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: otel-client-token
+            key: token
     config:
       # deltatocumulative processor is needed to convert metrics with delta temporality to cumulative temporality.
       # VictoriaMetrics doesn't support delta temporality. Skip this processor if you don't use delta temporality.
+      extensions:
+        bearertokenauth:
+          token: "${env:OTEL_CLIENT_TOKEN}"
       processors:
         deltatocumulative:
           max_stale: 5m
@@ -52,8 +61,12 @@ helm:
           protocols:
             grpc:
               endpoint: 0.0.0.0:4317
+              auth:
+                authenticator: bearertokenauth
             http:
               endpoint: 0.0.0.0:4318
+              auth:
+                authenticator: bearertokenauth
       exporters:
         otlphttp/victoriametrics:
           compression: gzip
