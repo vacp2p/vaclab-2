@@ -1,0 +1,25 @@
+---
+
+- name: Create opentelemetry namespace if not exists
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: opentelemetry
+
+- name: Create opentelemetry bearer token secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: otel-client-token
+        namespace: opentelemetry
+      type: Opaque
+      stringData:
+        token: "{{ opentelemetry_client_token }}"
