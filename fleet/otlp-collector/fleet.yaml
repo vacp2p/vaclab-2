@@ -17,6 +17,8 @@ helm:
     presets:
       clusterMetrics:
         enabled: true
+      logsCollection:
+        enabled: true
 
     service:
       type: ClusterIP
@@ -68,12 +70,17 @@ helm:
           compression: gzip
           encoding: proto
           metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
+          logs_endpoint: http://vlc-victoria-logs-cluster-vlinsert.victorialogs.svc.cluster.local:9481/insert/opentelemetry/v1/logs
           tls:
             insecure: true
 
       service:
         extensions: [health_check, bearertokenauth]
         pipelines:
+          logs:
+            receivers: [otlp]
+            processors: []
+            exporters: [otlphttp/victoriametrics]
           metrics:
             receivers: [otlp]
             processors: [deltatocumulative]
