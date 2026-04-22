@@ -42,6 +42,8 @@ helm:
 
     config:
       extensions:
+        health_check:
+          endpoint: 0.0.0.0:13133
         bearertokenauth:
           token: "${env:OTEL_CLIENT_TOKEN}"
 
@@ -70,7 +72,7 @@ helm:
             insecure: true
 
       service:
-        extensions: [bearertokenauth]
+        extensions: [health_check, bearertokenauth]
         pipelines:
           metrics:
             receivers: [otlp]
