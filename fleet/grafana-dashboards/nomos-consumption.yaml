@@ -197,63 +197,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "Peers - node-genesis-0",
-                      "Peers - node-genesis-1",
-                      "Peers - node-genesis-10",
-                      "Peers - node-genesis-11",
-                      "Peers - node-genesis-12",
-                      "Peers - node-genesis-13",
-                      "Peers - node-genesis-14",
-                      "Peers - node-genesis-15",
-                      "Peers - node-genesis-2",
-                      "Peers - node-genesis-3",
-                      "Peers - node-genesis-4",
-                      "Peers - node-genesis-5",
-                      "Peers - node-genesis-6",
-                      "Peers - node-genesis-7",
-                      "Peers - node-genesis-8",
-                      "Peers - node-genesis-9",
-                      "Peers - test-0",
-                      "Peers - test-1",
-                      "Peers - test-10",
-                      "Peers - test-11",
-                      "Peers - test-12",
-                      "Peers - test-13",
-                      "Peers - test-14",
-                      "Peers - test-15",
-                      "Peers - test-2",
-                      "Peers - test-3",
-                      "Peers - test-4",
-                      "Peers - test-5",
-                      "Peers - test-6",
-                      "Peers - test-7",
-                      "Peers - test-8",
-                      "Peers - test-9"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": true,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 8,
@@ -604,8 +548,7 @@ data:
                     "value": 80
                   }
                 ]
-              },
-              "unit": "short"
+              }
             },
             "overrides": []
           },
@@ -614,100 +557,6 @@ data:
             "w": 12,
             "x": 12,
             "y": 18
-          },
-          "id": 9,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.3.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "pending_outbound_messages",
-              "legendFormat": "Pending Outbound - {{service_name}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Pending Outbound Messages — queue depth",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 26
           },
           "id": 6,
           "options": {
@@ -738,120 +587,12 @@ data:
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 10,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "msgps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 26
-          },
-          "id": 8,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.3.0",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "rate(blend_inbound_messages_failed_total[5m])",
-              "legendFormat": "Failed Inb/sec - {{service_name}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "editorMode": "code",
-              "expr": "rate(blend_outbound_messages_failed_total[5m])",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Failed Out/sec - {{service_name}}",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "Failed Message Rate — events/sec (missing data)",
-          "type": "timeseries"
-        },
-        {
           "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 34
+            "y": 26
           },
           "id": 10,
           "panels": [],
@@ -923,7 +664,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 27
           },
           "id": 2,
           "options": {
@@ -1018,7 +759,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 27
           },
           "id": 1,
           "options": {
@@ -1117,7 +858,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 35
           },
           "id": 5,
           "options": {
@@ -1212,7 +953,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 43
+            "y": 35
           },
           "id": 4,
           "options": {
@@ -1284,5 +1025,5 @@ data:
       "timezone": "browser",
       "title": "Nomos Consumption",
       "uid": "al8vcc5",
-      "version": 1
+      "version": 3
     }
