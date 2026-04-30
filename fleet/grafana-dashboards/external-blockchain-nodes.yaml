@@ -28,7 +28,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 170,
+      "id": 232,
       "links": [],
       "panels": [
         {
@@ -111,7 +111,7 @@ data:
             "x": 0,
             "y": 1
           },
-          "id": 3,
+          "id": 16,
           "options": {
             "legend": {
               "calcs": [],
@@ -129,13 +129,13 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "consensus_forks_count",
+              "expr": "consensus_connections{namespace=\"\"}",
               "legendFormat": "{{service_name}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Consensus forks",
+          "title": "Consensus connections",
           "type": "timeseries"
         },
         {
@@ -223,27 +223,14 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "consensus_peers_connected",
+              "expr": "consensus_peers_connected{namespace=\"\"}",
               "hide": false,
-              "legendFormat": "Peers - {{service_name}}",
+              "legendFormat": "{{service_name}}",
               "range": true,
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "editorMode": "code",
-              "expr": "consensus_connections",
-              "hide": true,
-              "instant": false,
-              "legendFormat": "Connections - {{service_name}}",
-              "range": true,
-              "refId": "B"
             }
           ],
-          "title": "Peers connected",
+          "title": "Consensus peers connected",
           "type": "timeseries"
         },
         {
@@ -302,7 +289,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "consensus_tip_height",
+              "expr": "consensus_tip_height{namespace=\"\"}",
               "legendFormat": "{{service_name}}",
               "range": true,
               "refId": "A"
@@ -367,7 +354,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "consensus_finalized_height",
+              "expr": "consensus_finalized_height{namespace=\"\"}",
               "legendFormat": "{{service_name}}",
               "range": true,
               "refId": "A"
@@ -377,12 +364,106 @@ data:
           "type": "stat"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 17
+          },
+          "id": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "consensus_forks_count{namespace=\"\"}",
+              "legendFormat": "{{service_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Consensus forks",
+          "type": "timeseries"
+        },
+        {
           "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 25
           },
           "id": 11,
           "panels": [],
@@ -455,7 +536,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 18
+            "y": 26
           },
           "id": 7,
           "options": {
@@ -475,14 +556,15 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "rate(blend_messages_sent_total[5m])",
+              "expr": "rate(blend_messages_sent_total{namespace=\"\"}[5m])",
               "legendFormat": "Sent/sec - {{service_name}}",
               "range": true,
               "refId": "A"
             },
             {
               "editorMode": "code",
-              "expr": "rate(blend_messages_received_total[5m])",
+              "expr": "rate(blend_messages_received_total{namespace=\"\"}[5m])",
+              "hide": true,
               "legendFormat": "Received/sec - {{service_name}}",
               "range": true,
               "refId": "B"
@@ -556,7 +638,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 18
+            "y": 26
           },
           "id": 6,
           "options": {
@@ -576,7 +658,7 @@ data:
           "targets": [
             {
               "editorMode": "code",
-              "expr": "blend_peers_connected",
+              "expr": "blend_peers_connected{namespace=\"\"}",
               "hide": false,
               "legendFormat": "{{service_name}}",
               "range": true,
@@ -591,35 +673,7 @@ data:
       "schemaVersion": 42,
       "tags": [],
       "templating": {
-        "list": [
-          {
-            "allowCustomValue": false,
-            "current": {
-              "text": [
-                "nomos-genesis",
-                "test"
-              ],
-              "value": [
-                "nomos-genesis",
-                "test"
-              ]
-            },
-            "definition": "label_values(kube_pod_info{cluster=\"vaclab\"},namespace)",
-            "includeAll": true,
-            "label": "namespace",
-            "multi": true,
-            "name": "namespace",
-            "options": [],
-            "query": {
-              "qryType": 1,
-              "query": "label_values(kube_pod_info{cluster=\"vaclab\"},namespace)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "refresh": 2,
-            "regex": "",
-            "type": "query"
-          }
-        ]
+        "list": []
       },
       "time": {
         "from": "now-3h",
@@ -629,5 +683,5 @@ data:
       "timezone": "browser",
       "title": "External Blockchain Nodes",
       "uid": "al8vcc6",
-      "version": 4
+      "version": 1
     }
