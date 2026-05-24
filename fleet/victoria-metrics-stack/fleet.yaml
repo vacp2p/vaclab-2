@@ -653,6 +653,7 @@ helm:
         spec:
           inlineScrapeConfig: |-
             - job_name: 'libp2p-nodes'
+              scrape_interval: 5s
               kubernetes_sd_configs:
                 - role: pod
               scheme: http
@@ -704,7 +705,7 @@ helm:
                 
           port: "8429"
           selectAllByDefault: true
-          scrapeInterval: 5s
+          scrapeInterval: 30s
           externalLabels:
             cluster: "vaclab"
             # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
