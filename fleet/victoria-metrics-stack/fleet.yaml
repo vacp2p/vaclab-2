@@ -704,7 +704,7 @@ helm:
                 
           port: "8429"
           selectAllByDefault: true
-          scrapeInterval: 30s
+          scrapeInterval: 5s
           externalLabels:
             cluster: "vaclab"
             # For multi-cluster setups it is useful to use "cluster" label to identify the metrics source.
