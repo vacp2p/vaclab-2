@@ -1,0 +1,3854 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gossip-queues-vacdst
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_folder: "vac"  
+data:
+  gossip-queues.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Gossipsub Priority Queues ",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": 394,
+      "links": [],
+      "panels": [
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 44,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 15,
+                "x": 0,
+                "y": 1
+              },
+              "id": 1,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "dst_testnode_last_message_delay_ms{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n  muxer=~\"$muxer\"\n}\nand on(namespace, pod, muxer)\n(\n  rate(dst_testnode_message_delay_ms_count{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\",\n    muxer=~\"$muxer\"\n  }[$__rate_interval]) > 0\n)",
+                  "legendFormat": "{{pod}} | {{muxer}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Delivery Delay (Per Peer)",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 3,
+                "w": 9,
+                "x": 15,
+                "y": 1
+              },
+              "id": 2,
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "max by (muxer) (\n  dst_testnode_last_message_delay_ms{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\",\n    muxer=~\"$muxer\"\n  }\n  and on(namespace, pod, muxer)\n  (\n    rate(dst_testnode_message_delay_ms_count{\n      namespace=~\"$namespace\",\n      pod=~\"$pod\",\n      muxer=~\"$muxer\"\n    }[$__rate_interval]) > 0\n  )\n)",
+                  "legendFormat": "{{muxer}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Max Delay",
+              "type": "bargauge"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 9,
+                "x": 15,
+                "y": 4
+              },
+              "id": 4,
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "avg by (muxer) (\n  dst_testnode_last_message_delay_ms{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\",\n    muxer=~\"$muxer\"\n  }\n  and on(namespace, pod, muxer)\n  (\n    rate(dst_testnode_message_delay_ms_count{\n      namespace=~\"$namespace\",\n      pod=~\"$pod\",\n      muxer=~\"$muxer\"\n    }[$__rate_interval]) > 0\n  )\n)",
+                  "legendFormat": "{{muxer}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Average Delay",
+              "type": "bargauge"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 15,
+                "x": 0,
+                "y": 8
+              },
+              "id": 5,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(\n  0.99,\n  sum by (muxer, le) (\n    rate(dst_testnode_message_delay_ms_bucket{\n      namespace=~\"$namespace\",\n      pod=~\"$pod\",\n      muxer=~\"$muxer\"\n    }[$__rate_interval])\n  )\n)",
+                  "legendFormat": "{{muxer}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Delivery Delay P99",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 9,
+                "x": 15,
+                "y": 8
+              },
+              "id": 3,
+              "options": {
+                "displayMode": "gradient",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "maxVizHeight": 300,
+                "minVizHeight": 16,
+                "minVizWidth": 8,
+                "namePlacement": "auto",
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "p99"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showUnfilled": true,
+                "sizing": "auto",
+                "valueMode": "color"
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "histogram_quantile(\n  0.99,\n  sum by (muxer, le) (\n    rate(dst_testnode_message_delay_ms_bucket{\n      namespace=~\"$namespace\",\n      pod=~\"$pod\",\n      muxer=~\"$muxer\"\n    }[$__rate_interval])\n  )\n)",
+                  "legendFormat": "{{muxer}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "P99 Delay",
+              "type": "bargauge"
+            }
+          ],
+          "title": "Delivery Delay",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 48,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 8,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-0  "
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 10,
+                "w": 15,
+                "x": 0,
+                "y": 671
+              },
+              "id": 40,
+              "interval": "5s",
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "(libp2p_gossipsub_peers_scores{namespace=~\"$namespace\",pod=~\"$pod\"})",
+                  "legendFormat": "{{pod}}  {{id}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Peer Score",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 9,
+                "x": 15,
+                "y": 671
+              },
+              "id": 16,
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "\nincrease(libp2p_gossipsub_peers_score_slowPeerPenalty{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\"\n  })[$__rate_interval]\n",
+                  "legendFormat": "{{pod}} - SlowPeerPenalty Inc.",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_gossipsub_peers_scores{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval]",
+                  "hide": true,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Score",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Slow Peer Penalty Inc.",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 9,
+                "x": 15,
+                "y": 676
+              },
+              "id": 23,
+              "interval": "5s",
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_gossipsub_medium_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}\n",
+                  "legendFormat": "{{pod}} Medium -> {{id}}",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_gossipsub_low_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Low -> {{id}}",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_gossipsub_high_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - High -> {{id}}",
+                  "range": true,
+                  "refId": "C"
+                }
+              ],
+              "title": "H/M/L Queue Length",
+              "type": "timeseries"
+            }
+          ],
+          "title": "Global Score & Penalty",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 2
+          },
+          "id": 47,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "cps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 7,
+                "x": 0,
+                "y": 686
+              },
+              "id": 20,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_messages_rebroadcasted_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval]",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "REBROADCAST SENT",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "cps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 7,
+                "y": 686
+              },
+              "id": 27,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_messages_rebroadcasted_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval]",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "REBROADCAST",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "cps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 6,
+                "x": 13,
+                "y": 686
+              },
+              "id": 18,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_gossipsub_duplicate_total{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "DUPLICATE",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-slow-0 "
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 5,
+                "x": 19,
+                "y": 686
+              },
+              "id": 31,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_gossipsub_duplicate_total{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "DUPLICATE COUNT",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 7,
+                "x": 0,
+                "y": 692
+              },
+              "id": 35,
+              "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "libp2p_pubsub_received_graft_total{pod=~\"$pod\"}",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Number of received Graft",
+              "type": "gauge"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-slow-0"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 7,
+                "y": 692
+              },
+              "id": 19,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_received_ihave_total{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(\nlibp2p_pubsub_broadcast_ihave_total{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{sent}}",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "IHAVE Rate",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 13,
+                "y": 692
+              },
+              "id": 28,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_gossipsub_received_iwants{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Gossip IWANT Received Inc.",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 5,
+                "x": 19,
+                "y": 692
+              },
+              "id": 29,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_pubsub_received_iwant_total{namespace=~\"$namespace\", pod=~\"$pod\"}",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Pubsub IWANT Received Total",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 14,
+                "x": 0,
+                "y": 696
+              },
+              "id": 30,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_broadcast_iwant_total{namespace=~\"$namespace\", pod=~\"$pod\"})[$__rate_interval]",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Gossip IWANT Sent Inc.",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 10,
+                "x": 14,
+                "y": 696
+              },
+              "id": 32,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_broadcast_iwant_total{namespace=~\"$namespace\", pod=~\"$pod\"})",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Gossip IWANT Sent Total",
+              "type": "stat"
+            }
+          ],
+          "title": "Control Messages",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 3
+          },
+          "id": 46,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 0,
+                "y": 126
+              },
+              "id": 10,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_gossipsub_low_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})\n",
+                  "legendFormat": "{{pod}} -> queue",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_low_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - drop",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Low Priority Queue Length vs Drop",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 12,
+                "y": 126
+              },
+              "id": 15,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_low_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Low Priority Queue Drop",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 14,
+                "x": 0,
+                "y": 132
+              },
+              "id": 25,
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "\nincrease(libp2p_gossipsub_peers_score_slowPeerPenalty{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\"\n  })[$__rate_interval]\n",
+                  "legendFormat": "{{pod}} - SlowPeerPenalty Inc.",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_low_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - LOW DROP Inc.",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Slow Peer Penalty Inc. vs DROP [LOW]",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "cps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 5,
+                "x": 14,
+                "y": 132
+              },
+              "id": 36,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_received_ihave_total{namespace=~\"$namespace\", pod=~\"$pod\"}[$__rate_interval])",
+                  "legendFormat": "{{pod}} - IHAVE RX",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_low_priority_queue_drops_total{namespace=~\"$namespace\", pod=\"nimp2p-1\"}[1m])",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Low -Drop",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "IHAVE RECEIVED RATE vs LOW DROP",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-0 - Total"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": []
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 5,
+                "x": 19,
+                "y": 132
+              },
+              "id": 26,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]\n",
+                  "hide": true,
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_pubsub_low_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Total",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Low Priority Queue Drop Total",
+              "type": "stat"
+            }
+          ],
+          "title": "Low Priority Queues",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 4
+          },
+          "id": 45,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 16,
+                "x": 0,
+                "y": 80
+              },
+              "id": 9,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_gossipsub_medium_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}\n",
+                  "legendFormat": "{{pod}} - Queue",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_gossipsub_medium_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "hide": true,
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Drop",
+                  "range": true,
+                  "refId": "C"
+                }
+              ],
+              "title": "Medium Priority Queue Length vs Drop",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "cps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 16,
+                "y": 80
+              },
+              "id": 13,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n}[$__rate_interval])\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Medium Priority Queue Drop Rate",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 16,
+                "x": 0,
+                "y": 86
+              },
+              "id": 24,
+              "interval": "5s",
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "max"
+                  ],
+                  "displayMode": "table",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "\nincrease(libp2p_gossipsub_peers_score_slowPeerPenalty{\n    namespace=~\"$namespace\",\n    pod=~\"$pod\"\n  })[$__rate_interval]\n",
+                  "legendFormat": "{{pod}} - SlowPeerPenalty Inc.",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Medium DROP Inc.",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Slow Peer Penalty Inc. vs DROP [Medium]",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-0 - Total"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": []
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 8,
+                "x": 16,
+                "y": 86
+              },
+              "id": 17,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "increase(libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})[$__rate_interval]\n",
+                  "hide": true,
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_pubsub_medium_priority_queue_drops_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "{{pod}} - Total",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Medium Priority Queue Drop Total",
+              "type": "stat"
+            }
+          ],
+          "title": "Medium Priority Queues",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 5
+          },
+          "id": 43,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 12,
+                "x": 0,
+                "y": 92
+              },
+              "id": 37,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_disconnects_over_high_priority_queue_limit_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})",
+                  "legendFormat": "{{pod}} - High - disconnect",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_high_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_peers{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})",
+                  "hide": true,
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "C"
+                }
+              ],
+              "title": "High Priority Disconnect",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "always",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "none"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 7,
+                "w": 12,
+                "x": 12,
+                "y": 92
+              },
+              "id": 8,
+              "interval": "5s",
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "libp2p_gossipsub_high_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n}\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "High Priority Queue Length",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 12,
+                "x": 0,
+                "y": 99
+              },
+              "id": 34,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_disconnects_over_high_priority_queue_limit_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})",
+                  "legendFormat": "{{pod}} - High - disconnect",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_high_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "High Priority Disconnect",
+              "type": "stat"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 5,
+                "w": 12,
+                "x": 12,
+                "y": 99
+              },
+              "id": 38,
+              "interval": "5s",
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "(libp2p_peers{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})",
+                  "legendFormat": "{{pod}} - High - disconnect",
+                  "range": true,
+                  "refId": "A"
+                },
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "(libp2p_pubsub_high_priority_queue_size{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\",\n})",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "B"
+                }
+              ],
+              "title": "Connected Peers",
+              "type": "timeseries"
+            }
+          ],
+          "title": "High Priority Queues",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 6
+          },
+          "id": 49,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 0,
+                "y": 283
+              },
+              "id": 22,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(container_network_transmit_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n}[$__rate_interval])*8\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Data Rate TX",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 12,
+                "y": 283
+              },
+              "id": 11,
+              "options": {
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto"
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "max by(muxer)(dst_testnode_completed_messages_total_total{namespace=~\"$namespace\",muxer=~\"$muxer\",pod=~\"$pod\"})",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Number of Publishe messages",
+              "type": "gauge"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "bps"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "nimp2p-slow-0 "
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 0,
+                "y": 289
+              },
+              "id": 21,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(container_network_receive_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n}[$__rate_interval])*8\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Data Rate RX",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 12,
+                "y": 289
+              },
+              "id": 12,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "editorMode": "code",
+                  "expr": "(dst_testnode_completed_messages_total_total{namespace=~\"$namespace\",muxer=~\"$muxer\",pod=~\"$pod\"})",
+                  "legendFormat": "{{pod}}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Number of Publishe messages",
+              "type": "timeseries"
+            }
+          ],
+          "title": "Data Rate & Publisher",
+          "type": "row"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 7
+          },
+          "id": 7,
+          "panels": [
+            {
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "VictoriaLogs"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 25,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "ms"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 13,
+                "x": 0,
+                "y": 290
+              },
+              "id": 6,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "hidden",
+                  "placement": "right",
+                  "showLegend": false
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "victoriametrics-logs-datasource",
+                    "uid": "VictoriaLogs"
+                  },
+                  "direction": "desc",
+                  "editorMode": "code",
+                  "expr": "kubernetes.pod_namespace:\"libp2p-lab\" AND _msg:\"milliseconds\"\n| extract \"milliseconds: <latency>\"\n| stats by (_time:1ms) max(latency) as latency\n| sort by (_time desc)",
+                  "queryType": "statsRange",
+                  "refId": "A"
+                }
+              ],
+              "title": "Latency over time",
+              "type": "timeseries"
+            }
+          ],
+          "title": "Backup (From Log)",
+          "type": "row"
+        }
+      ],
+      "preload": false,
+      "schemaVersion": 42,
+      "tags": [],
+      "templating": {
+        "list": [
+          {
+            "allowCustomValue": false,
+            "current": {
+              "text": "libp2p-lab",
+              "value": "libp2p-lab"
+            },
+            "definition": "label_values({job=\"libp2p-nodes\"},namespace)",
+            "label": "namespace",
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values({job=\"libp2p-nodes\"},namespace)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "allowCustomValue": false,
+            "current": {
+              "text": "All",
+              "value": [
+                "$__all"
+              ]
+            },
+            "definition": "label_values({job=\"libp2p-nodes\", namespace=\"$namespace\"},pod)",
+            "includeAll": true,
+            "label": "pod",
+            "multi": true,
+            "name": "pod",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values({job=\"libp2p-nodes\", namespace=\"$namespace\"},pod)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "allowCustomValue": false,
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            },
+            "definition": "label_values({job=\"libp2p-nodes\"},muxer)",
+            "includeAll": true,
+            "label": "muxer",
+            "multi": true,
+            "name": "muxer",
+            "options": [],
+            "query": {
+              "qryType": 1,
+              "query": "label_values({job=\"libp2p-nodes\"},muxer)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "Gossipsub Queues",
+      "uid": "maqq8x5",
+      "version": 1
+    }
