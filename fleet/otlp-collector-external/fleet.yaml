@@ -149,8 +149,8 @@ helm:
         otlphttp/victoriametrics:
           compression: gzip
           encoding: proto
-          metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
-          logs_endpoint: http://vlc-victoria-logs-cluster-vlinsert.victorialogs.svc.cluster.local:9481/insert/opentelemetry/v1/logs
+          metrics_endpoint: http://vminsert-vmks-external-victoria-metrics-k8s-stack.vmetrics-external:8480/insert/0/opentelemetry/v1/metrics
+          logs_endpoint: http://vlc-external-victoria-logs-cluster-vlinsert.victorialogs-external.svc.cluster.local:9481/insert/opentelemetry/v1/logs
           tls:
             insecure: true
 

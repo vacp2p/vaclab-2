@@ -785,7 +785,6 @@ helm:
             uid: VictoriaMetricsPublic
             url: http://vmselect-vmks-external-victoria-metrics-k8s-stack.vmetrics-external:8481/select/0/prometheus
             access: proxy
-            version: 1
             orgId: 1
             isDefault: false
             editable: false
