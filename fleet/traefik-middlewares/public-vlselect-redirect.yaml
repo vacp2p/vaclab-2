@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: public-vlselect-redirect
+  namespace: default
+spec:
+  redirectRegex:
+    regex: '^https?://public\.log\.lab\.vac\.dev(?:/|/select/?)?$'
+    replacement: "https://public.log.lab.vac.dev/select/vmui"
+    permanent: true

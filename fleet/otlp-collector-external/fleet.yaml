@@ -16,9 +16,9 @@ helm:
 
     presets:
       clusterMetrics:
-        enabled: true
+        enabled: false
       logsCollection:
-        enabled: true
+        enabled: false
 
     service:
       type: ClusterIP
