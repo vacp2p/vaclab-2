@@ -181,11 +181,7 @@ helm:
 
       # Component scraping kube scheduler
       kubeScheduler:
-        enabled: false
-        
- 
-
-      
+        enabled: false    
 
 diff:
   comparePatches:

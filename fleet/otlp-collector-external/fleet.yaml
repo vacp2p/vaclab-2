@@ -24,6 +24,14 @@ helm:
       type: ClusterIP
       annotations:
         traefik.ingress.kubernetes.io/service.serversscheme: h2c
+    
+    resources:
+      requests:
+        cpu: "2"
+        memory: 4Gi
+      limits:
+        cpu: "4"
+        memory: 5Gi
 
     ingress:
       enabled: true
@@ -81,6 +89,10 @@ helm:
           token: "${env:OTEL_CLIENT_TOKEN}"
 
       processors:
+        memory_limiter:
+          check_interval: 1s
+          limit_mib: 3000      
+          spike_limit_mib: 512
         k8sattributes:
           auth_type: serviceAccount
           extract:
@@ -138,6 +150,7 @@ helm:
           protocols:
             grpc:
               endpoint: 0.0.0.0:4317
+              max_recv_msg_size_mib: 2
               auth:
                 authenticator: bearertokenauth
             http:
@@ -159,9 +172,9 @@ helm:
         pipelines:
           logs:
             receivers: [otlp]
-            processors: [k8sattributes, transform]
+            processors: [memory_limiter, k8sattributes, transform]
             exporters: [otlphttp/victoriametrics]
           metrics:
             receivers: [otlp]
-            processors: [k8sattributes, transform, deltatocumulative]
+            processors: [memory_limiter, k8sattributes, transform, deltatocumulative]
             exporters: [otlphttp/victoriametrics]
