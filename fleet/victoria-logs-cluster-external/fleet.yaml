@@ -182,7 +182,7 @@ helm:
         hosts:
         - name: public.log.lab.vac.dev
           path:
-          - /select/vmui
+          - /
           port: http
         ingressClassName: traefik
         pathType: Prefix
