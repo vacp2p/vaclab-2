@@ -4,10 +4,11 @@ metadata:
   name: public-vlselect-rate-limiter
   namespace: default
 spec:
+  # just a large number for now, globally shared by all public users accessing the dashboard
   rateLimit:
-    average: 25
+    average: 100
     period: 1s
-    burst: 50
+    burst: 200
     sourceCriterion:
       ipStrategy:
         depth: 1

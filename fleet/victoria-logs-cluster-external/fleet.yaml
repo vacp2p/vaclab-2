@@ -194,7 +194,9 @@ helm:
       lifecycle: {}
       name: ""
       nodeSelector: {}
-      podAnnotations: {}
+      podAnnotations:
+        kubernetes.io/ingress-bandwidth: "100M"
+        kubernetes.io/egress-bandwidth: "200M"
       podDisruptionBudget:
         enabled: false
         labels: {}

@@ -13,6 +13,10 @@ helm:
     mode: deployment
     image:
       repository: "otel/opentelemetry-collector-contrib"
+    
+    podAnnotations:
+      kubernetes.io/ingress-bandwidth: "200M"
+      kubernetes.io/egress-bandwidth: "100M"
 
     presets:
       clusterMetrics:
@@ -40,6 +44,8 @@ helm:
         cert-manager.io/cluster-issuer: letsencrypt-prod
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
         traefik.ingress.kubernetes.io/router.tls: "true"
+        traefik.ingress.kubernetes.io/router.middlewares: default-public-otlp-rate-limiter@kubernetescrd
+        
       hosts:
         - host: public.otlp.lab.vac.dev
           paths:
