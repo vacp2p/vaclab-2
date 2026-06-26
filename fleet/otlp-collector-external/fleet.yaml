@@ -42,6 +42,17 @@ helm:
         - secretName: otlp-external-tls
           hosts:
             - public.otlp.lab.vac.dev
+      additionalIngresses:
+        - name: insecure
+          ingressClassName: traefik
+          annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: web
+          hosts:
+            - host: public.otlp.lab.vac.dev
+              paths:
+                - path: /
+                  pathType: Prefix
+                  port: 4317
 
     ports:
       otlp:
