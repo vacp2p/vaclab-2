@@ -1,0 +1,156 @@
+defaultNamespace: opentelemetry
+dependsOn:
+  - name: vaclab-2-fleet-victoria-metrics-stack
+
+helm:
+  repo: https://open-telemetry.github.io/opentelemetry-helm-charts/
+  chart: opentelemetry-collector
+  version: 0.146.1
+  releaseName: otel-external
+  takeOwnership: true
+  disablePreProcess: true
+  values:
+    mode: deployment
+    image:
+      repository: "otel/opentelemetry-collector-contrib"
+
+    presets:
+      clusterMetrics:
+        enabled: true
+      logsCollection:
+        enabled: true
+
+    service:
+      type: ClusterIP
+      annotations:
+        traefik.ingress.kubernetes.io/service.serversscheme: h2c
+
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.tls: "true"
+      hosts:
+        - host: public.otlp.lab.vac.dev
+          paths:
+            - path: /
+              pathType: Prefix
+              port: 4317
+      tls:
+        - secretName: otlp-external-tls
+          hosts:
+            - public.otlp.lab.vac.dev
+
+    ports:
+      otlp:
+        enabled: true
+        containerPort: 4317
+        servicePort: 4317
+        protocol: TCP
+      otlp-http:
+        enabled: true
+        containerPort: 4318
+        servicePort: 4318
+        protocol: TCP
+
+    extraEnvs:
+      - name: OTEL_CLIENT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: otel-client-token
+            key: tokenExternal
+
+    config:
+      extensions:
+        health_check:
+          endpoint: 0.0.0.0:13133
+        bearertokenauth:
+          token: "${env:OTEL_CLIENT_TOKEN}"
+
+      processors:
+        k8sattributes:
+          auth_type: serviceAccount
+          extract:
+            metadata:
+              - k8s.namespace.name
+              - k8s.pod.name
+              - k8s.pod.uid
+              - k8s.pod.ip
+              - k8s.node.name
+              #- k8s.deployment.name
+              #- k8s.replicaset.name
+              #- k8s.statefulset.name
+              #- k8s.daemonset.name
+              - k8s.container.name
+
+          pod_association:
+            - sources:
+                - from: resource_attribute
+                  name: k8s.pod.uid
+            - sources:
+                - from: resource_attribute
+                  name: k8s.pod.ip
+            - sources:
+                - from: resource_attribute
+                  name: k8s.pod.name
+                - from: resource_attribute
+                  name: k8s.namespace.name
+            - sources:
+                - from: connection
+        deltatocumulative:
+          max_stale: 5m
+        
+        transform:
+          metric_statements:
+            - context: resource
+              statements:
+                - set(attributes["dst_source"], "external")
+                - set(attributes["namespace"], attributes["k8s.namespace.name"])
+                - set(attributes["pod"], attributes["k8s.pod.name"])
+                - set(attributes["pod_uid"], attributes["k8s.pod.uid"])
+                - set(attributes["pod_ip"], attributes["k8s.pod.ip"])
+                - set(attributes["node"], attributes["k8s.node.name"])
+          log_statements:
+            - context: resource
+              statements:
+                - set(attributes["dst_source"], "external")
+                - set(attributes["namespace"], attributes["k8s.namespace.name"])
+                - set(attributes["pod"], attributes["k8s.pod.name"])
+                - set(attributes["pod_uid"], attributes["k8s.pod.uid"])
+                - set(attributes["pod_ip"], attributes["k8s.pod.ip"])
+                - set(attributes["node"], attributes["k8s.node.name"])
+
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+              auth:
+                authenticator: bearertokenauth
+            http:
+              endpoint: 0.0.0.0:4318
+              auth:
+                authenticator: bearertokenauth
+
+      exporters:
+        otlphttp/victoriametrics:
+          compression: gzip
+          encoding: proto
+          metrics_endpoint: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
+          logs_endpoint: http://vlc-victoria-logs-cluster-vlinsert.victorialogs.svc.cluster.local:9481/insert/opentelemetry/v1/logs
+          tls:
+            insecure: true
+
+      service:
+        extensions: [health_check, bearertokenauth]
+        pipelines:
+          logs:
+            receivers: [otlp]
+            processors: [k8sattributes, transform]
+            exporters: [otlphttp/victoriametrics]
+          metrics:
+            receivers: [otlp]
+            processors: [k8sattributes, transform, deltatocumulative]
+            exporters: [otlphttp/victoriametrics]
