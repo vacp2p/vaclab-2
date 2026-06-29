@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: public-otlp-rate-limiter
+  namespace: default
+spec:
+  rateLimit:
+    # just a large number for now, globally shared by all external nodes
+    # combined with otlp recive message size limit of 2MB
+    # this allows 25*2MB/s ~= 400 Mbps
+    # which is 2 times higher than the L3 ingress bandwidth limits
+    # to allow throttling to without dropping aggressively
+    average: 25 
+    period: 1s
+    burst: 100
+    sourceCriterion:
+      ipStrategy:
+        depth: 1

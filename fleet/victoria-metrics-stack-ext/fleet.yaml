@@ -1,0 +1,193 @@
+defaultNamespace: vmetrics-external
+dependsOn: 
+  - name: vaclab-2-fleet-longhorn
+  #- name: vaclab-2-fleet-grafana-dashboards
+  - name: vaclab-2-fleet-storage
+  #- name: vaclab-2-fleet-cert-issuers
+
+helm:
+  repo: https://victoriametrics.github.io/helm-charts/
+  chart: victoria-metrics-k8s-stack
+  version: 0.67.0
+  releaseName: vmks-external
+  takeOwnership: true
+  values:
+      global:
+        clusterLabel: cluster 
+        license:
+          key: ""
+          keyRef: {}
+        cluster:
+          dnsDomain: cluster.local.
+
+      nameOverride: ""
+      fullnameOverride: ""
+      tenant: "0"
+      argocdReleaseOverride: ""
+
+      victoria-metrics-operator:
+        enabled: false
+      defaultDashboards:
+        enabled: false
+
+      defaultRules:
+        create: false
+
+      vmsingle:
+        enabled: false
+        
+      vmcluster:
+        annotations: {}
+        enabled: true
+        ingress:
+          insert:
+            annotations: {}
+            enabled: false
+            extraPaths: []
+            hosts: []
+            ingressClassName: ""
+            labels: {}
+            path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vminsert
+              }}'
+            pathType: Prefix
+            tls: []
+          select:
+            annotations: {}
+            enabled: true
+            extraPaths: []
+            hosts: []
+            ingressClassName: ""
+            labels: {}
+            path: '{{ dig "extraArgs" "http.pathPrefix" "/" .Values.vmcluster.spec.vmselect
+              }}'
+            pathType: Prefix
+            tls: []
+          storage:
+            annotations: {}
+            enabled: false
+            extraPaths: []
+            hosts: []
+            ingressClassName: ""
+            labels: {}
+            path: ""
+            pathType: Prefix
+            tls: []
+        labels: {}
+        spec:
+          replicationFactor: 2
+          retentionPeriod: "6"
+          vminsert:
+            enabled: true
+            extraArgs:
+              # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
+              # OTLP Protobuf: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
+              # Prometheus import: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/prometheus/api/v1/import/prometheus
+              # Note: OTLP requires protobuf encoding (not JSON). Use Prometheus format for simple HTTP push.
+              opentelemetry.usePrometheusNaming: "true"
+            port: "8480"
+            replicaCount: 2
+            resources:
+              limits:
+                cpu: "8"
+                memory: 8Gi
+              requests:
+                cpu: "4"
+                memory: 4Gi
+          vmselect:
+            enabled: true
+            extraArgs: {}
+            port: "8481"
+            replicaCount: 2
+            resources:
+              limits:
+                cpu: "8" 
+                memory: "16Gi"
+              requests:
+                cpu: "4"
+                memory: "8Gi"
+          vmstorage:
+            enabled: true
+            replicaCount: 2
+            resources:
+              limits:
+                cpu: "8" # set to 8 in production
+                memory: "8Gi"
+              requests:
+                cpu: "2"
+                memory: "2Gi"
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  resources:
+                    requests:
+                      storage: 200Gi # set to 500Gi in production
+                  storageClassName: longhorn-vaclab
+            storageDataPath: /vm-data
+        
+
+      alertmanager:
+        enabled: false
+        
+      vmalert:
+        enabled: false
+
+      vmauth:
+        enabled: false
+
+      vmagent:
+        enabled: false
+
+      # -- Grafana dependency chart configuration. For possible values refer [here](https://github.com/grafana/helm-charts/tree/main/charts/grafana#configuration)
+      grafana:
+        enabled: false
+        
+
+      defaultScrapeService:
+        namespace: kube-system
+
+      # -- prometheus-node-exporter dependency chart configuration. For possible values check [here](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus-node-exporter/values.yaml)
+      prometheus-node-exporter:
+        enabled: false
+
+      kube-state-metrics:
+        enabled: false  
+
+      # -- Component scraping the kubelets
+      kubelet:
+        enabled: false
+        
+      # Component scraping the kube api server
+      kubeApiServer:
+        # -- Enable Kube Api Server metrics scraping
+        enabled: false
+       
+      # Component scraping the kube controller manager
+      kubeControllerManager:
+        enabled: false
+
+      # Component scraping kubeDns. Use either this or coreDns
+      kubeDns:
+        # -- Enabled KubeDNS metrics scraping
+        enabled: false
+        
+      coreDns:
+        enabled: false
+        
+
+      # Component scraping etcd
+      kubeEtcd:
+        # -- Enabled KubeETCD metrics scraping
+        enabled: false
+
+      # Component scraping kube scheduler
+      kubeScheduler:
+        enabled: false    
+
+diff:
+  comparePatches:
+  - apiVersion: operator.victoriametrics.com/v1beta1
+    kind: VMCluster
+    jsonPointers:
+    - "/spec/vminsert/enabled"
+    - "/spec/vmselect/enabled"
+    - "/spec/vmstorage/enabled"
