@@ -650,6 +650,21 @@ helm:
             regex: "8009"
             source_labels:
             - __meta_kubernetes_pod_container_port_number
+        - job_name: mix-testnet-0.2
+          kubernetes_sd_configs:
+          - role: pod
+          relabel_configs:
+          - source_labels:
+            - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: keep
+            regex: testnet-0.2
+            source_labels:
+            - __meta_kubernetes_pod_label_fleet
+          - action: keep
+            regex: "8003"
+            source_labels:
+            - __meta_kubernetes_pod_container_port_number
         spec:
           inlineScrapeConfig: |-
             - job_name: 'libp2p-nodes'
