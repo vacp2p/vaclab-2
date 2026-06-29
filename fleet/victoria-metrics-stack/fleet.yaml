@@ -650,27 +650,32 @@ helm:
             regex: "8009"
             source_labels:
             - __meta_kubernetes_pod_container_port_number
-        - job_name: mix-testnet-0.2
-          kubernetes_sd_configs:
-          - role: pod
-          relabel_configs:
-          - action: keep
-            regex: testnet-0\.2
-            source_labels:
-            - __meta_kubernetes_pod_label_fleet
-          - source_labels:
-            - __meta_kubernetes_pod_ip
-            target_label: __address__
-            replacement: $1:8003
-          - source_labels:
-            - __meta_kubernetes_pod_name
-            target_label: instance
-          - action: keep
-            regex: Running
-            source_labels:
-            - __meta_kubernetes_pod_phase
         spec:
           inlineScrapeConfig: |-
+            - job_name: 'mix-testnet-0.2'
+              kubernetes_sd_configs:
+                - role: pod
+              scheme: http
+              metrics_path: /metrics
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_pod_label_fleet]
+                  action: keep
+                  regex: 'testnet-0\.2'
+                - source_labels: [__meta_kubernetes_pod_phase]
+                  action: keep
+                  regex: Running
+                - source_labels: [__meta_kubernetes_pod_ip]
+                  target_label: __address__
+                  replacement: '$1:8003'
+                - source_labels: [__meta_kubernetes_pod_name]
+                  target_label: instance
+                  action: replace
+                - source_labels: [__meta_kubernetes_namespace]
+                  target_label: namespace
+                  action: replace
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+                  action: replace
             - job_name: 'libp2p-nodes'
               kubernetes_sd_configs:
                 - role: pod
