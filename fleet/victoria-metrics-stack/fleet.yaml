@@ -654,17 +654,21 @@ helm:
           kubernetes_sd_configs:
           - role: pod
           relabel_configs:
+          - action: keep
+            regex: testnet-0\.2
+            source_labels:
+            - __meta_kubernetes_pod_label_fleet
+          - source_labels:
+            - __meta_kubernetes_pod_ip
+            target_label: __address__
+            replacement: $1:8003
           - source_labels:
             - __meta_kubernetes_pod_name
             target_label: instance
           - action: keep
-            regex: testnet-0.2
+            regex: Running
             source_labels:
-            - __meta_kubernetes_pod_label_fleet
-          - action: keep
-            regex: "8003"
-            source_labels:
-            - __meta_kubernetes_pod_container_port_number
+            - __meta_kubernetes_pod_phase
         spec:
           inlineScrapeConfig: |-
             - job_name: 'libp2p-nodes'
