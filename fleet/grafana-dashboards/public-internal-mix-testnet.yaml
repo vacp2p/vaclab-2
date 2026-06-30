@@ -8,7 +8,7 @@ metadata:
     grafana_folder: "public"
 data:
   public-internal-mix-testnet.json: |
-    {
+   {
       "annotations": {
         "list": [
           {
@@ -28,7 +28,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 0,
+      "id": 511,
       "links": [],
       "panels": [
         {
@@ -1166,7 +1166,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "rate(container_network_transmit_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n}[$__rate_interval])*8\n",
+              "expr": "rate(sum by (pod)(container_network_transmit_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
               "legendFormat": "{{pod}} ",
               "range": true,
               "refId": "A"
@@ -1265,7 +1265,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "rate(container_network_receive_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n}[$__rate_interval])*8\n",
+              "expr": "rate(sum by (pod)(container_network_receive_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
               "legendFormat": "{{pod}} ",
               "range": true,
               "refId": "A"
@@ -1329,5 +1329,5 @@ data:
       "timezone": "browser",
       "title": "Internal - MIX testnet 0.2",
       "uid": "akgtzjg29062026",
-      "version": 3
+      "version": 1
     }
