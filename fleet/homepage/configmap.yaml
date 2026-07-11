@@ -108,7 +108,7 @@ data:
             href: https://api.dashboard.lab.vac.dev/admin/token
             description: Create/Update/Delete Experiments & admin token
             namespace: dst-dashboard
-            app dst-dashboard-backend
+            app: dst-dashboard-backend
 
   
   widgets.yaml: |
