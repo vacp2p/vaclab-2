@@ -87,31 +87,6 @@ data:
             namespace: victorialogs
             podSelector: >-
               app in (vlselect)
-    
-    - DST TOOLS:
-        - DST Dashboard:
-            icon: mdi-chart-line
-            href: https://dashboard.lab.vac.dev
-            description: Experiment results & visualizations
-            namespace: dst-dashboard
-            podSelector: >-
-              app in (dst-dashboard-frontend)
-
-        - DST Dashboard API:
-            icon: si-swagger
-            href: https://api.dashboard.lab.vac.dev/api/docs
-            description: DST Dashboard API documentation
-            namespace: dst-dashboard
-            podSelector: >-
-              app in (dst-dashboard-backend)
-
-        - DST Dashboard Admin:
-            icon: mdi-shield-key
-            href: https://api.dashboard.lab.vac.dev/admin/token
-            description: Create/Update/Delete Experiments & admin token
-            namespace: dst-dashboard
-            podSelector: >-
-              app in (dst-dashboard-backend)
 
   
   widgets.yaml: |
