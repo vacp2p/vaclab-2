@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-prod
+spec:
+  serviceName: mongodb-prod
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-prod
+  template:
+    metadata:
+      labels:
+        app: mongodb-prod
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      containers:
+        - name: mongodb-prod
+          image: mongo:8
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 27017
+              name: mongodb-prod
+              protocol: TCP
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dst-mongo-prod-credentials
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dst-mongo-prod-credentials
+                  key: password
+          volumeMounts:
+            - name: mongo-data-prod
+              mountPath: /data/db
+      volumes:
+      - name: mongo-data-prod
+        persistentVolumeClaim:
+          claimName: dst-mongo-prod-pvc
+

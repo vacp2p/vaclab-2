@@ -1,0 +1,4 @@
+defaultNamespace: dst-dashboard
+dependsOn:
+  - name: vaclab-2-fleet-longhorn
+  - name: vaclab-2-fleet-storage
