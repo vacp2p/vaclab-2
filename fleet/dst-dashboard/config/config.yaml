@@ -6,6 +6,7 @@ data:
   config.yaml: |
     # DST Explorer Configuration
     # Global datasources - defined once, referenced by all experiments
+    # Do not use to load experiments (deprecated)
 
     datasources:
       - name: victoria-logs
