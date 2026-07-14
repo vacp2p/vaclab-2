@@ -30,7 +30,7 @@ spec:
           effect: "PreferNoSchedule"
       containers:
       - name: dst-dashboard-backend
-        image: mamoutoudiarra/dst-dashboard-backend:v1.0
+        image: mamoutoudiarra/dst-dashboard-backend:v1.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
