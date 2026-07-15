@@ -1,0 +1,4 @@
+defaultNamespace: dst-dashboard
+#dependsOn:
+#  - name: vaclab-2-fleet-dst-dashboard-backend
+#  - name: vaclab-2-fleet-dst-dashboard-frontend

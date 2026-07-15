@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dst-dashboard-frontend
+spec:
+  serviceName: dst-dashboard-frontend
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dst-dashboard-frontend
+  template:
+    metadata:
+      labels:
+        app: dst-dashboard-frontend
+        app.kubernetes.io/name: dst-dashboard-frontend
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      containers:
+      - name: frontend
+        image: mamoutoudiarra/dst-dashboard-frontend:v0.5
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2"

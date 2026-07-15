@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dst-dashboard-backend-admin-token-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,default-authentik-forwardauth@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - api.dashboard.lab.vac.dev
+    secretName: dashboard-backend-tls
+  rules:
+  - host: api.dashboard.lab.vac.dev
+    http:
+      paths:
+      - path: /admin/token
+        pathType: Exact
+        backend:
+          service:
+            name: dst-dashboard-backend
+            port:
+              number: 8000

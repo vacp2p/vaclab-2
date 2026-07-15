@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: mongodb-prod
+  ports:
+    - name: mongodb-prod
+      protocol: TCP
+      port: 8021
+      targetPort: 27017

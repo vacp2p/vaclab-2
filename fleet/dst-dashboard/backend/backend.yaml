@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dst-dashboard-backend
+spec:
+  serviceName: dst-dashboard-backend
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dst-dashboard-backend
+  template:
+    metadata:
+      labels:
+        app: dst-dashboard-backend
+        app.kubernetes.io/name: dst-dashboard-backend
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      containers:
+      - name: dst-dashboard-backend
+        image: mamoutoudiarra/dst-dashboard-backend:v1.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: DST_MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: dst-mongo-prod-credentials
+              key: uri
+        - name: DST_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: dst-dashboard-jwt-secret
+              key: secret
+        - name: DST_CONFIG_PATH
+          value: /app/config/config.yaml
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "4"
+          limits:
+            memory: "16Gi"
+            cpu: "8"
+      volumes:
+      - name: config
+        configMap:
+          name: dst-dashboard-config

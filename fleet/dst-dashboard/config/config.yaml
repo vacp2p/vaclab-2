@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dst-dashboard-config
+data:
+  config.yaml: |
+    # DST Explorer Configuration
+    # Global datasources - defined once, referenced by all experiments
+    # Do not use to load experiments (deprecated)
+
+    datasources:
+      - name: victoria-logs
+        type: VictoriaLogs
+        url: http://vlc-victoria-logs-cluster-vlselect.victorialogs:9471/select/logsql/query
+
+      - name: victoria-metrics
+        type: Prometheus
+        url: http://vmselect-vmks-victoria-metrics-k8s-stack.vmetrics:8481/select/0/prometheus/api/v1/
