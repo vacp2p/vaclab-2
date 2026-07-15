@@ -1,8 +1,9 @@
 defaultNamespace: vmetrics
-dependsOn: 
+dependsOn:
   - name: vaclab-2-fleet-longhorn
   - name: vaclab-2-fleet-grafana-dashboards
   - name: vaclab-2-fleet-storage
+  - name: vaclab-2-fleet-monitoring-priority-class
   #- name: vaclab-2-fleet-cert-issuers
 
 helm:
@@ -332,6 +333,12 @@ helm:
           retentionPeriod: "6"
           vminsert:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
             extraArgs:
               # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
               # OTLP Protobuf: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
@@ -349,18 +356,37 @@ helm:
                 memory: 4Gi
           vmselect:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
             extraArgs: {}
             port: "8481"
             replicaCount: 2
             resources:
               limits:
-                cpu: "8" 
+                cpu: "8"
                 memory: "16Gi"
               requests:
                 cpu: "4"
                 memory: "8Gi"
           vmstorage:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
+            affinity:
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: vmstorage
+                    topologyKey: kubernetes.io/hostname
             replicaCount: 3
             resources:
               limits:
@@ -368,7 +394,7 @@ helm:
                 memory: "8Gi"
               requests:
                 cpu: "2"
-                memory: "2Gi"
+                memory: "6Gi"
             storage:
               volumeClaimTemplate:
                 spec:
@@ -651,6 +677,12 @@ helm:
             source_labels:
             - __meta_kubernetes_pod_container_port_number
         spec:
+          priorityClassName: monitoring-critical
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
           inlineScrapeConfig: |-
             - job_name: 'mix-testnet-0.2'
               kubernetes_sd_configs:

@@ -1,0 +1,11 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monitoring-critical
+value: 900000000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: >-
+  Assigned to victoria-metrics-stack and victoria-logs-cluster components so they
+  keep a guaranteed CPU share and keep higher priority than experiment/simulation
+  workloads resource pressure.
