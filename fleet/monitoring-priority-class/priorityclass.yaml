@@ -8,4 +8,4 @@ preemptionPolicy: PreemptLowerPriority
 description: >-
   Assigned to victoria-metrics-stack and victoria-logs-cluster components so they
   keep a guaranteed CPU share and keep higher priority than experiment/simulation
-  workloads resource pressure.
+  workloads under high resource pressure.
