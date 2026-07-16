@@ -187,6 +187,16 @@ helm:
         limits:
           cpu: "8"
           memory: "8Gi"
+      # authentik writes its worker heartbeat file via mmap into /dev/shm; the container
+      # default 64Mi tmpfs fills up and workers get failed to proxy to backend: EOF"
+      volumes:
+        - name: authentik-shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+      volumeMounts:
+        - name: authentik-shm
+          mountPath: /dev/shm
       ingress:
         enabled: true
         ingressClassName: traefik
