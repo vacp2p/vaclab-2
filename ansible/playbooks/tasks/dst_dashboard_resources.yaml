@@ -1,0 +1,40 @@
+---
+- name: Create dst-dashboard namespace if not exists
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: dst-dashboard
+
+- name: Create dst-dashboard JWT secret
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: dst-dashboard-jwt-secret
+        namespace: dst-dashboard
+      type: Opaque
+      stringData:
+        secret: "{{ dst_dashboard_jwt_secret }}"
+
+- name: Create dst mongo secrets
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: dst-mongo-prod-credentials
+        namespace: dst-dashboard
+      type: Opaque
+      stringData:
+        password: "{{ dst_mongo_prod_password }}"
+        username: "{{ dst_mongo_prod_username }}"
+        uri: "{{ dst_mongo_prod_uri }}"

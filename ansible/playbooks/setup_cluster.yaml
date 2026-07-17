@@ -120,6 +120,13 @@
     - name: Import opentelemetry resources tasks
       ansible.builtin.import_tasks: tasks/opentelemetry_resources.yaml
 
+- name: Create dst_dashboard resources
+  hosts: server
+  run_once: true
+  tasks:
+    - name: Import dst_dashboard resources tasks
+      ansible.builtin.import_tasks: tasks/dst_dashboard_resources.yaml
+
 - name: Install Rancher and Fleet
   hosts: server
   run_once: true
