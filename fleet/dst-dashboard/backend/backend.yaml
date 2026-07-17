@@ -48,6 +48,8 @@ spec:
               key: secret
         - name: DST_CONFIG_PATH
           value: /app/config/config.yaml
+        - name: DEFAULT_ALLOWED_ORIGINS
+          value: "https://dashboard.lab.vac.dev,https://dev.dashboard.lab.vac.dev"
         volumeMounts:
         - name: config
           mountPath: /app/config

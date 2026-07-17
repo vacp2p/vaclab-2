@@ -23,6 +23,22 @@ helm:
     service:
       type: ClusterIP
 
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "PreferNoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - metal-01.he-eu-hel1.misc.vacdst
+
     ports:
       otlp:
         enabled: true

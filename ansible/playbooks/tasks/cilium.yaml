@@ -51,6 +51,13 @@
       # Network policy enforcement
       policyEnforcementMode: default
 
+      # Raise Cilium's API rate limits above their defaults -- too low for
+      # bursts of ~150-160 simultaneous pod creates/deletes per node
+      extraArgs:
+        - "--api-rate-limit=endpoint-create=rate-limit:20/s,rate-burst:40,parallel-requests:20"
+        - "--api-rate-limit=endpoint-delete=parallel-requests:20"
+        - "--api-rate-limit=endpoint-patch=rate-limit:20/s,rate-burst:40,parallel-requests:20"
+
       # Disable IPv6
       ipv6:
         enabled: false

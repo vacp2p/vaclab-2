@@ -37,6 +37,22 @@ helm:
         cpu: "4"
         memory: 5Gi
 
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "PreferNoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - metal-01.he-eu-hel1.misc.vacdst
+
     ingress:
       enabled: true
       ingressClassName: traefik
