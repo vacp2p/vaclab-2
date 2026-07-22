@@ -112,7 +112,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "sum(mix_messages_recvd_total{namespace=~\"$namespace\", instance=~\"$pod\"})",
+              "expr": "sum(increase(mix_messages_recvd_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
               "legendFormat": "{{instance}}",
               "range": true,
               "refId": "A"
@@ -190,7 +190,7 @@ data:
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum(mix_messages_forwarded_total{namespace=~\"$namespace\", instance=~\"$pod\"})",
+              "expr": "sum(increase(mix_messages_forwarded_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
               "instant": false,
               "legendFormat": "{{instance}}",
               "range": true,
@@ -268,7 +268,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "sum by (type)(mix_messages_recvd_total{namespace=~\"$namespace\", instance=~\"$pod\"})",
+              "expr": "sum by (type)(increase(mix_messages_recvd_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
               "legendFormat": "{{instance}}",
               "range": true,
               "refId": "A"
@@ -345,7 +345,7 @@ data:
                 "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "sum by (type)(mix_messages_forwarded_total{namespace=~\"$namespace\", instance=~\"$pod\"})",
+              "expr": "sum by (type)(increase(mix_messages_forwarded_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
               "legendFormat": "{{instance}}",
               "range": true,
               "refId": "A"
@@ -545,12 +545,112 @@ data:
           "type": "timeseries"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "description": "Include all messages types",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "msg",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 60,
+          "options": {
+            "legend": {
+              "calcs": [
+                "sum",
+                "mean",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (instance) (increase(mix_messages_forwarded_total{namespace=~\"$namespace\",instance=~\"$pod\"\n}[$__rate_interval]))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Mix Forwarded Message (over time)",
+          "type": "timeseries"
+        },
+        {
           "collapsed": true,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 25
           },
           "id": 46,
           "panels": [
@@ -620,13 +720,16 @@ data:
                 "h": 8,
                 "w": 14,
                 "x": 0,
-                "y": 32
+                "y": 26
               },
               "id": 10,
               "options": {
                 "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
+                  "calcs": [
+                    "mean",
+                    "max"
+                  ],
+                  "displayMode": "table",
                   "placement": "bottom",
                   "showLegend": true
                 },
@@ -685,7 +788,7 @@ data:
                 "h": 5,
                 "w": 10,
                 "x": 14,
-                "y": 32
+                "y": 26
               },
               "id": 53,
               "options": {
@@ -713,7 +816,9 @@ data:
                     "uid": "VictoriaMetrics"
                   },
                   "editorMode": "code",
-                  "expr": "sum by (error) (mix_messages_error_total{namespace=~\"$namespace\",instance=~\"$pod\"})",
+                  "exemplar": false,
+                  "expr": "sum by (error)(increase(mix_messages_error_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
+                  "instant": false,
                   "legendFormat": "__auto",
                   "range": true,
                   "refId": "A"
@@ -751,7 +856,7 @@ data:
                 "h": 3,
                 "w": 10,
                 "x": 14,
-                "y": 51
+                "y": 41
               },
               "id": 54,
               "options": {
@@ -786,7 +891,7 @@ data:
                     "uid": "VictoriaMetrics"
                   },
                   "editorMode": "code",
-                  "expr": "sum (mix_messages_error_total{namespace=~\"$namespace\",instance=~\"$pod\"})",
+                  "expr": "sum (increase(mix_messages_error_total{namespace=~\"$namespace\", instance=~\"$pod\"}[$__range]))",
                   "legendFormat": "__auto",
                   "range": true,
                   "refId": "A"
@@ -805,7 +910,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 26
           },
           "id": 45,
           "panels": [
@@ -841,7 +946,7 @@ data:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 71
+                "y": 27
               },
               "id": 52,
               "options": {
@@ -990,7 +1095,7 @@ data:
                 "h": 6,
                 "w": 24,
                 "x": 0,
-                "y": 75
+                "y": 31
               },
               "id": 9,
               "options": {
@@ -1067,223 +1172,224 @@ data:
           "type": "row"
         },
         {
-          "collapsed": false,
+          "collapsed": true,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 19
+            "y": 27
           },
           "id": 49,
-          "panels": [],
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 0,
+                "y": 60
+              },
+              "id": 22,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(sum by (pod)(container_network_transmit_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Data Rate TX",
+              "type": "timeseries"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 2,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 12,
+                "x": 12,
+                "y": 60
+              },
+              "id": 21,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.3.0",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "VictoriaMetrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "rate(sum by (pod)(container_network_receive_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
+                  "legendFormat": "{{pod}} ",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Data Rate RX",
+              "type": "timeseries"
+            }
+          ],
           "title": "Data Rate",
           "type": "row"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 2,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 0,
-            "y": 20
-          },
-          "id": 22,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "editorMode": "code",
-              "expr": "rate(sum by (pod)(container_network_transmit_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
-              "legendFormat": "{{pod}} ",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Data Rate TX",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 2,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "showValues": false,
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": 0
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "bps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 12,
-            "y": 20
-          },
-          "id": 21,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.3.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "editorMode": "code",
-              "expr": "rate(sum by (pod)(container_network_receive_bytes_total{\n  namespace=~\"$namespace\",\n  pod=~\"$pod\"\n})[$__rate_interval])*8\n",
-              "legendFormat": "{{pod}} ",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Data Rate RX",
-          "type": "timeseries"
-        },
-        {
           "collapsed": false,
           "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 26
+            "y": 28
           },
           "id": 57,
           "panels": [],
@@ -1360,7 +1466,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 27
+            "y": 29
           },
           "id": 58,
           "options": {
@@ -1486,7 +1592,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 27
+            "y": 29
           },
           "id": 59,
           "options": {
@@ -1573,12 +1679,12 @@ data:
         ]
       },
       "time": {
-        "from": "now-24h",
+        "from": "now-2d",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "browser",
-      "title": "Internal - MIX testnet 0.2 ",
+      "title": "Internal - MIX testnet 0.2",
       "uid": "akgtzjg29062026",
-      "version": 5
+      "version": 2
     }
