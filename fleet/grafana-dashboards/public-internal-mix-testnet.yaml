@@ -1497,7 +1497,7 @@ data:
               "exemplar": true,
               "expr": "sum(container_memory_working_set_bytes{namespace=\"$namespace\",pod=~\"$pod\",image!=\"\",container!=\"\"}) by(pod)",
               "interval": "",
-              "legendFormat": "{{ container }}",
+              "legendFormat": "{{ pod }}",
               "range": true,
               "refId": "A"
             }
