@@ -65,7 +65,7 @@
       nameserver 1.1.1.1
       nameserver 185.12.64.2
 
-- name: Create kubelet config for static cpuManager and custom resolv.conf
+- name: Create kubelet config for static cpuManager
   ansible.builtin.copy:
     dest: /etc/rancher/kubelet-config.yaml
     mode: '0644'
