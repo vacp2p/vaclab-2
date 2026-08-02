@@ -65,6 +65,20 @@
       nameserver 1.1.1.1
       nameserver 185.12.64.2
 
+- name: Create kubelet config for static cpuManager and custom resolv.conf
+  ansible.builtin.copy:
+    dest: /etc/rancher/kubelet-config.yaml
+    mode: '0644'
+    content: |
+      kind: KubeletConfiguration
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      cpuManagerPolicy: static
+      cpuManagerReconcilePeriod: 10s
+      kubeReserved:
+        cpu: "1"
+      systemReserved:
+        cpu: "1"
+
 - name: Configure user limits for file descriptors
   ansible.builtin.copy:
     dest: /etc/security/limits.d/99-vaclab-limits.conf
