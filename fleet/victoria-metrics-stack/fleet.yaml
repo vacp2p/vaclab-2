@@ -858,6 +858,24 @@ helm:
             editable: false
             jsonData:
               httpMethod: GET
+
+          - name: Tempo
+            type: tempo
+            uid: Tempo
+            url: http://tempo.grafana-tempo:3200
+            access: proxy
+            orgId: 1
+            isDefault: false
+            editable: false
+
+          - name: Tempo-Public
+            type: tempo
+            uid: TempoPublic
+            url: http://tempo-external.grafana-tempo-external:3200
+            access: proxy
+            orgId: 1
+            isDefault: false
+            editable: false
         grafanaOperator:
           # -- Create datasources as CRDs (requires grafana-operator to be installed)
           enabled: false
