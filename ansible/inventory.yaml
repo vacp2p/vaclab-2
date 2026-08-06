@@ -31,8 +31,8 @@ k3s_cluster:
     api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 
     # Optional vars
-    extra_server_args: "--flannel-backend=none --disable-network-policy --write-kubeconfig-mode 644 --kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
-    extra_agent_args: "--kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf"
+    extra_server_args: "--flannel-backend=none --disable-network-policy --write-kubeconfig-mode 644 --kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf --kubelet-arg=config=/etc/rancher/kubelet-config.yaml"
+    extra_agent_args: "--kubelet-arg=max-pods=1000 --kubelet-arg=resolv-conf=/etc/rancher/resolv.conf --kubelet-arg=config=/etc/rancher/kubelet-config.yaml"
     # extra_install_envs: { 'INSTALL_K3S_SKIP_SELINUX_RPM': 'true' }
     # cluster_context: vaclab
     # api_port: 6443
