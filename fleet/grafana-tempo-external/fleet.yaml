@@ -1,0 +1,46 @@
+defaultNamespace: grafana-tempo-external
+dependsOn:
+  - name: vaclab-2-fleet-longhorn
+  - name: vaclab-2-fleet-storage
+
+helm:
+  repo: https://grafana.github.io/helm-charts
+  chart: tempo
+  version: 1.24.4
+  releaseName: tempo-external
+  takeOwnership: true
+  values:
+    tempo:
+      retention: 4380h # 6 months
+      resources:
+        requests:
+          cpu: "2"
+          memory: 4Gi
+        limits:
+          cpu: "2"
+          memory: 8Gi
+      # otlp grpc (4317) and http (4318) receivers are enabled by default,
+      # matching the ports the otlp-collector-external already exports on.
+
+    persistence:
+      enabled: true
+      storageClassName: longhorn-vaclab
+      size: 100Gi
+    
+    priorityClassName: monitoring-critical
+
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "PreferNoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - metal-01.he-eu-hel1.misc.vacdst

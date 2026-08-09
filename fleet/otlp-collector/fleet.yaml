@@ -1,6 +1,7 @@
 defaultNamespace: opentelemetry
 dependsOn:
   - name: vaclab-2-fleet-victoria-metrics-stack
+  - name: vaclab-2-fleet-grafana-tempo
 
 helm:
   repo: https://open-telemetry.github.io/opentelemetry-helm-charts/
@@ -115,6 +116,14 @@ helm:
                 - set(attributes["pod_uid"], attributes["k8s.pod.uid"])
                 - set(attributes["pod_ip"], attributes["k8s.pod.ip"])
                 - set(attributes["node"], attributes["k8s.node.name"])
+          trace_statements:
+            - context: resource
+              statements:
+                - set(attributes["namespace"], attributes["k8s.namespace.name"])
+                - set(attributes["pod"], attributes["k8s.pod.name"])
+                - set(attributes["pod_uid"], attributes["k8s.pod.uid"])
+                - set(attributes["pod_ip"], attributes["k8s.pod.ip"])
+                - set(attributes["node"], attributes["k8s.node.name"])
 
       receivers:
         otlp:
@@ -136,6 +145,10 @@ helm:
           logs_endpoint: http://vlc-victoria-logs-cluster-vlinsert.victorialogs.svc.cluster.local:9481/insert/opentelemetry/v1/logs
           tls:
             insecure: true
+        otlp/tempo:
+          endpoint: tempo.grafana-tempo.svc.cluster.local:4317
+          tls:
+            insecure: true
 
       service:
         extensions: [health_check, bearertokenauth]
@@ -148,3 +161,7 @@ helm:
             receivers: [otlp]
             processors: [k8sattributes, transform, deltatocumulative]
             exporters: [otlphttp/victoriametrics]
+          traces:
+            receivers: [otlp]
+            processors: [k8sattributes, transform]
+            exporters: [otlp/tempo]
