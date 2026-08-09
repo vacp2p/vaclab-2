@@ -226,6 +226,7 @@ helm:
         envflag.enable: true
         httpListenAddr: :9471
         loggerFormat: json
+        search.maxQueryDuration: 120s
       extraContainers: []
       extraLabels: {}
       extraVolumeMounts: []
