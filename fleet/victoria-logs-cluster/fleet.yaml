@@ -227,7 +227,6 @@ helm:
         httpListenAddr: :9471
         loggerFormat: json
         search.maxQueryDuration: 120s
-        search.maxMemoryPerQuery: 4GB
       extraContainers: []
       extraLabels: {}
       extraVolumeMounts: []
@@ -302,10 +301,10 @@ helm:
       resources:
         requests:
           cpu: "2"
-          memory: 2Gi
+          memory: 4Gi
         limits:
           cpu: "4"
-          memory: 8Gi
+          memory: 32Gi
       securityContext:
         enabled: true
         runAsGroup: 1000
