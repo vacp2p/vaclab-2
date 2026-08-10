@@ -13,7 +13,7 @@
       # Managed by Ansible: update_chrony_client.yaml
       # IPs (not hostnames) to avoid depending on DNS for time sync.
       # node-01.ih-eu-mda1.misc.vaclab
-      server 185.181.228.122 iburst
+      server 185.181.228.122 iburst prefer
       # metal-01.he-eu-hel1.misc.vacdst
       server 65.21.76.50 iburst
       driftfile /var/lib/chrony/chrony.drift
