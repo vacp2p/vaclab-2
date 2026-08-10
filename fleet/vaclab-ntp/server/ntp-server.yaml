@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ntp-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ntp-server
+  template:
+    metadata:
+      labels:
+        app: ntp-server
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - node-01.ih-eu-mda1.misc.vaclab.status.im
+                      - metal-01.he-eu-hel1.misc.vacdst.status.im
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: ntp-server
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: ntp-server
+          image: cturra/ntp:latest
+          securityContext:
+            capabilities:
+              add: ["SYS_TIME", "NET_BIND_SERVICE"]
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/chrony/chrony.conf
+              subPath: chrony.conf
+            - name: ntp-drift
+              mountPath: /var/lib/chrony
+      volumes:
+        - name: conf
+          configMap:
+            name: vaclab-ntp-server-conf
+        - name: ntp-drift
+          persistentVolumeClaim:
+            claimName: ntp-drift-pvc
