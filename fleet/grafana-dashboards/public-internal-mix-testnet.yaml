@@ -720,7 +720,7 @@ data:
                 "h": 8,
                 "w": 14,
                 "x": 0,
-                "y": 26
+                "y": 108
               },
               "id": 10,
               "options": {
@@ -788,7 +788,7 @@ data:
                 "h": 5,
                 "w": 10,
                 "x": 14,
-                "y": 26
+                "y": 108
               },
               "id": 53,
               "options": {
@@ -856,7 +856,7 @@ data:
                 "h": 3,
                 "w": 10,
                 "x": 14,
-                "y": 41
+                "y": 121
               },
               "id": 54,
               "options": {
@@ -946,7 +946,7 @@ data:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 27
+                "y": 169
               },
               "id": 52,
               "options": {
@@ -1095,7 +1095,7 @@ data:
                 "h": 6,
                 "w": 24,
                 "x": 0,
-                "y": 31
+                "y": 173
               },
               "id": 9,
               "options": {
@@ -1247,7 +1247,7 @@ data:
                 "h": 6,
                 "w": 12,
                 "x": 0,
-                "y": 60
+                "y": 170
               },
               "id": 22,
               "options": {
@@ -1346,7 +1346,7 @@ data:
                 "h": 6,
                 "w": 12,
                 "x": 12,
-                "y": 60
+                "y": 170
               },
               "id": 21,
               "options": {
@@ -1630,6 +1630,356 @@ data:
           ],
           "title": "CPU Usage by Pod",
           "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 37
+          },
+          "id": 61,
+          "panels": [],
+          "title": "RLN Proof",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "VictoriaLogs"
+          },
+          "description": "Max is 1 hour. Fetching more than last 1 hour is not supported for now.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 4,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 17,
+            "x": 0,
+            "y": 38
+          },
+          "id": 64,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "VictoriaLogs"
+              },
+              "editorMode": "code",
+              "expr": "kubernetes.pod_namespace:\"$namespace\" AND \"RLN proof\"\n| copy _time as start_marker\n| union (\n    kubernetes.pod_namespace:\"$namespace\" AND \"proof generated successfully\"\n  )\n| replace (\"\\\"\", \"\") at kubernetes.pod_name\n| sort by (kubernetes.pod_name, _time)\n| running_stats by (kubernetes.pod_name) max(start_marker) as latest_start\n| filter \"proof generated successfully\"\n| math (_time - latest_start) / 1000000 as duration_ms\n| sort by (_time) desc\n",
+              "maxLines": 10000,
+              "queryType": "instant",
+              "refId": "A"
+            }
+          ],
+          "title": "Proof Generation Time",
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "source": "labels"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {
+                  "Time": true,
+                  "duration_ms": true,
+                  "kubernetes.pod_name": true,
+                  "kubernetes.pod_namespace": true
+                },
+                "indexByName": {
+                  "Time": 0,
+                  "duration_ms": 1,
+                  "kubernetes.pod_name": 3,
+                  "kubernetes.pod_namespace": 2
+                },
+                "renameByName": {
+                  "duration_ms": "",
+                  "kubernetes.pod_name": "pod",
+                  "kubernetes.pod_namespace": "namespace"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "time",
+                    "targetField": "Time"
+                  },
+                  {
+                    "destinationType": "number",
+                    "targetField": "duration_ms"
+                  },
+                  {
+                    "destinationType": "string",
+                    "targetField": "namespace"
+                  },
+                  {
+                    "destinationType": "string",
+                    "targetField": "pod"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "partitionByValues",
+              "options": {
+                "fields": [
+                  "pod",
+                  "namespace"
+                ],
+                "keepFields": false
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "victoriametrics-logs-datasource",
+            "uid": "VictoriaLogs"
+          },
+          "description": "Max is 1 hour. Fetching more than last 1 hour is not supported for now.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "ms"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 7,
+            "x": 17,
+            "y": 38
+          },
+          "id": 65,
+          "options": {
+            "displayMode": "basic",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 16,
+            "minVizWidth": 8,
+            "namePlacement": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "p95"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victoriametrics-logs-datasource",
+                "uid": "VictoriaLogs"
+              },
+              "editorMode": "code",
+              "expr": "kubernetes.pod_namespace:\"$namespace\" AND \"RLN proof\"\n| copy _time as start_marker\n| union (\n    kubernetes.pod_namespace:\"$namespace\" AND \"proof generated successfully\"\n  )\n| replace (\"\\\"\", \"\") at kubernetes.pod_name\n| sort by (kubernetes.pod_name, _time)\n| running_stats by (kubernetes.pod_name) max(start_marker) as latest_start\n| filter \"proof generated successfully\"\n| math (_time - latest_start) / 1000000 as duration_ms\n| sort by (_time) desc\n",
+              "maxLines": 10000,
+              "queryType": "instant",
+              "refId": "A"
+            }
+          ],
+          "title": "Proof Generation Time (95th Percentile)",
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "source": "labels"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {
+                  "Time": true,
+                  "duration_ms": true,
+                  "kubernetes.pod_name": true,
+                  "kubernetes.pod_namespace": true
+                },
+                "indexByName": {
+                  "Time": 0,
+                  "duration_ms": 1,
+                  "kubernetes.pod_name": 3,
+                  "kubernetes.pod_namespace": 2
+                },
+                "renameByName": {
+                  "duration_ms": "",
+                  "kubernetes.pod_name": "pod",
+                  "kubernetes.pod_namespace": "namespace"
+                }
+              }
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "time",
+                    "targetField": "Time"
+                  },
+                  {
+                    "destinationType": "number",
+                    "targetField": "duration_ms"
+                  },
+                  {
+                    "destinationType": "string",
+                    "targetField": "namespace"
+                  },
+                  {
+                    "destinationType": "string",
+                    "targetField": "pod"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "partitionByValues",
+              "options": {
+                "fields": [
+                  "pod",
+                  "namespace"
+                ],
+                "keepFields": false
+              }
+            }
+          ],
+          "type": "bargauge"
         }
       ],
       "preload": false,
@@ -1679,12 +2029,12 @@ data:
         ]
       },
       "time": {
-        "from": "now-2d",
+        "from": "now-1h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "browser",
       "title": "Internal - MIX testnet 0.2",
       "uid": "akgtzjg29062026",
-      "version": 2
+      "version": 11
     }
