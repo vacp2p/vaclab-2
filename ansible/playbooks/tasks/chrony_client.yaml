@@ -1,0 +1,29 @@
+---
+- name: Install chrony
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+    update_cache: true
+
+- name: Configure chrony to sync against the internal vaclab-ntp servers
+  ansible.builtin.copy:
+    dest: /etc/chrony/chrony.conf
+    mode: '0644'
+    content: |
+      # Managed by Ansible: update_chrony_client.yaml
+      # IPs (not hostnames) to avoid depending on DNS for time sync.
+      # node-01.ih-eu-mda1.misc.vaclab
+      server 185.181.228.122 iburst
+      # metal-01.he-eu-hel1.misc.vacdst
+      server 65.21.76.50 iburst
+      driftfile /var/lib/chrony/chrony.drift
+      rtcsync
+      makestep 1.0 3
+      logdir /var/log/chrony
+  notify: Restart chrony
+
+- name: Ensure chrony service is enabled and running
+  ansible.builtin.systemd:
+    name: chrony
+    state: started
+    enabled: true
