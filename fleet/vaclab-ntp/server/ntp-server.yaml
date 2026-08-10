@@ -32,6 +32,13 @@ spec:
               topologyKey: kubernetes.io/hostname
       containers:
         - name: ntp-server
+          resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
           image: cturra/ntp:latest
           securityContext:
             capabilities:
