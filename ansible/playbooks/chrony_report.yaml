@@ -9,12 +9,12 @@
         set -o pipefail
         chronyc tracking | awk -F': ' '
           /^Stratum/         {stratum=$2}
-          /^System time/     {systime=$2}
+          /^System time/     {sys_time=$2}
           /^Last offset/     {lastoff=$2}
           /^RMS offset/      {rms=$2}
           /^Root dispersion/ {rootdisp=$2}
           /^Leap status/     {leap=$2}
-          END {printf "%-8s %-32s %-18s %-18s %-18s %-12s", stratum, systime, lastoff, rms, rootdisp, leap}
+          END {printf "%-8s %-32s %-18s %-18s %-18s %-12s", stratum, sys_time, lastoff, rms, rootdisp, leap}
         '
       args:
         executable: /bin/bash
