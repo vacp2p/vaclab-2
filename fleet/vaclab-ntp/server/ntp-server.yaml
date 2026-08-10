@@ -22,8 +22,8 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - node-01.ih-eu-mda1.misc.vaclab.status.im
-                      - metal-01.he-eu-hel1.misc.vacdst.status.im
+                      - node-01.ih-eu-mda1.misc.vaclab
+                      - metal-01.he-eu-hel1.misc.vacdst
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
