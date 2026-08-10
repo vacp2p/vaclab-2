@@ -46,6 +46,13 @@ spec:
         - name: conf
           configMap:
             name: vaclab-ntp-server-conf
-        - name: ntp-drift
-          persistentVolumeClaim:
-            claimName: ntp-drift-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: ntp-drift
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn-vaclab
+        resources:
+          requests:
+            storage: 1Gi
