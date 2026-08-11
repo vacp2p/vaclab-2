@@ -1,10 +1,10 @@
 ---
-- name: Gather chrony sync status from all cluster nodes
-  hosts: k3s_cluster
+- name: Gather chrony tracking status from client hosts
+  hosts: k3s_cluster:!ntp_server_hosts
   become: true
   gather_facts: false
   tasks:
-    - name: Get chrony tracking summary
+    - name: Get chrony tracking summary (host-level)
       ansible.builtin.shell: |
         set -o pipefail
         chronyc tracking | awk -F': ' '
@@ -21,16 +21,48 @@
       register: chrony_summary
       changed_when: false
 
+# ntp_server_hosts (currently just metal-01) have no host-level chronyc
+# anymore - only the co-located ntp-server pod (replicas: 1, ordinal 0)
+# disciplines that host's clock. Query the pod itself instead.
+- name: Gather chrony tracking status from the vaclab-ntp server pod
+  hosts: server[0]
+  become: false
+  gather_facts: false
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  tasks:
+    - name: Get chrony tracking summary from ntp-server-0
+      ansible.builtin.shell: |
+        set -o pipefail
+        kubectl exec -n vaclab-ntp ntp-server-0 -- chronyc tracking | awk -F': ' '
+          /^Stratum/         {stratum=$2}
+          /^System time/     {sys_time=$2}
+          /^Last offset/     {lastoff=$2}
+          /^RMS offset/      {rms=$2}
+          /^Root dispersion/ {rootdisp=$2}
+          /^Leap status/     {leap=$2}
+          END {printf "%-8s %-32s %-18s %-18s %-18s %-12s", stratum, sys_time, lastoff, rms, rootdisp, leap}
+        '
+      args:
+        executable: /bin/bash
+      register: chrony_summary_ntp_server_pod
+      changed_when: false
+
 - name: Display cluster-wide chrony sync table
   hosts: server[0]
   become: false
   gather_facts: false
   tasks:
-    - name: Print table header
+    - name: Print combined table
+      vars:
+        header: "{{ '%-44s' | format('HOST') }} {{ '%-8s %-32s %-18s %-18s %-18s %-12s' | format('STRATUM', 'SYSTEM TIME OFFSET', 'LAST OFFSET', 'RMS OFFSET', 'ROOT DISPERSION', 'LEAP STATUS') }}"
       ansible.builtin.debug:
-        msg: "{{ '%-42s' | format('HOST') }} {{ '%-8s %-32s %-18s %-18s %-18s %-12s' | format('STRATUM', 'SYSTEM TIME OFFSET', 'LAST OFFSET', 'RMS OFFSET', 'ROOT DISPERSION', 'LEAP STATUS') }}"
-
-    - name: Print each node's row
-      ansible.builtin.debug:
-        msg: "{{ '%-42s' | format(item) }} {{ hostvars[item].chrony_summary.stdout }}"
-      loop: "{{ groups['k3s_cluster'] }}"
+        msg: |
+          {{ header }}
+          {% for item in groups['k3s_cluster'] %}
+          {% if item in groups['ntp_server_hosts'] %}
+          {{ '%-44s' | format(item ~ ' (via pod)') }} {{ chrony_summary_ntp_server_pod.stdout }}
+          {% else %}
+          {{ '%-44s' | format(item) }} {{ hostvars[item].chrony_summary.stdout }}
+          {% endif %}
+          {% endfor %}
