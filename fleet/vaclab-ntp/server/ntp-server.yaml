@@ -54,6 +54,18 @@ spec:
           securityContext:
             capabilities:
               add: ["SYS_TIME", "NET_BIND_SERVICE"]
+            # SYS_TIME alone isn't enough: since glibc 2.31, adjtimex() calls
+            # the clock_adjtime syscall, which containerd's default seccomp
+            # profile doesn't whitelist even under CAP_SYS_TIME (moby/moby
+            # #40919, #40929). This let discrete step corrections through
+            # (clock_settime, a different syscall - confirmed working via
+            # the earlier makestep test) while silently blocking the
+            # continuous ADJ_FREQUENCY corrections chronyd needs to keep
+            # drift bounded between polls, matching exactly what we
+            # observed: confident, unchanging Frequency estimate, tiny
+            # Last offset each poll, but System time growing unboundedly.
+            seccompProfile:
+              type: Unconfined
           volumeMounts:
             - name: conf
               mountPath: /etc/chrony/chrony.conf
