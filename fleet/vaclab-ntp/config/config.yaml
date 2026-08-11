@@ -4,8 +4,8 @@ metadata:
   name: vaclab-ntp-server-conf
 data:
   chrony.conf: |
-    server time.cloudflare.com iburst 
     server consolidare-continuum.com iburst
+    server time.cloudflare.com iburst 
     driftfile /var/lib/chrony/drift
     rtcsync
     makestep 1.0 3

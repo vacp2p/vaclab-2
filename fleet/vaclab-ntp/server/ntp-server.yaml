@@ -21,15 +21,11 @@ spec:
       # cluster host, including metal-01, syncs against it as a uniform NTP
       # client.
       #
-      # Pinned to metal-01: every client's config points at 65.21.76.50
-      # (metal-01's address) regardless of where the pod runs. If the pod
-      # lands elsewhere, requests take a genuine extra cross-node overlay
-      # hop (client -> metal-01 -> DNAT -> tunnel -> pod's actual node) for
-      # every host except whichever one happens to be co-located with the
-      # pod, which then measures a structurally different (shorter/
-      # asymmetric) path than everyone else. Pinning to metal-01 makes that
-      # hop uniform for the other 5 hosts, so only metal-01 itself is the
-      # (single, expected) local-delivery outlier.
+      # Pinned to node-01: node-01..05 are all in the same location
+      # (ih-eu-mda1); metal-01 is the one outlier, in a different location
+      # (he-eu-hel1) with a confirmed real ~53ms RTT to the others. Pinning
+      # the server here gives 4 of 5 client hosts a genuine same-LAN path,
+      # and only metal-01 carries the long WAN hop, instead of the reverse.
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -38,7 +34,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - metal-01.he-eu-hel1.misc.vacdst
+                      - node-01.ih-eu-mda1.misc.vaclab
       containers:
         - name: ntp-server
           resources:

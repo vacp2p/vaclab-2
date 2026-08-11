@@ -12,10 +12,13 @@
     content: |
       # Managed by Ansible: update_chrony_client.yaml
       # Primary: vaclab-ntp server pod, reached via its NodePort (30123/udp)
-      # on metal-01.he-eu-hel1.misc.vacdst. NodePort routes correctly to the
-      # pod regardless of which node it's actually scheduled on. IP (not
-      # hostname) to avoid depending on DNS for time sync.
-      server 65.21.76.50 port 30123 iburst prefer
+      # on node-01.ih-eu-mda1.misc.vaclab. NodePort routes correctly to the
+      # pod regardless of which node it's actually scheduled on. Using the
+      # full SSH-facing hostname (confirmed resolvable - it's what every
+      # ansible connection in this playbook uses), not the bare k8s node
+      # name, which is a different string and not confirmed resolvable at
+      # the OS/DNS level.
+      server node-01.ih-eu-mda1.misc.vaclab.status.im port 30123 iburst prefer
       # Backup: only used if the vaclab-ntp server is unreachable.
       server time.cloudflare.com iburst
       driftfile /var/lib/chrony/chrony.drift
