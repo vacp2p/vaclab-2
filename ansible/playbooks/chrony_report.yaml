@@ -1,51 +1,34 @@
 ---
-- name: Gather chrony tracking status from client hosts
-  hosts: k3s_cluster:!ntp_server_hosts
+- name: Gather chrony sync status from all cluster nodes
+  hosts: k3s_cluster
   become: true
   gather_facts: false
   tasks:
-    - name: Get chrony tracking summary (host-level)
+    - name: Get chrony tracking summary
       ansible.builtin.shell: |
         set -o pipefail
         chronyc tracking | awk -F': ' '
-          /^Stratum/         {stratum=$2}
-          /^System time/     {sys_time=$2}
-          /^Last offset/     {lastoff=$2}
-          /^RMS offset/      {rms=$2}
-          /^Root dispersion/ {rootdisp=$2}
-          /^Leap status/     {leap=$2}
-          END {printf "%-8s %-32s %-18s %-18s %-18s %-12s", stratum, sys_time, lastoff, rms, rootdisp, leap}
+          /^Stratum/ {stratum=$2}
+          /^System time/ {
+            split($2, a, " "); v = a[1] + 0
+            if ($2 ~ /fast/) v = -v
+            sys_ms = v * 1000
+          }
+          /^Last offset/ {
+            split($2, a, " "); lastoff_ms = (a[1] + 0) * 1000
+          }
+          /^RMS offset/ {
+            split($2, a, " "); rms_ms = (a[1] + 0) * 1000
+          }
+          /^Root dispersion/ {
+            split($2, a, " "); rootdisp_ms = (a[1] + 0) * 1000
+          }
+          /^Leap status/ {leap=$2}
+          END {printf "%s,%.3f,%.3f,%.3f,%.3f,%s", stratum, sys_ms, lastoff_ms, rms_ms, rootdisp_ms, leap}
         '
       args:
         executable: /bin/bash
       register: chrony_summary
-      changed_when: false
-
-# ntp_server_hosts (currently just metal-01) have no host-level chronyc
-# anymore - only the co-located ntp-server pod (replicas: 1, ordinal 0)
-# disciplines that host's clock. Query the pod itself instead.
-- name: Gather chrony tracking status from the vaclab-ntp server pod
-  hosts: server[0]
-  become: false
-  gather_facts: false
-  environment:
-    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-  tasks:
-    - name: Get chrony tracking summary from ntp-server-0
-      ansible.builtin.shell: |
-        set -o pipefail
-        kubectl exec -n vaclab-ntp ntp-server-0 -- chronyc tracking | awk -F': ' '
-          /^Stratum/         {stratum=$2}
-          /^System time/     {sys_time=$2}
-          /^Last offset/     {lastoff=$2}
-          /^RMS offset/      {rms=$2}
-          /^Root dispersion/ {rootdisp=$2}
-          /^Leap status/     {leap=$2}
-          END {printf "%-8s %-32s %-18s %-18s %-18s %-12s", stratum, sys_time, lastoff, rms, rootdisp, leap}
-        '
-      args:
-        executable: /bin/bash
-      register: chrony_summary_ntp_server_pod
       changed_when: false
 
 - name: Display cluster-wide chrony sync table
@@ -55,14 +38,11 @@
   tasks:
     - name: Print combined table
       vars:
-        header: "{{ '%-44s' | format('HOST') }} {{ '%-8s %-32s %-18s %-18s %-18s %-12s' | format('STRATUM', 'SYSTEM TIME OFFSET', 'LAST OFFSET', 'RMS OFFSET', 'ROOT DISPERSION', 'LEAP STATUS') }}"
+        header: "{{ '%-32s %-8s %12s %14s %10s %14s %-8s' | format('HOST', 'STRATUM', 'OFFSET(ms)', 'LASTOFF(ms)', 'RMS(ms)', 'ROOTDISP(ms)', 'LEAP') }}"
       ansible.builtin.debug:
         msg: |
           {{ header }}
           {% for item in groups['k3s_cluster'] %}
-          {% if item in groups['ntp_server_hosts'] %}
-          {{ '%-44s' | format(item ~ ' (via pod)') }} {{ chrony_summary_ntp_server_pod.stdout }}
-          {% else %}
-          {{ '%-44s' | format(item) }} {{ hostvars[item].chrony_summary.stdout }}
-          {% endif %}
+          {% set f = hostvars[item].chrony_summary.stdout.split(',') %}
+          {{ '%-32s %-8s %12s %14s %10s %14s %-8s' | format(item | regex_replace('\.status\.im$', ''), f[0], f[1], f[2], f[3], f[4], f[5]) }}
           {% endfor %}

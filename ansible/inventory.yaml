@@ -1,12 +1,4 @@
 ---
-# Hosts that run a vaclab-ntp server pod (hostNetwork) locally. Their system
-# clock is already disciplined directly by that pod's chronyd, so they must
-# NOT also run a native host-level chrony client - two chronyd instances
-# steering the same kernel clock fight each other and cause large offsets.
-ntp_server_hosts:
-  hosts:
-    metal-01.he-eu-hel1.misc.vacdst.status.im:
-
 k3s_cluster:
   children:
     server:

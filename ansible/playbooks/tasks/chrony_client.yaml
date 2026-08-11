@@ -11,10 +11,12 @@
     mode: '0644'
     content: |
       # Managed by Ansible: update_chrony_client.yaml
-      # Primary: the sole vaclab-ntp server (metal-01.he-eu-hel1.misc.vacdst).
-      # IP (not hostname) to avoid depending on DNS for time sync.
-      server 65.21.76.50 iburst prefer
-      # Backup: only used if metal-01 becomes unreachable.
+      # Primary: vaclab-ntp server pod, reached via its NodePort (30123/udp)
+      # on metal-01.he-eu-hel1.misc.vacdst. NodePort routes correctly to the
+      # pod regardless of which node it's actually scheduled on. IP (not
+      # hostname) to avoid depending on DNS for time sync.
+      server 65.21.76.50 port 30123 iburst prefer
+      # Backup: only used if the vaclab-ntp server is unreachable.
       server time.cloudflare.com iburst
       driftfile /var/lib/chrony/chrony.drift
       rtcsync

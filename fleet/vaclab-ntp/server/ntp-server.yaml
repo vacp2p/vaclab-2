@@ -13,36 +13,25 @@ spec:
       labels:
         app: ntp-server
     spec:
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/hostname
-                    operator: In
-                    values:
-                      - metal-01.he-eu-hel1.misc.vacdst
+      # No hostNetwork / SYS_TIME / node pinning: this pod never disciplines
+      # any host's real kernel clock directly (that was the suspected cause
+      # of the unresolved, still-growing frequency error on metal-01). It's
+      # a pure NTP relay - syncs from upstream as a client, serves that time
+      # over the wire via the ntp-server-nodeport Service. Every cluster
+      # host, including metal-01, syncs against it as a uniform NTP client.
       containers:
         - name: ntp-server
           resources:
-            # requests.cpu != limits.cpu on purpose: this must NOT be
-            # Guaranteed QoS. A Guaranteed pod gets an exclusive, pinned
-            # physical core under the cluster's static CPU manager policy,
-            # which is suspected of causing this pod's chronyd to measure a
-            # large, still-growing clock frequency error (~500ppm) despite
-            # otherwise clean, low-noise measurements.
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "256Mi"
+              cpu: "100m"
             limits:
-              memory: "1Gi"
-              cpu: "1"
+              memory: "512Mi"
+              cpu: "500m"
           image: cturra/ntp:latest
           securityContext:
             capabilities:
-              add: ["SYS_TIME", "NET_BIND_SERVICE"]
+              add: ["NET_BIND_SERVICE"]
           volumeMounts:
             - name: conf
               mountPath: /etc/chrony/chrony.conf
