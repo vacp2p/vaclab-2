@@ -5,17 +5,17 @@
     state: present
     update_cache: true
 
-- name: Configure chrony to sync against the internal vaclab-ntp servers
+- name: Configure chrony to sync against the internal vaclab-ntp server, with Cloudflare as backup
   ansible.builtin.copy:
     dest: /etc/chrony/chrony.conf
     mode: '0644'
     content: |
       # Managed by Ansible: update_chrony_client.yaml
-      # IPs (not hostnames) to avoid depending on DNS for time sync.
-      # node-01.ih-eu-mda1.misc.vaclab
-      server 185.181.228.122 iburst prefer
-      # metal-01.he-eu-hel1.misc.vacdst
-      server 65.21.76.50 iburst
+      # Primary: the sole vaclab-ntp server (metal-01.he-eu-hel1.misc.vacdst).
+      # IP (not hostname) to avoid depending on DNS for time sync.
+      server 65.21.76.50 iburst prefer
+      # Backup: only used if metal-01 becomes unreachable.
+      server time.cloudflare.com iburst
       driftfile /var/lib/chrony/chrony.drift
       rtcsync
       makestep 1.0 3
