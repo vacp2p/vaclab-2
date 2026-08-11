@@ -4,6 +4,7 @@ metadata:
   name: ntp-server
 spec:
   replicas: 1
+  serviceName: ntp-server
   selector:
     matchLabels:
       app: ntp-server
@@ -26,9 +27,15 @@ spec:
       containers:
         - name: ntp-server
           resources:
+            # requests.cpu != limits.cpu on purpose: this must NOT be
+            # Guaranteed QoS. A Guaranteed pod gets an exclusive, pinned
+            # physical core under the cluster's static CPU manager policy,
+            # which is suspected of causing this pod's chronyd to measure a
+            # large, still-growing clock frequency error (~500ppm) despite
+            # otherwise clean, low-noise measurements.
             requests:
-              memory: "1Gi"
-              cpu: "1"
+              memory: "512Mi"
+              cpu: "250m"
             limits:
               memory: "1Gi"
               cpu: "1"
