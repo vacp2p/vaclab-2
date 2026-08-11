@@ -13,21 +13,41 @@ spec:
       labels:
         app: ntp-server
     spec:
-      # No hostNetwork / SYS_TIME / node pinning: this pod never disciplines
-      # any host's real kernel clock directly (that was the suspected cause
-      # of the unresolved, still-growing frequency error on metal-01). It's
-      # a pure NTP relay - syncs from upstream as a client, serves that time
-      # over the wire via the ntp-server-nodeport Service. Every cluster
-      # host, including metal-01, syncs against it as a uniform NTP client.
+      # No hostNetwork / SYS_TIME: this pod never disciplines any host's
+      # real kernel clock directly (that was the suspected cause of the
+      # unresolved, still-growing frequency error under the old design).
+      # It's a pure NTP relay - syncs from upstream as a client, serves that
+      # time over the wire via the ntp-server-nodeport Service. Every
+      # cluster host, including metal-01, syncs against it as a uniform NTP
+      # client.
+      #
+      # Pinned to metal-01: every client's config points at 65.21.76.50
+      # (metal-01's address) regardless of where the pod runs. If the pod
+      # lands elsewhere, requests take a genuine extra cross-node overlay
+      # hop (client -> metal-01 -> DNAT -> tunnel -> pod's actual node) for
+      # every host except whichever one happens to be co-located with the
+      # pod, which then measures a structurally different (shorter/
+      # asymmetric) path than everyone else. Pinning to metal-01 makes that
+      # hop uniform for the other 5 hosts, so only metal-01 itself is the
+      # (single, expected) local-delivery outlier.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       containers:
         - name: ntp-server
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "1Gi"
+              cpu: "2"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "2"
           image: cturra/ntp:latest
           securityContext:
             capabilities:
