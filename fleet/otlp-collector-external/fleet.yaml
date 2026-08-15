@@ -25,6 +25,22 @@ helm:
       logsCollection:
         enabled: false
 
+    # Same chart as fleet/otlp-collector: default probe timing
+    # (timeoutSeconds: 1, no initialDelaySeconds) proved too tight for this
+    # collector on a busy cluster and caused a crash-restart loop the first
+    # time it was restarted after a long time running. Applying the same
+    # fix preventively here.
+    livenessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+    readinessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+
     service:
       type: ClusterIP
       annotations:
