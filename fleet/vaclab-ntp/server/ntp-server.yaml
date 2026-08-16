@@ -13,23 +13,15 @@ spec:
       labels:
         app: ntp-server
     spec:
-      # hostNetwork + SYS_TIME: this pod directly disciplines metal-01's
+      # hostNetwork + SYS_TIME: this pod directly corrects metal-01's
       # real kernel clock. Without SYS_TIME, chronyd can only *measure*
       # drift and mathematically compensate for it in served responses, but
-      # never actually correct the underlying clock. Confirmed by direct
-      # testing on TWO different nodes (metal-01, then node-01 after
-      # relocating to rule out WAN-latency as the cause): both showed the
-      # same unbounded, worsening divergence (skew climbing past 100-800ppm,
-      # root dispersion into the tens-to-hundreds of ms) instead of
-      # converging. A proven-working makestep test earlier showed
-      # SYS_TIME/adjtimex genuinely works when present (landed a real
-      # 1.169s -> 2ms correction), so this reverts to that design.
-      #
+      # never actually correct the underlying clock. 
       # Because this pod owns metal-01's real port 123 via hostNetwork,
       # metal-01 must NOT also run a native host-level chrony client - see
-      # ansible/inventory.yaml's ntp_server_hosts group. Two daemons
-      # disciplining the same kernel clock fight each other (confirmed via
-      # ss -ulnp showing two chronyd PIDs both bound to 127.0.0.1:323).
+      # ansible/inventory.yaml's ntp_server_hosts group. 2 daemons
+      # disciplining the same kernel clock fight each other and cause instability.  
+      # The host-level chrony client is disabled on metal-01.
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       affinity:
@@ -51,14 +43,6 @@ spec:
               memory: "1Gi"
               cpu: "2"
           image: cturra/ntp:latest
-          # The image's own /opt/startup.sh unconditionally execs
-          # `chronyd -u chrony -d -x -L ...` - the -x flag is hardcoded, not
-          # controlled by any env var, and disables clock control
-          # regardless of SYS_TIME/seccomp granted at the pod level. This
-          # replicates the script's permission-fixup steps (needed for the
-          # ntp-drift PVC and /run/chrony) but drops -x. Our own ConfigMap
-          # already provides the full chrony.conf, so the script's env-var
-          # -driven config generation isn't needed either.
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -74,16 +58,7 @@ spec:
           securityContext:
             capabilities:
               add: ["SYS_TIME", "NET_BIND_SERVICE"]
-            # SYS_TIME alone isn't enough: since glibc 2.31, adjtimex() calls
-            # the clock_adjtime syscall, which containerd's default seccomp
-            # profile doesn't whitelist even under CAP_SYS_TIME (moby/moby
-            # #40919, #40929). This let discrete step corrections through
-            # (clock_settime, a different syscall - confirmed working via
-            # the earlier makestep test) while silently blocking the
-            # continuous ADJ_FREQUENCY corrections chronyd needs to keep
-            # drift bounded between polls, matching exactly what we
-            # observed: confident, unchanging Frequency estimate, tiny
-            # Last offset each poll, but System time growing unboundedly.
+            # SYS_TIME alone isn't enough
             seccompProfile:
               type: Unconfined
           volumeMounts:

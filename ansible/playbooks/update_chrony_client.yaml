@@ -4,9 +4,10 @@
   become: true
   tasks:
     # These hosts run a vaclab-ntp server pod with hostNetwork: true, whose
-    # chronyd already disciplines this host's kernel clock directly. A
-    # second, independent chronyd here would fight it for control of the
-    # same clock (confirmed: both ended up bound to 127.0.0.1:323 at once).
+    # chronyd already corrects this host's kernel clock directly. A
+    # second, independent chronyd here would fight it for control over the
+    # same clock and cause instability. 
+    # Disabling the host-level chrony client avoids this conflict.
     - name: Stop and disable native chrony service
       ansible.builtin.systemd:
         name: chrony
