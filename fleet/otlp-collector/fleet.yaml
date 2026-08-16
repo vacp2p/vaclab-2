@@ -22,13 +22,7 @@ helm:
         enabled: true
 
     # Chart defaults (timeoutSeconds: 1, no initialDelaySeconds) are too
-    # tight for this collector: it discovers/attaches filelog receivers for
-    # every pod's logs across the whole cluster at startup, which can
-    # briefly block the health_check HTTP handler past a 1s timeout on a
-    # busy cluster - causing a crash-restart loop (confirmed: exit code 2 at
-    # exactly 30s = failureThreshold 3 x periodSeconds 10, clean startup
-    # logs otherwise, negligible CPU/memory usage - not an actual crash or
-    # resource issue, just an over-eager probe).
+    # tight for this collector
     livenessProbe:
       initialDelaySeconds: 20
       timeoutSeconds: 5
