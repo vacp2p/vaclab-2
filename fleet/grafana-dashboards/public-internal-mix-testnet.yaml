@@ -720,7 +720,7 @@ data:
                 "h": 8,
                 "w": 14,
                 "x": 0,
-                "y": 108
+                "y": 26
               },
               "id": 10,
               "options": {
@@ -788,7 +788,7 @@ data:
                 "h": 5,
                 "w": 10,
                 "x": 14,
-                "y": 108
+                "y": 26
               },
               "id": 53,
               "options": {
@@ -856,7 +856,7 @@ data:
                 "h": 3,
                 "w": 10,
                 "x": 14,
-                "y": 121
+                "y": 31
               },
               "id": 54,
               "options": {
@@ -946,7 +946,7 @@ data:
                 "h": 4,
                 "w": 24,
                 "x": 0,
-                "y": 169
+                "y": 203
               },
               "id": 52,
               "options": {
@@ -1095,7 +1095,7 @@ data:
                 "h": 6,
                 "w": 24,
                 "x": 0,
-                "y": 173
+                "y": 207
               },
               "id": 9,
               "options": {
@@ -1247,7 +1247,7 @@ data:
                 "h": 6,
                 "w": 12,
                 "x": 0,
-                "y": 170
+                "y": 204
               },
               "id": 22,
               "options": {
@@ -1346,7 +1346,7 @@ data:
                 "h": 6,
                 "w": 12,
                 "x": 12,
-                "y": 170
+                "y": 204
               },
               "id": 21,
               "options": {
@@ -1641,15 +1641,135 @@ data:
           },
           "id": 61,
           "panels": [],
-          "title": "RLN Proof",
+          "title": "RLN Proof Generation",
           "type": "row"
         },
         {
           "datasource": {
-            "type": "victoriametrics-logs-datasource",
-            "uid": "VictoriaLogs"
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
           },
-          "description": "Max is 1 hour. Fetching more than last 1 hour is not supported for now.",
+          "description": "per node histogram can be obtained by setting pod selector to a target node instead of All",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 38
+          },
+          "id": 64,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, sum(rate(mix_rln_proof_generation_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le,mode))",
+              "instant": false,
+              "legendFormat": "p50 ({{mode}}) ",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(mix_rln_proof_generation_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le,mode))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p95 ({{mode}}) ",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(mix_rln_proof_generation_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le, mode))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p99 ({{mode}}) ",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Proof Generation Duration Histogram",
+          "type": "histogram"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "description": "SUM/COUNT",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1664,7 +1784,7 @@ data:
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
                 "drawStyle": "line",
-                "fillOpacity": 4,
+                "fillOpacity": 5,
                 "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
@@ -1703,7 +1823,7 @@ data:
                   }
                 ]
               },
-              "unit": "ms"
+              "unit": "s"
             },
             "overrides": [
               {
@@ -1721,18 +1841,18 @@ data:
             ]
           },
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 17,
             "x": 0,
-            "y": 38
+            "y": 44
           },
-          "id": 64,
+          "id": 66,
           "options": {
             "legend": {
               "calcs": [
                 "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "bottom",
@@ -1748,90 +1868,26 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "victoriametrics-logs-datasource",
-                "uid": "VictoriaLogs"
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "kubernetes.pod_namespace:\"$namespace\" AND \"RLN proof\"\n| copy _time as start_marker\n| union (\n    kubernetes.pod_namespace:\"$namespace\" AND \"proof generated successfully\"\n  )\n| replace (\"\\\"\", \"\") at kubernetes.pod_name\n| sort by (kubernetes.pod_name, _time)\n| running_stats by (kubernetes.pod_name) max(start_marker) as latest_start\n| filter \"proof generated successfully\"\n| math (_time - latest_start) / 1000000 as duration_ms\n| sort by (_time) desc\n",
-              "maxLines": 10000,
-              "queryType": "instant",
+              "expr": "sum(rate(mix_rln_proof_generation_duration_seconds_sum{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (instance)\n/\nsum(rate(mix_rln_proof_generation_duration_seconds_count{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (instance)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
               "refId": "A"
             }
           ],
-          "title": "Proof Generation Time",
-          "transformations": [
-            {
-              "id": "extractFields",
-              "options": {
-                "source": "labels"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {},
-                "includeByName": {
-                  "Time": true,
-                  "duration_ms": true,
-                  "kubernetes.pod_name": true,
-                  "kubernetes.pod_namespace": true
-                },
-                "indexByName": {
-                  "Time": 0,
-                  "duration_ms": 1,
-                  "kubernetes.pod_name": 3,
-                  "kubernetes.pod_namespace": 2
-                },
-                "renameByName": {
-                  "duration_ms": "",
-                  "kubernetes.pod_name": "pod",
-                  "kubernetes.pod_namespace": "namespace"
-                }
-              }
-            },
-            {
-              "id": "convertFieldType",
-              "options": {
-                "conversions": [
-                  {
-                    "destinationType": "time",
-                    "targetField": "Time"
-                  },
-                  {
-                    "destinationType": "number",
-                    "targetField": "duration_ms"
-                  },
-                  {
-                    "destinationType": "string",
-                    "targetField": "namespace"
-                  },
-                  {
-                    "destinationType": "string",
-                    "targetField": "pod"
-                  }
-                ],
-                "fields": {}
-              }
-            },
-            {
-              "id": "partitionByValues",
-              "options": {
-                "fields": [
-                  "pod",
-                  "namespace"
-                ],
-                "keepFields": false
-              }
-            }
-          ],
+          "title": "Avgerage Proof Generation Duration (Over Time)",
           "type": "timeseries"
         },
         {
           "datasource": {
-            "type": "victoriametrics-logs-datasource",
-            "uid": "VictoriaLogs"
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
           },
-          "description": "Max is 1 hour. Fetching more than last 1 hour is not supported for now.",
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1851,7 +1907,7 @@ data:
                   }
                 ]
               },
-              "unit": "ms"
+              "unit": "s"
             },
             "overrides": [
               {
@@ -1869,14 +1925,14 @@ data:
             ]
           },
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 7,
             "x": 17,
-            "y": 38
+            "y": 44
           },
-          "id": 65,
+          "id": 67,
           "options": {
-            "displayMode": "basic",
+            "displayMode": "gradient",
             "legend": {
               "calcs": [],
               "displayMode": "list",
@@ -1889,9 +1945,7 @@ data:
             "namePlacement": "auto",
             "orientation": "horizontal",
             "reduceOptions": {
-              "calcs": [
-                "p95"
-              ],
+              "calcs": [],
               "fields": "",
               "values": false
             },
@@ -1903,82 +1957,358 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "victoriametrics-logs-datasource",
-                "uid": "VictoriaLogs"
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
               },
               "editorMode": "code",
-              "expr": "kubernetes.pod_namespace:\"$namespace\" AND \"RLN proof\"\n| copy _time as start_marker\n| union (\n    kubernetes.pod_namespace:\"$namespace\" AND \"proof generated successfully\"\n  )\n| replace (\"\\\"\", \"\") at kubernetes.pod_name\n| sort by (kubernetes.pod_name, _time)\n| running_stats by (kubernetes.pod_name) max(start_marker) as latest_start\n| filter \"proof generated successfully\"\n| math (_time - latest_start) / 1000000 as duration_ms\n| sort by (_time) desc\n",
-              "maxLines": 10000,
-              "queryType": "instant",
+              "expr": "histogram_quantile(0.95,\n  sum(rate(mix_rln_proof_generation_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le, instance)\n)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
               "refId": "A"
             }
           ],
-          "title": "Proof Generation Time (95th Percentile)",
-          "transformations": [
-            {
-              "id": "extractFields",
-              "options": {
-                "source": "labels"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {},
-                "includeByName": {
-                  "Time": true,
-                  "duration_ms": true,
-                  "kubernetes.pod_name": true,
-                  "kubernetes.pod_namespace": true
+          "title": "Proof Generation Duration p95",
+          "type": "bargauge"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 50
+          },
+          "id": 68,
+          "panels": [],
+          "title": "RLN Proof Verification",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "description": "per node histogram can be obtained by setting pod selector to a target node instead of All",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
                 },
-                "indexByName": {
-                  "Time": 0,
-                  "duration_ms": 1,
-                  "kubernetes.pod_name": 3,
-                  "kubernetes.pod_namespace": 2
-                },
-                "renameByName": {
-                  "duration_ms": "",
-                  "kubernetes.pod_name": "pod",
-                  "kubernetes.pod_namespace": "namespace"
+                "lineWidth": 1,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
                 }
-              }
-            },
-            {
-              "id": "convertFieldType",
-              "options": {
-                "conversions": [
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "destinationType": "time",
-                    "targetField": "Time"
+                    "color": "green",
+                    "value": 0
                   },
                   {
-                    "destinationType": "number",
-                    "targetField": "duration_ms"
-                  },
-                  {
-                    "destinationType": "string",
-                    "targetField": "namespace"
-                  },
-                  {
-                    "destinationType": "string",
-                    "targetField": "pod"
+                    "color": "red",
+                    "value": 80
                   }
-                ],
-                "fields": {}
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
               }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 51
+          },
+          "id": 69,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, sum(rate(mix_rln_proof_verification_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le))",
+              "instant": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "A"
             },
             {
-              "id": "partitionByValues",
-              "options": {
-                "fields": [
-                  "pod",
-                  "namespace"
-                ],
-                "keepFields": false
-              }
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(mix_rln_proof_verification_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(mix_rln_proof_verification_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "C"
             }
           ],
+          "title": "Proof Verification Duration Histogram",
+          "type": "histogram"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "description": "SUM/COUNT",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 5,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 17,
+            "x": 0,
+            "y": 57
+          },
+          "id": 70,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "mean",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(mix_rln_proof_verification_duration_seconds_sum{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (instance)\n/\nsum(rate(mix_rln_proof_verification_duration_seconds_count{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (instance)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Avgerage Proof Verification Duration (Over Time)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "duration_ms"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "${__field.labels.pod}"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 7,
+            "x": 17,
+            "y": 57
+          },
+          "id": 71,
+          "options": {
+            "displayMode": "gradient",
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "maxVizHeight": 300,
+            "minVizHeight": 16,
+            "minVizWidth": 8,
+            "namePlacement": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "sizing": "auto",
+            "valueMode": "color"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95,\n  sum(rate(mix_rln_proof_verification_duration_seconds_bucket{namespace=~\"$namespace\",instance=~\"$pod\"}[$__rate_interval])) by (le, instance)\n)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Proof Verification Duration p95",
           "type": "bargauge"
         }
       ],
@@ -2036,5 +2366,5 @@ data:
       "timezone": "browser",
       "title": "Internal - MIX testnet 0.2",
       "uid": "akgtzjg29062026",
-      "version": 11
+      "version": 12
     }

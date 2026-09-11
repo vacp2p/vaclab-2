@@ -25,6 +25,18 @@ helm:
       logsCollection:
         enabled: false
 
+    # (timeoutSeconds: 1, no initialDelaySeconds) proved too tight for this
+    livenessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+    readinessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+
     service:
       type: ClusterIP
       annotations:

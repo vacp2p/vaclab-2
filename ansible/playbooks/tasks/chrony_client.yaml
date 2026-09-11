@@ -1,0 +1,33 @@
+---
+- name: Install chrony
+  ansible.builtin.apt:
+    name: chrony
+    state: present
+    update_cache: true
+
+- name: Configure chrony to sync against the internal vaclab-ntp server, with Cloudflare as backup
+  ansible.builtin.copy:
+    dest: /etc/chrony/chrony.conf
+    mode: '0644'
+    content: |
+      # Managed by Ansible: update_chrony_client.yaml
+      # Primary: the sole vaclab-ntp server, hostNetwork on metal-01, so
+      # reached directly on the standard NTP port (123) - no NodePort
+      # involved. Using the full SSH-facing hostname (confirmed resolvable -
+      # it's what every ansible connection in this playbook uses), not the
+      # bare k8s node name, which is a different string and not confirmed
+      # resolvable at the OS/DNS level.
+      server metal-01.he-eu-hel1.misc.vacdst.status.im iburst prefer
+      # Backup: only used if the vaclab-ntp server is unreachable.
+      server time.cloudflare.com iburst
+      driftfile /var/lib/chrony/chrony.drift
+      rtcsync
+      makestep 1.0 3
+      logdir /var/log/chrony
+  notify: Restart chrony
+
+- name: Ensure chrony service is enabled and running
+  ansible.builtin.systemd:
+    name: chrony
+    state: started
+    enabled: true

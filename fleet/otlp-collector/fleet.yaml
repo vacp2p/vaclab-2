@@ -21,6 +21,19 @@ helm:
       logsCollection:
         enabled: true
 
+    # Chart defaults (timeoutSeconds: 1, no initialDelaySeconds) are too
+    # tight for this collector
+    livenessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+    readinessProbe:
+      initialDelaySeconds: 20
+      timeoutSeconds: 5
+      periodSeconds: 10
+      failureThreshold: 5
+
     service:
       type: ClusterIP
 

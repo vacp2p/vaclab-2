@@ -23,7 +23,7 @@ spec:
                   key: token
           args:
             - "traces"
-            - "--otlp-endpoint=otlp.lab.vac.dev:30317"
+            - "--otlp-endpoint=otlp.lab.vac.dev:31317"
             - "--otlp-insecure"
             - "--otlp-header"
             - "Authorization=\"Bearer $(OTEL_CLIENT_TOKEN)\""
