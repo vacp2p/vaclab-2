@@ -69,7 +69,18 @@ helm:
             type: internal_metrics
           k8s:
             type: kubernetes_logs
-            # Exclude system namespaces 
+            # Default is 60s: too short for this cluster's high-churn
+            # simulation workloads (nomos-testnet, nimlibp2p, zerotesting -
+            # pods created/destroyed constantly). If a pod is deleted before
+            # Vector gets to its backlogged log lines, metadata annotation
+            # fails; under sustained churn this compounds into a growing
+            # multi-hour processing lag (observed: 4 of 6 nodes stuck
+            # hours behind, continuously emitting annotation_failed errors -
+            # vectordotdev/vector#10122, #12909, #13467, #21793). Longer
+            # cache retention gives Vector room to catch up without losing
+            # the metadata race.
+            delay_deletion_ms: 300000
+            # Exclude system namespaces
             extra_field_selector: "metadata.namespace!=kube-system,metadata.namespace!=kyverno,metadata.namespace!=homepage,metadata.namespace!=authentik,metadata.namespace!=vaclab-system,metadata.namespace!=cert-manager,metadata.namespace!=cattle-capi-system,metadata.namespace!=cattle-fleet-clusters-system,metadata.namespace!=cattle-fleet-local-system,metadata.namespace!=cattle-fleet-system,metadata.namespace!=cattle-global-data,metadata.namespace!=cattle-impersonation-system,metadata.namespace!=cattle-local-user-passwords,metadata.namespace!=cattle-system,metadata.namespace!=cattle-turtles-system,metadata.namespace!=cattle-ui-plugin-system,metadata.namespace!=cilium-secrets,metadata.namespace!=fleet-default,metadata.namespace!=fleet-local,metadata.namespace!=kube-node-lease,metadata.namespace!=kube-public,metadata.namespace!=local,metadata.namespace!=longhorn-system,metadata.namespace!=policy-reporter,metadata.namespace!=victorialogs,metadata.namespace!=vmetrics,metadata.namespace!=grafana-tempo,metadata.namespace!=grafana-tempo-external"
         transforms:
           parser:
@@ -100,7 +111,16 @@ helm:
       service:
         enabled: false
     vlinsert:
-      affinity: {}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       annotations: {}
       containerWorkingDir: ""
       enabled: true
@@ -216,7 +236,16 @@ helm:
           - port: http
         useServiceMonitor: false
     vlselect:
-      affinity: {}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       annotations: {}
       containerWorkingDir: ""
       enabled: true

@@ -78,6 +78,22 @@ helm:
           retentionPeriod: "6"
           vminsert:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - metal-01.he-eu-hel1.misc.vacdst
             extraArgs:
               # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
               # OTLP Protobuf: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
@@ -95,6 +111,22 @@ helm:
                 memory: 4Gi
           vmselect:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - metal-01.he-eu-hel1.misc.vacdst
             extraArgs: {}
             port: "8481"
             replicaCount: 2
@@ -107,6 +139,19 @@ helm:
                 memory: "8Gi"
           vmstorage:
             enabled: true
+            priorityClassName: monitoring-critical
+            tolerations:
+              - key: "dedicated"
+                operator: "Equal"
+                value: "monitoring"
+                effect: "PreferNoSchedule"
+            affinity:
+              podAntiAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchLabels:
+                        app.kubernetes.io/name: vmstorage
+                    topologyKey: kubernetes.io/hostname
             replicaCount: 2
             resources:
               limits:

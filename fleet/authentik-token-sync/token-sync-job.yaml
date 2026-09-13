@@ -11,11 +11,21 @@ spec:
     spec:
       template:
         spec:
-          #tolerations:
-          #  - key: "dedicated"
-          #    operator: "Equal"
-          #    value: "monitoring"
-          #    effect: "PreferNoSchedule"
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
           serviceAccountName: authentik-outpost-token-sync
           restartPolicy: OnFailure
           initContainers:

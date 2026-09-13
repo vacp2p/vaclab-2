@@ -19,8 +19,10 @@ spec:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/worker
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"

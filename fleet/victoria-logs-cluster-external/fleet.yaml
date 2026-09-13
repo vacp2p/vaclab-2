@@ -27,7 +27,16 @@ helm:
     vector:
       enabled: false
     vlinsert:
-      affinity: {}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       annotations: {}
       containerWorkingDir: ""
       enabled: true
@@ -127,7 +136,11 @@ helm:
       strategy: {}
       suppressStorageFQDNsRender: false
       terminationGracePeriodSeconds: 30
-      tolerations: []
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       topologySpreadConstraints: []
       vmServiceScrape:
         annotations: {}
@@ -139,7 +152,16 @@ helm:
           - port: http
         useServiceMonitor: false
     vlselect:
-      affinity: {}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       annotations: {}
       containerWorkingDir: ""
       enabled: true
@@ -247,7 +269,11 @@ helm:
       strategy: {}
       suppressStorageFQDNsRender: false
       terminationGracePeriodSeconds: 60
-      tolerations: []
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       topologySpreadConstraints: []
       vmServiceScrape:
         annotations: {}
@@ -259,7 +285,16 @@ helm:
           - port: http
         useServiceMonitor: false
     vlstorage:
-      affinity: {}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       annotations: {}
       containerWorkingDir: ""
       emptyDir: {}
@@ -351,7 +386,11 @@ helm:
         targetPort: http
         type: ClusterIP
       terminationGracePeriodSeconds: 60
-      tolerations: []
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
       topologySpreadConstraints: []
       vmServiceScrape:
         annotations: {}
