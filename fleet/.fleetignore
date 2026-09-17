@@ -1,5 +1,5 @@
 # Bundles listed here are kept in the repo for reference but are not
 # scanned/managed by Fleet, so their live resources get uninstalled.
 # Remove a line here to re-enable that bundle.
-fleet/bandwidth-scheduler/
-fleet/bandwidth-operator/
+bandwidth-scheduler/
+bandwidth-operator/
