@@ -97,7 +97,7 @@ helm:
       - vector-vl-config
       resources:
         requests:
-          cpu: "2"
+          cpu: "1"
           memory: 2Gi
         limits:
           cpu: "4"
@@ -194,7 +194,7 @@ helm:
           cpu: "8" # set to 8 in prod
           memory: "8Gi" # set to 8Gi in prod
         requests:
-          cpu: "2"  # set to 2 in prod
+          cpu: "1"
           memory: 2Gi
       securityContext:
         enabled: true
@@ -329,7 +329,7 @@ helm:
       replicaCount: 2
       resources:
         requests:
-          cpu: "2"
+          cpu: "1"
           memory: 4Gi
         limits:
           cpu: "4"
@@ -449,7 +449,7 @@ helm:
       replicaCount: 3
       resources:
         requests:
-          cpu: "4"
+          cpu: "1"
           memory: "8Gi"
         limits:
           cpu: "8"

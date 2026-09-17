@@ -107,7 +107,7 @@ helm:
                 cpu: "8"
                 memory: 8Gi
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: 4Gi
           vmselect:
             enabled: true
@@ -132,10 +132,10 @@ helm:
             replicaCount: 2
             resources:
               limits:
-                cpu: "8" 
+                cpu: "8"
                 memory: "16Gi"
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: "8Gi"
           vmstorage:
             enabled: true
@@ -158,7 +158,7 @@ helm:
                 cpu: "8" # set to 8 in production
                 memory: "8Gi"
               requests:
-                cpu: "2"
+                cpu: "1"
                 memory: "2Gi"
             storage:
               volumeClaimTemplate:

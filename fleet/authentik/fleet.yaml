@@ -186,7 +186,7 @@ helm:
           effect: "NoSchedule"
       resources:
         requests:
-          cpu: "4"
+          cpu: "2"
           memory: "4Gi"
         limits:
           cpu: "8"
@@ -234,7 +234,7 @@ helm:
           effect: "NoSchedule"
       resources:
         requests:
-          cpu: "2"
+          cpu: "1"
           memory: "2Gi"
         limits:
           cpu: "4"

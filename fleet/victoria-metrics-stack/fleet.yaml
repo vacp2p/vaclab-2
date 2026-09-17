@@ -377,7 +377,7 @@ helm:
                 cpu: "8"
                 memory: 8Gi
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: 4Gi
           vmselect:
             enabled: true
@@ -405,7 +405,7 @@ helm:
                 cpu: "8"
                 memory: "16Gi"
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: "8Gi"
           vmstorage:
             enabled: true
@@ -428,7 +428,7 @@ helm:
                 cpu: "8" # set to 8 in production
                 memory: "8Gi"
               requests:
-                cpu: "2"
+                cpu: "1"
                 memory: "6Gi"
             storage:
               volumeClaimTemplate:
@@ -849,7 +849,7 @@ helm:
             promscrape.dropOriginalLabels: "true"
           resources:
             requests:
-              cpu: "4"
+              cpu: "2"
               memory: 4Gi
             limits:
               cpu: "16"
@@ -1123,7 +1123,7 @@ helm:
         
         resources:
           requests:
-            cpu: "8"
+            cpu: "1"
             memory: 8Gi
           limits:
             cpu: "16"

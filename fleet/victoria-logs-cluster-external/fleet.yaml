@@ -110,7 +110,7 @@ helm:
           cpu: "8" # set to 8 in prod
           memory: "8Gi" # set to 8Gi in prod
         requests:
-          cpu: "2"  # set to 2 in prod
+          cpu: "1"
           memory: 2Gi
       securityContext:
         enabled: true
@@ -363,7 +363,7 @@ helm:
       replicaCount: 1
       resources:
         requests:
-          cpu: "2"
+          cpu: "1"
           memory: "1Gi"
       retentionDiskSpaceUsage: ""
       retentionPeriod: 6
