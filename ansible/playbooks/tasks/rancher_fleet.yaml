@@ -17,6 +17,27 @@
     values:
       crds:
         enabled: true
+      tolerations: &cert_manager_tolerations
+        - key: "dedicated"
+          operator: "Equal"
+          value: "monitoring"
+          effect: "PreferNoSchedule"
+      affinity: &cert_manager_affinity
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
+      webhook:
+        tolerations: *cert_manager_tolerations
+        affinity: *cert_manager_affinity
+      cainjector:
+        tolerations: *cert_manager_tolerations
+        affinity: *cert_manager_affinity
 
 - name: Wait for cert-manager to be ready
   command: kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=300s
@@ -152,9 +173,14 @@
           operator: "Equal"
           value: "monitoring"
           effect: "PreferNoSchedule"
+      # Rancher's chart only supports hard (requiredDuringScheduling) node
+      # affinity -- there is no soft/preferred option in this chart
+      # anywhere else until this is reverted.
       extraNodeSelectorTerms:
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - metal-01.he-eu-hel1.misc.vacdst
       ingress:
         enabled: true
         tls:

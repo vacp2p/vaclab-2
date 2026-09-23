@@ -114,8 +114,45 @@
             enabled: true
             serviceMonitor:
               enabled: false
+          # Keep the chart's default required podAffinity to a local cilium
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - topologyKey: kubernetes.io/hostname
+                  labelSelector:
+                    matchLabels:
+                      k8s-app: cilium
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
         ui:
           enabled: true
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
           backend:
             resources:
               limits:
@@ -156,6 +193,41 @@
           requests:
             cpu: "2"
             memory: "512Mi"
+        # Keep the chart's default required podAntiAffinity (spreads the 3
+        # replicas across 3 different nodes for HA -- only one is ever the
+        # elected leader) and add a soft preference for metal-01 alongside
+        # it, so at most one of the 3 replicas can land there.
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    io.cilium/app: operator
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - metal-01.he-eu-hel1.misc.vacdst
+        # Preserve the chart's default tolerations (control-plane, master,
+        # not-ready, uninitialized) alongside our own.
+        tolerations:
+          - key: "node-role.kubernetes.io/control-plane"
+            operator: Exists
+          - key: "node-role.kubernetes.io/master"
+            operator: Exists
+          - key: "node.kubernetes.io/not-ready"
+            operator: Exists
+          - key: "node.cloudprovider.kubernetes.io/uninitialized"
+            operator: Exists
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
 
       # Cilium agent resources
       resources:
