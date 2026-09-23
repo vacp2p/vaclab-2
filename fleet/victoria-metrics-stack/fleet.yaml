@@ -46,6 +46,21 @@ helm:
           limits:
             cpu: "2"
             memory: 2Gi
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - metal-01.he-eu-hel1.misc.vacdst
+        tolerations:
+          - key: "dedicated"
+            operator: "Equal"
+            value: "monitoring"
+            effect: "PreferNoSchedule"
 
       defaultDashboards:
         # -- Enable custom dashboards installation
@@ -339,6 +354,16 @@ helm:
                 operator: "Equal"
                 value: "monitoring"
                 effect: "PreferNoSchedule"
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - metal-01.he-eu-hel1.misc.vacdst
             extraArgs:
               # Enable OpenTelemetry metrics ingestion with Prometheus-compatible naming
               # OTLP Protobuf: http://vminsert-vmks-victoria-metrics-k8s-stack.vmetrics:8480/insert/0/opentelemetry/v1/metrics
@@ -352,7 +377,7 @@ helm:
                 cpu: "8"
                 memory: 8Gi
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: 4Gi
           vmselect:
             enabled: true
@@ -362,6 +387,16 @@ helm:
                 operator: "Equal"
                 value: "monitoring"
                 effect: "PreferNoSchedule"
+            affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - metal-01.he-eu-hel1.misc.vacdst
             extraArgs: {}
             port: "8481"
             replicaCount: 2
@@ -370,7 +405,7 @@ helm:
                 cpu: "8"
                 memory: "16Gi"
               requests:
-                cpu: "4"
+                cpu: "1"
                 memory: "8Gi"
           vmstorage:
             enabled: true
@@ -393,7 +428,7 @@ helm:
                 cpu: "8" # set to 8 in production
                 memory: "8Gi"
               requests:
-                cpu: "2"
+                cpu: "1"
                 memory: "6Gi"
             storage:
               volumeClaimTemplate:
@@ -428,6 +463,21 @@ helm:
             limits:
               cpu: "1"
               memory: 1Gi
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
 
           # -- (string) If this one defined, it will be used for alertmanager configuration and config parameter will be ignored
           configSecret: ""
@@ -528,6 +578,21 @@ helm:
             limits:
               cpu: "2"
               memory: 2Gi
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
+          tolerations:
+            - key: "dedicated"
+              operator: "Equal"
+              value: "monitoring"
+              effect: "PreferNoSchedule"
 
           # External labels to add to all generated recording rules and alerts
           externalLabels: {}
@@ -683,6 +748,16 @@ helm:
               operator: "Equal"
               value: "monitoring"
               effect: "PreferNoSchedule"
+          affinity:
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - metal-01.he-eu-hel1.misc.vacdst
           inlineScrapeConfig: |-
             - job_name: 'mix-testnet-0.2'
               kubernetes_sd_configs:
@@ -774,7 +849,7 @@ helm:
             promscrape.dropOriginalLabels: "true"
           resources:
             requests:
-              cpu: "4"
+              cpu: "2"
               memory: 4Gi
             limits:
               cpu: "16"
@@ -1036,8 +1111,10 @@ helm:
               - weight: 100
                 preference:
                   matchExpressions:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: Exists
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - metal-01.he-eu-hel1.misc.vacdst
         tolerations:
           - key: "dedicated"
             operator: "Equal"
@@ -1046,7 +1123,7 @@ helm:
         
         resources:
           requests:
-            cpu: "8"
+            cpu: "1"
             memory: 8Gi
           limits:
             cpu: "16"
@@ -1131,7 +1208,17 @@ helm:
             operator: "Equal"
             value: "monitoring"
             effect: "PreferNoSchedule"
-        
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                preference:
+                  matchExpressions:
+                    - key: kubernetes.io/hostname
+                      operator: In
+                      values:
+                        - metal-01.he-eu-hel1.misc.vacdst
+
         # -- [Scrape configuration](https://docs.victoriametrics.com/operator/api/#vmservicescrapespec) for Kube State Metrics
         vmScrape:
           enabled: true

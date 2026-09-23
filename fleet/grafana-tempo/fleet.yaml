@@ -15,7 +15,7 @@ helm:
       retention: 4380h # 6 months
       resources:
         requests:
-          cpu: "2"
+          cpu: "500m"
           memory: 4Gi
         limits:
           cpu: "2"

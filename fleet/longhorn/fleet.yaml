@@ -11,6 +11,10 @@ helm:
     defaultSettings:
       createDefaultDiskLabeledNodes: true
       defaultDataPath: /var/lib/longhorn
+      # Default is 12% of node CPU reserved for instance-manager regardless of
+      # actual usage (observed ~0.3% used on a 62-core node); lower reservation
+      # frees real scheduling headroom without affecting the runtime CPU limit.
+      guaranteedInstanceManagerCPU: "4"
     longhornManager:
       tolerations:
         - key: "dedicated"
@@ -30,8 +34,10 @@ helm:
             - weight: 100
               preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/control-plane
-                    operator: Exists
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - metal-01.he-eu-hel1.misc.vacdst
       tolerations:
         - key: "dedicated"
           operator: "Equal"
